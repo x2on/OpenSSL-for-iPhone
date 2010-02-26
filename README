@@ -1,5 +1,7 @@
 From: http://www.x2on.de/2010/02/01/tutorial-iphone-app-with-compiled-openssl-library/
 
+UPDATE 2010-02-26: I have updated OpenSSL to 0.9.8m
+
 This is a tutorial for using self-compiled builds of  the OpenSSL-library on the iPhone. You can build apps with XCode and the official SDK from Apple with this. I also made a small example-app for using the libraries with XCode and the iPhone/iPhone-Simulator. You can also download the precompiled OpenSSL-library (0.9.8m-beta1).
 
 Create OpenSSL Libary:
