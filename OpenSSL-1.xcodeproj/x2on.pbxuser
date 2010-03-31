@@ -10,9 +10,9 @@
 	};
 	1D3623250D0F684500981E51 /* OpenSSL_1AppDelegate.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1608, 1209}}";
-			sepNavSelRange = "{1389, 235}";
-			sepNavVisRange = "{0, 2059}";
+			sepNavIntBoundsRect = "{{0, 0}, {1433, 1313}}";
+			sepNavSelRange = "{208, 0}";
+			sepNavVisRange = "{1925, 931}";
 		};
 	};
 	1D6058900D05DD3D006BFB54 /* OpenSSL-1 */ = {
@@ -24,6 +24,7 @@
 	29B97313FDCFA39411CA2CEA /* Project object */ = {
 		activeBuildConfigurationName = Debug;
 		activeExecutable = 2A347539111721A9007C3F01 /* OpenSSL-1 */;
+		activeSDKPreference = iphonesimulator3.1.3;
 		activeTarget = 1D6058900D05DD3D006BFB54 /* OpenSSL-1 */;
 		addToTargets = (
 			1D6058900D05DD3D006BFB54 /* OpenSSL-1 */,
@@ -38,7 +39,7 @@
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
-					1430,
+					833,
 					20,
 					48,
 					43,
@@ -77,17 +78,17 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 286984855;
-			PBXWorkspaceStateSaveDate = 286984855;
+			PBXPerProjectTemplateStateSaveDate = 291641863;
+			PBXWorkspaceStateSaveDate = 291641863;
 		};
 		perUserProjectItems = {
+			2A0C1BCD11621A4600885C03 /* PBXTextBookmark */ = 2A0C1BCD11621A4600885C03 /* PBXTextBookmark */;
+			2A0C1BCE11621A4600885C03 /* PBXTextBookmark */ = 2A0C1BCE11621A4600885C03 /* PBXTextBookmark */;
+			2A0C1BCF11621A4600885C03 /* PBXTextBookmark */ = 2A0C1BCF11621A4600885C03 /* PBXTextBookmark */;
+			2A0C1BD111621A4600885C03 /* PlistBookmark */ = 2A0C1BD111621A4600885C03 /* PlistBookmark */;
 			2A191D4E111734250052E5A8 /* PBXTextBookmark */ = 2A191D4E111734250052E5A8 /* PBXTextBookmark */;
 			2A3475B0111725A3007C3F01 /* PBXTextBookmark */ = 2A3475B0111725A3007C3F01 /* PBXTextBookmark */;
-			2A958F2F111B0ABA005357FF /* PBXTextBookmark */ = 2A958F2F111B0ABA005357FF /* PBXTextBookmark */;
-			2A958F30111B0ABA005357FF /* PBXTextBookmark */ = 2A958F30111B0ABA005357FF /* PBXTextBookmark */;
-			2A958F31111B0ABA005357FF /* PBXTextBookmark */ = 2A958F31111B0ABA005357FF /* PBXTextBookmark */;
-			2A958F32111B0ABA005357FF /* PBXBookmark */ = 2A958F32111B0ABA005357FF /* PBXBookmark */;
-			2A958F33111B0ABA005357FF /* PlistBookmark */ = 2A958F33111B0ABA005357FF /* PlistBookmark */;
+			2AD8794D113D9EB000EDB9AF /* PlistBookmark */ = 2AD8794D113D9EB000EDB9AF /* PlistBookmark */;
 		};
 		sourceControlManager = 2A347548111721AA007C3F01 /* Source Control */;
 		userBuildSettings = {
@@ -95,10 +96,51 @@
 	};
 	29B97316FDCFA39411CA2CEA /* main.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1608, 840}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 598}}";
 			sepNavSelRange = "{158, 0}";
 			sepNavVisRange = "{0, 363}";
 		};
+	};
+	2A0C1BCD11621A4600885C03 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 1D3623250D0F684500981E51 /* OpenSSL_1AppDelegate.m */;
+		name = "OpenSSL_1AppDelegate.m: 11";
+		rLen = 0;
+		rLoc = 208;
+		rType = 0;
+		vrLen = 931;
+		vrLoc = 1925;
+	};
+	2A0C1BCE11621A4600885C03 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 32CA4F630368D1EE00C91783 /* OpenSSL_1_Prefix.pch */;
+		name = "OpenSSL_1_Prefix.pch: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 187;
+		vrLoc = 0;
+	};
+	2A0C1BCF11621A4600885C03 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 29B97316FDCFA39411CA2CEA /* main.m */;
+		name = "main.m: 10";
+		rLen = 0;
+		rLoc = 158;
+		rType = 0;
+		vrLen = 363;
+		vrLoc = 0;
+	};
+	2A0C1BD111621A4600885C03 /* PlistBookmark */ = {
+		isa = PlistBookmark;
+		fRef = 8D1107310486CEB800E47090 /* OpenSSL_1-Info.plist */;
+		fallbackIsa = PBXBookmark;
+		isK = 0;
+		kPath = (
+		);
+		name = "/Users/x2on/Projects/iphone/OpenSSL-for-iPhone/OpenSSL_1-Info.plist";
+		rLen = 0;
+		rLoc = 9223372036854775807;
 	};
 	2A191D4E111734250052E5A8 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
@@ -169,41 +211,7 @@
 		path = /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk/System/Library/Frameworks/CoreGraphics.framework/Headers/CGGeometry.h;
 		sourceTree = "<absolute>";
 	};
-	2A958F2F111B0ABA005357FF /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 1D3623250D0F684500981E51 /* OpenSSL_1AppDelegate.m */;
-		name = "OpenSSL_1AppDelegate.m: 43";
-		rLen = 235;
-		rLoc = 1389;
-		rType = 0;
-		vrLen = 2059;
-		vrLoc = 0;
-	};
-	2A958F30111B0ABA005357FF /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 29B97316FDCFA39411CA2CEA /* main.m */;
-		name = "main.m: 10";
-		rLen = 0;
-		rLoc = 158;
-		rType = 0;
-		vrLen = 363;
-		vrLoc = 0;
-	};
-	2A958F31111B0ABA005357FF /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 32CA4F630368D1EE00C91783 /* OpenSSL_1_Prefix.pch */;
-		name = "OpenSSL_1_Prefix.pch: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 187;
-		vrLoc = 0;
-	};
-	2A958F32111B0ABA005357FF /* PBXBookmark */ = {
-		isa = PBXBookmark;
-		fRef = 8D1107310486CEB800E47090 /* OpenSSL_1-Info.plist */;
-	};
-	2A958F33111B0ABA005357FF /* PlistBookmark */ = {
+	2AD8794D113D9EB000EDB9AF /* PlistBookmark */ = {
 		isa = PlistBookmark;
 		fRef = 8D1107310486CEB800E47090 /* OpenSSL_1-Info.plist */;
 		fallbackIsa = PBXBookmark;
@@ -212,11 +220,11 @@
 		);
 		name = "/Users/x2on/Projects/iphone/OpenSSL-for-iPhone/OpenSSL_1-Info.plist";
 		rLen = 0;
-		rLoc = 9223372036854775807;
+		rLoc = 9223372036854775808;
 	};
 	32CA4F630368D1EE00C91783 /* OpenSSL_1_Prefix.pch */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1608, 840}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 598}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 187}";
 		};

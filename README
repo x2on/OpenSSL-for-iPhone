@@ -1,17 +1,18 @@
 From: http://www.x2on.de/2010/02/01/tutorial-iphone-app-with-compiled-openssl-library/
 
+UPDATE 2010-03-31: I have updated OpenSSL to 0.9.8n
 UPDATE 2010-02-26: I have updated OpenSSL to 0.9.8m
 
-This is a tutorial for using self-compiled builds of  the OpenSSL-library on the iPhone. You can build apps with XCode and the official SDK from Apple with this. I also made a small example-app for using the libraries with XCode and the iPhone/iPhone-Simulator. You can also download the precompiled OpenSSL-library (0.9.8m-beta1).
+This is a tutorial for using self-compiled builds of  the OpenSSL-library on the iPhone. You can build apps with XCode and the official SDK from Apple with this. I also made a small example-app for using the libraries with XCode and the iPhone/iPhone-Simulator. You can also download the precompiled OpenSSL-library (0.9.8n).
 
 Create OpenSSL Libary:
 
     * Download OpenSSL Sourcecode
     * Build OpenSSL for i368 iPhoneSimulator:
-          o cd openssl-0.9.8m
+          o cd openssl-0.9.8n
             mkdir openssl_arm
             mkdir openssl_i386
-            ./config --openssldir=/Users/
+            ./config --openssldir=/PathtoOpenSSL/openssl_i386
 
           o Edit Makefile:
                 + Change CC = cc to:
@@ -20,7 +21,7 @@ Create OpenSSL Libary:
 
                 + Add as first item to CFLAG:
 
-                  -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk
+                  -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk
 
           o Change in crypto/ui/ui_openssl.c
 
@@ -53,11 +54,11 @@ Create OpenSSL Libary:
 
                 + Change
 
-                  -isysroot  /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk
+                  -isysroot  /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk
 
                   to
 
-                  -isysroot  /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.1.2.sdk
+                  -isysroot  /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.1.3.sdk
 
           o Build it:
             make
@@ -81,4 +82,4 @@ Edit your iPhone-XCode project:
 
 Enjoy OpenSSL on the iPhone!
 
-I have made an iPhone OS 3.1.2 XCode Project with OpenSSL 0.9.8m (Beta1) Libaries. The examples uses the MD5-algorithm to calculate an md5 hash from an UITextfield.
+I have made an iPhone OS 3.1.3 XCode Project with OpenSSL 0.9.8n Libaries. The examples uses the MD5-algorithm to calculate an md5 hash from an UITextfield.
