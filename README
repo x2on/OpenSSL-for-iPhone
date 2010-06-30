@@ -1,86 +1,14 @@
 From: http://www.x2on.de/2010/02/01/tutorial-iphone-app-with-compiled-openssl-library/
 
+UPDATE 2010-06-30: I have updated OpenSSL to 1.0.0a with iOS 4.0 as base SDK
 UPDATE 2010-06-10: I have updated OpenSSL to 0.9.8o + iPad Version
 UPDATE 2010-03-31: I have updated OpenSSL to 0.9.8n
 UPDATE 2010-02-26: I have updated OpenSSL to 0.9.8m
 
-This is a tutorial for using self-compiled builds of  the OpenSSL-library on the iPhone. You can build apps with XCode and the official SDK from Apple with this. I also made a small example-app for using the libraries with XCode and the iPhone/iPhone-Simulator. You can also download the precompiled OpenSSL-library (0.9.8n).
+This is a tutorial for using self-compiled builds of  the OpenSSL-library on the iPhone. You can build apps with XCode and the official SDK from Apple with this. I also made a small example-app for using the libraries with XCode and the iPhone/iPhone-Simulator. You can also download the precompiled OpenSSL-library (1.0.0a).
 
-Create OpenSSL Libary:
-
-    * Download OpenSSL Sourcecode
-    * Build OpenSSL for i368 iPhoneSimulator:
-          o cd openssl-0.9.8o
-            mkdir openssl_arm
-            mkdir openssl_i386
-            ./config --openssldir=/PathtoOpenSSL/openssl_i386
-
-          o Edit Makefile:
-                + Change CC = cc to:
-
-                  CC= /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.0
-
-                + Add as first item to CFLAG:
-
-                  -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk
-
-          o Change in crypto/ui/ui_openssl.c
-
-            static volatile sig_atomic_t intr_signal;
-
-            to
-
-            static volatile int intr_signal;
-
-            for preventing building error
-          o Build it:
-
-            make
-            make install
-
-          o Your libcrypto.a and libssl.a are in the folder openssl_i368/lib
-          o Rename the two files to libcrypto_i386.a and libssl_i386.a
-    * Build OpenSSL for arm iPhoneOS:
-          o Edit Makefile:
-                + Search and replace openssl_i386 with openssl_arm
-                + Change -arch i386 in CFLAG to:
-                  -arch armv6
-                + Change
-
-                  CC=  /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.0
-
-                  to
-
-                  CC=  /Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/gcc-4.0
-
-                + Change
-
-                  -isysroot  /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk
-
-                  to
-
-                  -isysroot  /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.1.3.sdk
-
-          o Build it:
-            make
-            make install
-
-          o Your libcrypto.a and libssl.a are in the folder openssl_arm/lib
-          o Rename the two files to libcrypto_arm.a and libssl_arm.a
-
-Edit your iPhone-XCode project:
-
-    * Copy the “include” folder from OpenSSL into your project-folder
-    * Copy the libcrypto_*.a and libss_*.a files into your project-folder
-    * Drag the libcrypto_*.a and libss_*.a files into your XCode Framework Folder-Tree
-    * Open the Build-Info from your “Target” (Righclick on Target – Get Info)
-    * Change Library Search Paths to
-
-      $(inherited) "$(SRCROOT)"
-
-    * Change User Header Search Paths to include
-    * Activate Always Search User Paths
+An updated version for OpenSSL 1.0 and Xcode 3.2.3 with iOS 4 is coming soon.
 
 Enjoy OpenSSL on the iPhone!
 
-I have made an iPhone OS 3.1.3 XCode Project with OpenSSL 0.9.8o Libaries. The examples uses the MD5-algorithm to calculate an md5 hash from an UITextfield.
+I have made an iOS 4.0 XCode Project with OpenSSL 1.0.0a Libaries. The examples uses the MD5-algorithm to calculate an md5 hash from an UITextfield.

@@ -1,6 +1,6 @@
 //
 //  main.m
-//  OpenSSL-1
+//  OpenSSL-for-iPhone
 //
 //  Created by Felix Schulze on 01.02.2010.
 //  Copyright Felix Schulze 2010. All rights reserved.

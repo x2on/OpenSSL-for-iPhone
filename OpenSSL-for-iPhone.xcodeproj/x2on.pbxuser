@@ -1,0 +1,211 @@
+// !$*UTF8*$!
+{
+	1D3623240D0F684500981E51 /* OpenSSL_for_iPhoneAppDelegate.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {818, 319}}";
+			sepNavSelRange = "{65, 98}";
+			sepNavVisRange = "{0, 360}";
+		};
+	};
+	1D3623250D0F684500981E51 /* OpenSSL_for_iPhoneAppDelegate.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1965, 1976}}";
+			sepNavSelRange = "{210, 25}";
+			sepNavVisRange = "{0, 1111}";
+		};
+	};
+	1D6058900D05DD3D006BFB54 /* OpenSSL-for-iPhone */ = {
+		activeExec = 0;
+		executables = (
+			2A38C4FE11DBC47D00738646 /* OpenSSL-for-iPhone */,
+		);
+	};
+	29B97313FDCFA39411CA2CEA /* Project object */ = {
+		activeBuildConfigurationName = Debug;
+		activeExecutable = 2A38C4FE11DBC47D00738646 /* OpenSSL-for-iPhone */;
+		activeTarget = 1D6058900D05DD3D006BFB54 /* OpenSSL-for-iPhone */;
+		addToTargets = (
+			1D6058900D05DD3D006BFB54 /* OpenSSL-for-iPhone */,
+		);
+		codeSenseManager = 2A38C51011DBC48700738646 /* Code sense */;
+		executables = (
+			2A38C4FE11DBC47D00738646 /* OpenSSL-for-iPhone */,
+		);
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					640,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					600,
+					60,
+					20,
+					48,
+					43,
+					43,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXTargetDataSource_PrimaryAttribute,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 299615357;
+			PBXWorkspaceStateSaveDate = 299615357;
+		};
+		perUserProjectItems = {
+			2A38C54C11DBC83400738646 /* PBXTextBookmark */ = 2A38C54C11DBC83400738646 /* PBXTextBookmark */;
+			2A38C54D11DBC83400738646 /* PBXTextBookmark */ = 2A38C54D11DBC83400738646 /* PBXTextBookmark */;
+			2A38C54E11DBC83400738646 /* PBXTextBookmark */ = 2A38C54E11DBC83400738646 /* PBXTextBookmark */;
+			2A38C54F11DBC83400738646 /* PlistBookmark */ = 2A38C54F11DBC83400738646 /* PlistBookmark */;
+			2A38C5D211DBC90200738646 /* PBXTextBookmark */ = 2A38C5D211DBC90200738646 /* PBXTextBookmark */;
+			2A38C5D411DBC91A00738646 /* PBXTextBookmark */ = 2A38C5D411DBC91A00738646 /* PBXTextBookmark */;
+		};
+		sourceControlManager = 2A38C50F11DBC48700738646 /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	29B97316FDCFA39411CA2CEA /* main.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {818, 319}}";
+			sepNavSelRange = "{138, 0}";
+			sepNavVisRange = "{0, 372}";
+		};
+	};
+	2A38C4FE11DBC47D00738646 /* OpenSSL-for-iPhone */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 0;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		dataTipCustomDataFormattersEnabled = 1;
+		dataTipShowTypeColumn = 1;
+		dataTipSortType = 0;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = "OpenSSL-for-iPhone";
+		showTypeColumn = 0;
+		sourceDirectories = (
+		);
+	};
+	2A38C50F11DBC48700738646 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+			repositoryNamesForRoots = {
+				"" = "";
+			};
+		};
+	};
+	2A38C51011DBC48700738646 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	2A38C54C11DBC83400738646 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 1D3623240D0F684500981E51 /* OpenSSL_for_iPhoneAppDelegate.h */;
+		name = "OpenSSL_for_iPhoneAppDelegate.h: 5";
+		rLen = 98;
+		rLoc = 65;
+		rType = 0;
+		vrLen = 360;
+		vrLoc = 0;
+	};
+	2A38C54D11DBC83400738646 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 32CA4F630368D1EE00C91783 /* OpenSSL_for_iPhone_Prefix.pch */;
+		name = "OpenSSL_for_iPhone_Prefix.pch: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 205;
+		vrLoc = 0;
+	};
+	2A38C54E11DBC83400738646 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 29B97316FDCFA39411CA2CEA /* main.m */;
+		name = "main.m: 6";
+		rLen = 0;
+		rLoc = 138;
+		rType = 0;
+		vrLen = 372;
+		vrLoc = 0;
+	};
+	2A38C54F11DBC83400738646 /* PlistBookmark */ = {
+		isa = PlistBookmark;
+		fRef = 8D1107310486CEB800E47090 /* OpenSSL_for_iPhone-Info.plist */;
+		fallbackIsa = PBXBookmark;
+		isK = 0;
+		kPath = (
+		);
+		name = "/Users/x2on/Projects/iPhone/OpenSSL-for-iPhone/OpenSSL_for_iPhone-Info.plist";
+		rLen = 0;
+		rLoc = 9223372036854775807;
+	};
+	2A38C5D211DBC90200738646 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 1D3623250D0F684500981E51 /* OpenSSL_for_iPhoneAppDelegate.m */;
+		name = "OpenSSL_for_iPhoneAppDelegate.m: 6";
+		rLen = 0;
+		rLoc = 163;
+		rType = 0;
+		vrLen = 675;
+		vrLoc = 0;
+	};
+	2A38C5D411DBC91A00738646 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 1D3623250D0F684500981E51 /* OpenSSL_for_iPhoneAppDelegate.m */;
+		name = "OpenSSL_for_iPhoneAppDelegate.m: 6";
+		rLen = 0;
+		rLoc = 163;
+		rType = 0;
+		vrLen = 675;
+		vrLoc = 0;
+	};
+	32CA4F630368D1EE00C91783 /* OpenSSL_for_iPhone_Prefix.pch */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {818, 319}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 205}";
+		};
+	};
+}

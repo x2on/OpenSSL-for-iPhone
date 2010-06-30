@@ -1,0 +1,8 @@
+//
+// Prefix header for all source files of the 'OpenSSL-for-iPhone' target in the 'OpenSSL-for-iPhone' project
+//
+
+#ifdef __OBJC__
+    #import <Foundation/Foundation.h>
+    #import <UIKit/UIKit.h>
+#endif
