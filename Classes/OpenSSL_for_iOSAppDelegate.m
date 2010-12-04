@@ -16,24 +16,21 @@
 
 
 #pragma mark -
-#pragma mark Application lifecycle
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {   
-	[window makeKeyAndVisible];
-	return YES;
-}
+#pragma mark OpenSSL
 
 - (IBAction)calculateMD5:(id)sender
 {
 	/** Calculate MD5*/
 	NSString *string =  textField.text;
-	unsigned char result[16];
     unsigned char *inStrg = (unsigned char*)[[string dataUsingEncoding:NSASCIIStringEncoding] bytes];
     unsigned long lngth = [string length];
+	unsigned char result[MD5_DIGEST_LENGTH];
+	NSMutableString *outStrg = [NSMutableString string];
+	
     MD5(inStrg, lngth, result);
-    NSMutableString *outStrg = [NSMutableString string];
+	
     unsigned int i;
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < MD5_DIGEST_LENGTH; i++)
     {
         [outStrg appendFormat:@"%02x", result[i]];
     }
@@ -56,7 +53,8 @@
     SHA256_Init(&sha256);
     SHA256_Update(&sha256, inStrg, lngth);
     SHA256_Final(result, &sha256);
-    int i = 0;
+	
+    unsigned int i;
     for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
     {
         [outStrg appendFormat:@"%02x", result[i]];
@@ -65,6 +63,14 @@
 	
 	//Hide Keyboard after calculation
 	[textField resignFirstResponder];
+}
+
+#pragma mark -
+#pragma mark Application lifecycle
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {   
+	[window makeKeyAndVisible];
+	return YES;
 }
 
 - (IBAction)showInfo {
