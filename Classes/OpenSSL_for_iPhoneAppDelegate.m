@@ -2,7 +2,7 @@
 //  OpenSSL_for_iPhoneAppDelegate.m
 //  OpenSSL-for-iPhone
 //
-//  Created by Felix Schulze on 30.06.2010.
+//  Created by Felix Schulze on 04.12.2010.
 //  Copyright Felix Schulze 2010. All rights reserved.
 //
 
@@ -11,66 +11,21 @@
 
 @implementation OpenSSL_for_iPhoneAppDelegate
 
-@synthesize window;
+@synthesize window, textField, md5TextField;
 
-UITextField *textView;
-UILabel *label;
 
 #pragma mark -
 #pragma mark Application lifecycle
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
-    
-    UINavigationBar *navBar = [[UINavigationBar alloc] initWithFrame:
-                               CGRectMake( 0.0f, 20.0f, window.frame.size.width, 48.0f)];
-    [navBar setBarStyle: 0];
-	
-	UINavigationItem *title = [[UINavigationItem alloc] initWithTitle:@"OpenSSL-Test"];
-    [navBar pushNavigationItem:title animated:true];
-	
-	UIButton* infoButton = [UIButton buttonWithType:UIButtonTypeInfoLight];
-	[infoButton addTarget:self action:@selector(infoView) forControlEvents:UIControlEventTouchUpInside];
-	
-	UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithCustomView:infoButton];
-	title.rightBarButtonItem = buttonItem;
-	[buttonItem release];
-	
-	textView = [[UITextView alloc] initWithFrame: CGRectMake(5, 100, 310, 50)];
-	textView.backgroundColor = [UIColor lightGrayColor]; 
-	[textView setText:@"Testing text"];
-	
-	label = [[UILabel alloc] initWithFrame:CGRectMake(20, 200, 320.0f, 100)];
-	label.font = [UIFont fontWithName:@"Courier New" size: 10.0];
-	[label setText:@"MD5-Hash"];
-	
-	UIButton *button = [[UIButton buttonWithType:UIButtonTypeRoundedRect] retain];	button.frame = CGRectMake(100, 150, 100, 50);
-	[button setTitle:@"Calc MD5" forState:UIControlStateNormal];
-	button.backgroundColor = [UIColor clearColor];
-	[button addTarget:self action:@selector(action:) forControlEvents:UIControlEventTouchUpInside];
-	button.adjustsImageWhenHighlighted = YES;
-	
-	
-    [window addSubview:textView];
-    [window addSubview:navBar];
-	[window addSubview:button];
-	[window addSubview:label];
-    [window makeKeyAndVisible];
-	
-	
-    [title release];
-    [navBar release];
-	[textView release];
-	[label release];
-	[button release];
-	
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {   
+	[window makeKeyAndVisible];
 	return YES;
 }
 
-- (void)action:(id)sender
+- (IBAction)calculateMD5:(id)sender
 {
-	
 	/** Calculate MD5*/
-	NSString *string =  textView.text;
+	NSString *string =  textField.text;
 	unsigned char result[16];
     unsigned char *inStrg = (unsigned char*)[[string dataUsingEncoding:NSASCIIStringEncoding] bytes];
     unsigned long lngth = [string length];
@@ -81,13 +36,12 @@ UILabel *label;
     {
         [outStrg appendFormat:@"%02x", result[i]];
     }
-	[label setText:outStrg];
+	md5TextField.text = outStrg;
 }
 
-- (void) infoView
-{
+- (IBAction)showInfo {
 	
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"OpenSSL-Test" message:@"Copyright 2010 by Felix Schulze\n http://www.x2on.de" delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"OpenSSL-for-iOS" message:@"OpenSSL-Version: 1.0.0c\nLicense: See include/LICENSE\n\nCopyright 2010 by Felix Schulze\n http://www.x2on.de" delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];
 	
 	[alert show];
 	[alert release];

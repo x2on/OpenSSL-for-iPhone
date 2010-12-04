@@ -10,9 +10,17 @@
 
 @interface OpenSSL_for_iPhoneAppDelegate : NSObject <UIApplicationDelegate> {
     UIWindow *window;
+	
+	IBOutlet UITextField *textField;
+	IBOutlet UITextField *md5TextField;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
+@property (nonatomic, retain) IBOutlet UITextField *textField;
+@property (nonatomic, retain) IBOutlet UITextField *md5TextField;
 
+
+- (IBAction)showInfo;
+- (IBAction)calculateMD5:(id)sender;
 @end
 
