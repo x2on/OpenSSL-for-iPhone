@@ -1,16 +1,16 @@
 //
-//  OpenSSL_for_iPhoneAppDelegate.m
-//  OpenSSL-for-iPhone
+//  OpenSSL_for_iOSAppDelegate.m
+//  OpenSSL-for-iOS
 //
 //  Created by Felix Schulze on 04.12.2010.
 //  Copyright Felix Schulze 2010. All rights reserved.
 //
 
-#import "OpenSSL_for_iPhoneAppDelegate.h"
+#import "OpenSSL_for_iOSAppDelegate.h"
 #include <Openssl/md5.h>
 #include <Openssl/sha.h>
 
-@implementation OpenSSL_for_iPhoneAppDelegate
+@implementation OpenSSL_for_iOSAppDelegate
 
 @synthesize window, textField, md5TextField, sha256TextField;
 
@@ -51,7 +51,7 @@
 	unsigned long lngth = [string length];
 	unsigned char result[SHA256_DIGEST_LENGTH];
     NSMutableString *outStrg = [NSMutableString string];
-
+	
     SHA256_CTX sha256;
     SHA256_Init(&sha256);
     SHA256_Update(&sha256, inStrg, lngth);
