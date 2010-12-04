@@ -1,13 +1,14 @@
 From: http://www.x2on.de/2010/02/01/tutorial-iphone-app-with-compiled-openssl-library/ and http://www.x2on.de/2010/07/13/tutorial-iphone-app-with-compiled-openssl-1-0-0a-library/
 
+UPDATE 2010-12-04: I habe updated OpemSSL to 1.0.0c
 UPDATE 2010-11-16: I have updated OpenSSL to 1.0.0b
 UPDATE 2010-06-30: I have updated OpenSSL to 1.0.0a with iOS 4.0 as base SDK
 UPDATE 2010-06-10: I have updated OpenSSL to 0.9.8o + iPad Version
 UPDATE 2010-03-31: I have updated OpenSSL to 0.9.8n
 UPDATE 2010-02-26: I have updated OpenSSL to 0.9.8m
 
-This is a tutorial for using self-compiled builds of  the OpenSSL-library on the iPhone. You can build apps with XCode and the official SDK from Apple with this. I also made a small example-app for using the libraries with XCode and the iPhone/iPhone-Simulator. You can also download the precompiled OpenSSL-library (1.0.0b).
+This is a tutorial for using self-compiled builds of  the OpenSSL-library on the iPhone. You can build apps with XCode and the official SDK from Apple with this. I also made a small example-app for using the libraries with XCode and the iPhone/iPhone-Simulator. You can also download the precompiled OpenSSL-library (1.0.0c).
 
 Enjoy OpenSSL on the iPhone!
 
-I have made an iOS 4.0 XCode Project with OpenSSL 1.0.0b Libaries. The examples uses the MD5-algorithm to calculate an md5 hash from an UITextfield.
+I have made an iOS 4.0 XCode Project with OpenSSL 1.0.0c Libaries. The examples uses the MD5-algorithm to calculate an md5 hash from an UITextfield.
