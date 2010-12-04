@@ -12,15 +12,19 @@
     UIWindow *window;
 	
 	IBOutlet UITextField *textField;
-	IBOutlet UITextField *md5TextField;
+	IBOutlet UILabel *md5TextField;
+	IBOutlet UILabel *sha256TextField;
+
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet UITextField *textField;
-@property (nonatomic, retain) IBOutlet UITextField *md5TextField;
+@property (nonatomic, retain) IBOutlet UILabel *md5TextField;
+@property (nonatomic, retain) IBOutlet UILabel *sha256TextField;
 
 
 - (IBAction)showInfo;
 - (IBAction)calculateMD5:(id)sender;
+- (IBAction)calculateSHA256:(id)sender;
 @end
 

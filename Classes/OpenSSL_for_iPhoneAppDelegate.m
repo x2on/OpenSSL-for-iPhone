@@ -8,10 +8,11 @@
 
 #import "OpenSSL_for_iPhoneAppDelegate.h"
 #include <Openssl/md5.h>
+#include <Openssl/sha.h>
 
 @implementation OpenSSL_for_iPhoneAppDelegate
 
-@synthesize window, textField, md5TextField;
+@synthesize window, textField, md5TextField, sha256TextField;
 
 
 #pragma mark -
@@ -37,6 +38,33 @@
         [outStrg appendFormat:@"%02x", result[i]];
     }
 	md5TextField.text = outStrg;
+	
+	//Hide Keyboard after calculation
+	[textField resignFirstResponder];
+}
+
+- (IBAction)calculateSHA256:(id)sender {
+	
+	/* Calculate SHA256 */
+	NSString *string =  textField.text;
+    unsigned char *inStrg = (unsigned char*)[[string dataUsingEncoding:NSASCIIStringEncoding] bytes];
+	unsigned long lngth = [string length];
+	unsigned char result[SHA256_DIGEST_LENGTH];
+    NSMutableString *outStrg = [NSMutableString string];
+
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, inStrg, lngth);
+    SHA256_Final(result, &sha256);
+    int i = 0;
+    for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
+    {
+        [outStrg appendFormat:@"%02x", result[i]];
+    }
+	sha256TextField.text = outStrg;
+	
+	//Hide Keyboard after calculation
+	[textField resignFirstResponder];
 }
 
 - (IBAction)showInfo {
