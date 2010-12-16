@@ -1,5 +1,6 @@
 From: http://www.x2on.de/2010/02/01/tutorial-iphone-app-with-compiled-openssl-library/ and http://www.x2on.de/2010/07/13/tutorial-iphone-app-with-compiled-openssl-1-0-0a-library/
 
+UPDATE 2010-12-16: Script for building OpenSSL
 UPDATE 2010-12-04: SHA256 Hash + Clean project file with iOS 4.2 as base SDK
 UPDATE 2010-12-04: I habe updated OpemSSL to 1.0.0c
 UPDATE 2010-11-16: I have updated OpenSSL to 1.0.0b
