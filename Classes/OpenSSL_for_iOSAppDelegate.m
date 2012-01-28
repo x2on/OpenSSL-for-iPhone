@@ -75,7 +75,7 @@
 
 - (IBAction)showInfo {
 	
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"OpenSSL-for-iOS" message:@"OpenSSL-Version: 1.0.0e\nLicense: See include/LICENSE\n\nCopyright 2010-2011 by Felix Schulze\n http://www.x2on.de" delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"OpenSSL-for-iOS" message:@"OpenSSL-Version: 1.0.0g\nLicense: See include/LICENSE\n\nCopyright 2010-2012 by Felix Schulze\n http://www.x2on.de" delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];
 	
 	[alert show];
 	[alert release];
