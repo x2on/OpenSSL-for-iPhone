@@ -7,119 +7,138 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1D3623260D0F684500981E51 /* OpenSSL_for_iOSAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* OpenSSL_for_iOSAppDelegate.m */; };
-		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
-		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
-		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
-		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
-		2A28EE4612AA83FE00C0D35A /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 2A28EE4512AA83FE00C0D35A /* Icon.png */; };
-		2AA51C5512AA80B400AEA776 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AA51C5312AA80B400AEA776 /* libssl.a */; };
-		2AA51C5612AA80B400AEA776 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AA51C5412AA80B400AEA776 /* libcrypto.a */; };
+		533ED3001528C4840005C6FA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED2FF1528C4840005C6FA /* UIKit.framework */; };
+		533ED3021528C4840005C6FA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED3011528C4840005C6FA /* Foundation.framework */; };
+		533ED3041528C4840005C6FA /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED3031528C4840005C6FA /* CoreGraphics.framework */; };
+		533ED30A1528C4840005C6FA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 533ED3081528C4840005C6FA /* InfoPlist.strings */; };
+		533ED30C1528C4840005C6FA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 533ED30B1528C4840005C6FA /* main.m */; };
+		533ED3101528C4840005C6FA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 533ED30F1528C4840005C6FA /* AppDelegate.m */; };
+		533ED3131528C4840005C6FA /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 533ED3121528C4840005C6FA /* ViewController.m */; };
+		533ED3161528C4840005C6FA /* ViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 533ED3141528C4840005C6FA /* ViewController_iPhone.xib */; };
+		533ED3191528C4840005C6FA /* ViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 533ED3171528C4840005C6FA /* ViewController_iPad.xib */; };
+		533ED3201528C4950005C6FA /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 533ED31F1528C4950005C6FA /* Icon.png */; };
+		533ED3221528C4960005C6FA /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 533ED3211528C4960005C6FA /* Icon@2x.png */; };
+		533ED3261528C4FA0005C6FA /* Icon~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 533ED3251528C4FA0005C6FA /* Icon~ipad.png */; };
+		533ED3281528C5140005C6FA /* Icon~iPad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 533ED3271528C5140005C6FA /* Icon~iPad@2x.png */; };
+		533ED32C1528C53B0005C6FA /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED32A1528C53B0005C6FA /* libcrypto.a */; };
+		533ED32D1528C53B0005C6FA /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED32B1528C53B0005C6FA /* libssl.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		1D3623240D0F684500981E51 /* OpenSSL_for_iOSAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenSSL_for_iOSAppDelegate.h; sourceTree = "<group>"; };
-		1D3623250D0F684500981E51 /* OpenSSL_for_iOSAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenSSL_for_iOSAppDelegate.m; sourceTree = "<group>"; };
-		1D6058910D05DD3D006BFB54 /* OpenSSL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenSSL.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		28AD733E0D9D9553002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
-		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		2A28EE4512AA83FE00C0D35A /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
-		2AA51C5312AA80B400AEA776 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = lib/libssl.a; sourceTree = "<group>"; };
-		2AA51C5412AA80B400AEA776 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = lib/libcrypto.a; sourceTree = "<group>"; };
-		32CA4F630368D1EE00C91783 /* OpenSSL_for_iOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenSSL_for_iOS_Prefix.pch; sourceTree = "<group>"; };
-		8D1107310486CEB800E47090 /* OpenSSL_for_iOS-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "OpenSSL_for_iOS-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		533ED2FB1528C4840005C6FA /* OpenSSL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenSSL.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		533ED2FF1528C4840005C6FA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		533ED3011528C4840005C6FA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		533ED3031528C4840005C6FA /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		533ED3071528C4840005C6FA /* OpenSSL-for-iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "OpenSSL-for-iOS-Info.plist"; sourceTree = "<group>"; };
+		533ED3091528C4840005C6FA /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		533ED30B1528C4840005C6FA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		533ED30D1528C4840005C6FA /* OpenSSL-for-iOS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "OpenSSL-for-iOS-Prefix.pch"; sourceTree = "<group>"; };
+		533ED30E1528C4840005C6FA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		533ED30F1528C4840005C6FA /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		533ED3111528C4840005C6FA /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		533ED3121528C4840005C6FA /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		533ED3151528C4840005C6FA /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController_iPhone.xib; sourceTree = "<group>"; };
+		533ED3181528C4840005C6FA /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController_iPad.xib; sourceTree = "<group>"; };
+		533ED31F1528C4950005C6FA /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Icon.png; path = ../Icon.png; sourceTree = "<group>"; };
+		533ED3211528C4960005C6FA /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon@2x.png"; path = "../Icon@2x.png"; sourceTree = "<group>"; };
+		533ED3251528C4FA0005C6FA /* Icon~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon~ipad.png"; path = "../Icon~ipad.png"; sourceTree = "<group>"; };
+		533ED3271528C5140005C6FA /* Icon~iPad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon~iPad@2x.png"; path = "../Icon~iPad@2x.png"; sourceTree = "<group>"; };
+		533ED32A1528C53B0005C6FA /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = lib/libcrypto.a; sourceTree = "<group>"; };
+		533ED32B1528C53B0005C6FA /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = lib/libssl.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		1D60588F0D05DD3D006BFB54 /* Frameworks */ = {
+		533ED2F81528C4840005C6FA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
-				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
-				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
-				2AA51C5512AA80B400AEA776 /* libssl.a in Frameworks */,
-				2AA51C5612AA80B400AEA776 /* libcrypto.a in Frameworks */,
+				533ED3001528C4840005C6FA /* UIKit.framework in Frameworks */,
+				533ED3021528C4840005C6FA /* Foundation.framework in Frameworks */,
+				533ED3041528C4840005C6FA /* CoreGraphics.framework in Frameworks */,
+				533ED32C1528C53B0005C6FA /* libcrypto.a in Frameworks */,
+				533ED32D1528C53B0005C6FA /* libssl.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		080E96DDFE201D6D7F000001 /* Classes */ = {
+		533ED2F01528C4840005C6FA = {
 			isa = PBXGroup;
 			children = (
-				1D3623240D0F684500981E51 /* OpenSSL_for_iOSAppDelegate.h */,
-				1D3623250D0F684500981E51 /* OpenSSL_for_iOSAppDelegate.m */,
+				533ED3051528C4840005C6FA /* OpenSSL-for-iOS */,
+				533ED2FE1528C4840005C6FA /* Frameworks */,
+				533ED2FC1528C4840005C6FA /* Products */,
 			);
-			path = Classes;
 			sourceTree = "<group>";
 		};
-		19C28FACFE9D520D11CA2CBB /* Products */ = {
+		533ED2FC1528C4840005C6FA /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* OpenSSL.app */,
+				533ED2FB1528C4840005C6FA /* OpenSSL.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
+		533ED2FE1528C4840005C6FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				080E96DDFE201D6D7F000001 /* Classes */,
-				29B97315FDCFA39411CA2CEA /* Other Sources */,
-				29B97317FDCFA39411CA2CEA /* Resources */,
-				29B97323FDCFA39411CA2CEA /* Frameworks */,
-				19C28FACFE9D520D11CA2CBB /* Products */,
-			);
-			name = CustomTemplate;
-			sourceTree = "<group>";
-		};
-		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
-			isa = PBXGroup;
-			children = (
-				32CA4F630368D1EE00C91783 /* OpenSSL_for_iOS_Prefix.pch */,
-				29B97316FDCFA39411CA2CEA /* main.m */,
-			);
-			name = "Other Sources";
-			sourceTree = "<group>";
-		};
-		29B97317FDCFA39411CA2CEA /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				2A28EE4512AA83FE00C0D35A /* Icon.png */,
-				28AD733E0D9D9553002E5188 /* MainWindow.xib */,
-				8D1107310486CEB800E47090 /* OpenSSL_for_iOS-Info.plist */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-		};
-		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				2AA51C5312AA80B400AEA776 /* libssl.a */,
-				2AA51C5412AA80B400AEA776 /* libcrypto.a */,
-				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
-				1D30AB110D05D00D00671497 /* Foundation.framework */,
-				288765FC0DF74451002DB57D /* CoreGraphics.framework */,
+				533ED32A1528C53B0005C6FA /* libcrypto.a */,
+				533ED32B1528C53B0005C6FA /* libssl.a */,
+				533ED2FF1528C4840005C6FA /* UIKit.framework */,
+				533ED3011528C4840005C6FA /* Foundation.framework */,
+				533ED3031528C4840005C6FA /* CoreGraphics.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		533ED3051528C4840005C6FA /* OpenSSL-for-iOS */ = {
+			isa = PBXGroup;
+			children = (
+				533ED3291528C51A0005C6FA /* Ressources */,
+				533ED30E1528C4840005C6FA /* AppDelegate.h */,
+				533ED30F1528C4840005C6FA /* AppDelegate.m */,
+				533ED3111528C4840005C6FA /* ViewController.h */,
+				533ED3121528C4840005C6FA /* ViewController.m */,
+				533ED3141528C4840005C6FA /* ViewController_iPhone.xib */,
+				533ED3171528C4840005C6FA /* ViewController_iPad.xib */,
+				533ED3061528C4840005C6FA /* Supporting Files */,
+			);
+			path = "OpenSSL-for-iOS";
+			sourceTree = "<group>";
+		};
+		533ED3061528C4840005C6FA /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				533ED3071528C4840005C6FA /* OpenSSL-for-iOS-Info.plist */,
+				533ED3081528C4840005C6FA /* InfoPlist.strings */,
+				533ED30B1528C4840005C6FA /* main.m */,
+				533ED30D1528C4840005C6FA /* OpenSSL-for-iOS-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		533ED3291528C51A0005C6FA /* Ressources */ = {
+			isa = PBXGroup;
+			children = (
+				533ED3271528C5140005C6FA /* Icon~iPad@2x.png */,
+				533ED3251528C4FA0005C6FA /* Icon~ipad.png */,
+				533ED3211528C4960005C6FA /* Icon@2x.png */,
+				533ED31F1528C4950005C6FA /* Icon.png */,
+			);
+			name = Ressources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1D6058900D05DD3D006BFB54 /* OpenSSL-for-iOS */ = {
+		533ED2FA1528C4840005C6FA /* OpenSSL-for-iOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "OpenSSL-for-iOS" */;
+			buildConfigurationList = 533ED31C1528C4840005C6FA /* Build configuration list for PBXNativeTarget "OpenSSL-for-iOS" */;
 			buildPhases = (
-				1D60588D0D05DD3D006BFB54 /* Resources */,
-				1D60588E0D05DD3D006BFB54 /* Sources */,
-				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+				533ED2F71528C4840005C6FA /* Sources */,
+				533ED2F81528C4840005C6FA /* Frameworks */,
+				533ED2F91528C4840005C6FA /* Resources */,
 			);
 			buildRules = (
 			);
@@ -127,141 +146,195 @@
 			);
 			name = "OpenSSL-for-iOS";
 			productName = "OpenSSL-for-iOS";
-			productReference = 1D6058910D05DD3D006BFB54 /* OpenSSL.app */;
+			productReference = 533ED2FB1528C4840005C6FA /* OpenSSL.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		29B97313FDCFA39411CA2CEA /* Project object */ = {
+		533ED2F21528C4840005C6FA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0430;
+				ORGANIZATIONNAME = Immobilienscout24;
 			};
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OpenSSL-for-iOS" */;
+			buildConfigurationList = 533ED2F51528C4840005C6FA /* Build configuration list for PBXProject "OpenSSL-for-iOS" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
-			hasScannedForEncodings = 1;
+			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
-				Japanese,
-				French,
-				German,
+				en,
 			);
-			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
+			mainGroup = 533ED2F01528C4840005C6FA;
+			productRefGroup = 533ED2FC1528C4840005C6FA /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1D6058900D05DD3D006BFB54 /* OpenSSL-for-iOS */,
+				533ED2FA1528C4840005C6FA /* OpenSSL-for-iOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		1D60588D0D05DD3D006BFB54 /* Resources */ = {
+		533ED2F91528C4840005C6FA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
-				2A28EE4612AA83FE00C0D35A /* Icon.png in Resources */,
+				533ED30A1528C4840005C6FA /* InfoPlist.strings in Resources */,
+				533ED3161528C4840005C6FA /* ViewController_iPhone.xib in Resources */,
+				533ED3191528C4840005C6FA /* ViewController_iPad.xib in Resources */,
+				533ED3201528C4950005C6FA /* Icon.png in Resources */,
+				533ED3221528C4960005C6FA /* Icon@2x.png in Resources */,
+				533ED3261528C4FA0005C6FA /* Icon~ipad.png in Resources */,
+				533ED3281528C5140005C6FA /* Icon~iPad@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		1D60588E0D05DD3D006BFB54 /* Sources */ = {
+		533ED2F71528C4840005C6FA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
-				1D3623260D0F684500981E51 /* OpenSSL_for_iOSAppDelegate.m in Sources */,
+				533ED30C1528C4840005C6FA /* main.m in Sources */,
+				533ED3101528C4840005C6FA /* AppDelegate.m in Sources */,
+				533ED3131528C4840005C6FA /* ViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXVariantGroup section */
+		533ED3081528C4840005C6FA /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				533ED3091528C4840005C6FA /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		533ED3141528C4840005C6FA /* ViewController_iPhone.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				533ED3151528C4840005C6FA /* en */,
+			);
+			name = ViewController_iPhone.xib;
+			sourceTree = "<group>";
+		};
+		533ED3171528C4840005C6FA /* ViewController_iPad.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				533ED3181528C4840005C6FA /* en */,
+			);
+			name = ViewController_iPad.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
-		1D6058940D05DD3E006BFB54 /* Debug */ = {
+		533ED31A1528C4840005C6FA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = OpenSSL_for_iOS_Prefix.pch;
-				INFOPLIST_FILE = "OpenSSL_for_iOS-Info.plist";
-				LIBRARY_SEARCH_PATHS = lib;
-				PRODUCT_NAME = OpenSSL;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "include/**";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		1D6058950D05DD3E006BFB54 /* Release */ = {
+		533ED31B1528C4840005C6FA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = OpenSSL_for_iOS_Prefix.pch;
-				INFOPLIST_FILE = "OpenSSL_for_iOS-Info.plist";
-				LIBRARY_SEARCH_PATHS = lib;
-				PRODUCT_NAME = OpenSSL;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "include/**";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		C01FCF4F08A954540054247B /* Debug */ = {
+		533ED31D1528C4840005C6FA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "include/**";
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = iphoneos;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "OpenSSL-for-iOS/OpenSSL-for-iOS-Prefix.pch";
+				INFOPLIST_FILE = "OpenSSL-for-iOS/OpenSSL-for-iOS-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/lib\"",
+				);
+				PRODUCT_NAME = OpenSSL;
+				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
 		};
-		C01FCF5008A954540054247B /* Release */ = {
+		533ED31E1528C4840005C6FA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "include/**";
-				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				SDKROOT = iphoneos;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "OpenSSL-for-iOS/OpenSSL-for-iOS-Prefix.pch";
+				INFOPLIST_FILE = "OpenSSL-for-iOS/OpenSSL-for-iOS-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/lib\"",
+				);
+				PRODUCT_NAME = OpenSSL;
+				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "OpenSSL-for-iOS" */ = {
+		533ED2F51528C4840005C6FA /* Build configuration list for PBXProject "OpenSSL-for-iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1D6058940D05DD3E006BFB54 /* Debug */,
-				1D6058950D05DD3E006BFB54 /* Release */,
+				533ED31A1528C4840005C6FA /* Debug */,
+				533ED31B1528C4840005C6FA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OpenSSL-for-iOS" */ = {
+		533ED31C1528C4840005C6FA /* Build configuration list for PBXNativeTarget "OpenSSL-for-iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C01FCF4F08A954540054247B /* Debug */,
-				C01FCF5008A954540054247B /* Release */,
+				533ED31D1528C4840005C6FA /* Debug */,
+				533ED31E1528C4840005C6FA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+	rootObject = 533ED2F21528C4840005C6FA /* Project object */;
 }
