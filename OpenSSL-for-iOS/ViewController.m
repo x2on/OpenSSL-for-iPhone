@@ -11,6 +11,7 @@
 #import "ViewController.h"
 #include <Openssl/md5.h>
 #include <Openssl/sha.h>
+#include <Openssl/opensslv.h>
 
 @implementation ViewController
 
@@ -70,7 +71,9 @@
 
 - (IBAction)showInfo 
 {	
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"OpenSSL-for-iOS" message:@"OpenSSL-Version: 1.0.1\nLicense: See include/LICENSE\n\nCopyright 2010-2012 by Felix Schulze\n http://www.x2on.de" delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];	
+    NSString *version = [NSString stringWithCString:OPENSSL_VERSION_TEXT encoding:NSUTF8StringEncoding];
+    NSString *message = [NSString stringWithFormat:@"OpenSSL-Version: %@\nLicense: See include/LICENSE\n\nCopyright 2010-2012 by Felix Schulze\n http://www.x2on.de", version];
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"OpenSSL-for-iOS" message:message delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];	
 	[alert show];
 }
 
