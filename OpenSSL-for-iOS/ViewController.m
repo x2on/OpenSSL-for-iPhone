@@ -9,9 +9,9 @@
 //
 
 #import "ViewController.h"
-#include <Openssl/md5.h>
-#include <Openssl/sha.h>
-#include <Openssl/opensslv.h>
+#include <openssl/md5.h>
+#include <openssl/sha.h>
+#include <openssl/opensslv.h>
 
 @implementation ViewController
 
