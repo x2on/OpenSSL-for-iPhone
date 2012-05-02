@@ -556,7 +556,6 @@ struct ssl_session_st
 #define SSL_OP_SSLEAY_080_CLIENT_DH_BUG			0x00000080L
 #define SSL_OP_TLS_D5_BUG				0x00000100L
 #define SSL_OP_TLS_BLOCK_PADDING_BUG			0x00000200L
-#define SSL_OP_NO_TLSv1_1				0x00000400L
 
 /* Disable SSL 3.0/TLS 1.0 CBC vulnerability workaround that was added
  * in OpenSSL 0.9.6d.  Usually (depending on the application protocol)
@@ -604,6 +603,7 @@ struct ssl_session_st
 #define SSL_OP_NO_SSLv3					0x02000000L
 #define SSL_OP_NO_TLSv1					0x04000000L
 #define SSL_OP_NO_TLSv1_2				0x08000000L
+#define SSL_OP_NO_TLSv1_1				0x10000000L
 
 /* These next two were never actually used for anything since SSLeay
  * zap so we have some more flags.
@@ -2058,6 +2058,7 @@ void ERR_load_SSL_strings(void);
 #define SSL_F_DTLS1_ACCEPT				 246
 #define SSL_F_DTLS1_ADD_CERT_TO_BUF			 295
 #define SSL_F_DTLS1_BUFFER_RECORD			 247
+#define SSL_F_DTLS1_CHECK_TIMEOUT_NUM			 316
 #define SSL_F_DTLS1_CLIENT_HELLO			 248
 #define SSL_F_DTLS1_CONNECT				 249
 #define SSL_F_DTLS1_ENC					 250
