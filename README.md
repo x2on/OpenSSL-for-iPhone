@@ -3,6 +3,7 @@
 From <http://www.x2on.de/2010/02/01/tutorial-iphone-app-with-compiled-openssl-library/> and <http://www.x2on.de/2010/07/13/tutorial-iphone-app-with-compiled-openssl-1-0-0a-library/>
 
 ## Changelog
+* 2012-05-17: OpenSSL 1.0.1c
 * 2012-05-02: OpenSSL 1.0.1b
 * 2012-04-01: OpenSSL 1.0.1 + Modernizes project to use ARC
 * 2012-01-28: OpenSSL 1.0.0g + Optimized build script
