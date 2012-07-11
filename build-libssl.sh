@@ -35,6 +35,15 @@ CURRENTPATH=`pwd`
 ARCHS="i386 armv6 armv7"
 DEVELOPER=`xcode-select -print-path`
 
+if [ ! -d "$DEVELOPER" ]; then
+  echo "xcode path is not set correctly $DEVELOPER does not exist (most likely because of xcode 4.3)"
+  echo "run"
+  echo "sudo xcode-select -switch <xcode path>"
+  echo "for default installation:"
+  echo "sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer"
+  exit 1
+fi
+
 set -e
 if [ ! -e openssl-${VERSION}.tar.gz ]; then
 	echo "Downloading openssl-${VERSION}.tar.gz"
