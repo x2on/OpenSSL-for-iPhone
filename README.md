@@ -3,6 +3,7 @@
 From <http://www.x2on.de/2010/02/01/tutorial-iphone-app-with-compiled-openssl-library/> and <http://www.x2on.de/2010/07/13/tutorial-iphone-app-with-compiled-openssl-1-0-0a-library/>
 
 ## Changelog
+* 2012-09-21: Support for iOS 6.0 and iPhone 5 (armv7s) - Remove armv6 support
 * 2012-05-17: OpenSSL 1.0.1c
 * 2012-05-02: OpenSSL 1.0.1b
 * 2012-04-01: OpenSSL 1.0.1 + Modernizes project to use ARC
@@ -23,4 +24,9 @@ This is a tutorial for using self-compiled builds of  the OpenSSL-library on the
 
 **Enjoy OpenSSL on the iPhone!**
 
-I have made an iOS 4.0 XCode Project with OpenSSL Libaries. The examples uses the MD5 or SHA256-algorithm to calculate an md5 or sha256 hash from an UITextfield.
+I have made an iOS 6.0 XCode Project with OpenSSL Libaries. The examples uses the MD5 or SHA256-algorithm to calculate an md5 or sha256 hash from an UITextfield.
+
+## System support
+**iOS 4.3 - iOS 6.0 (i386, armv7, armv7s) is currently supported.**
+
+For iOS < 4.3 you must use iOS SDK < 6.0 and an older version of the build script.
