@@ -3,6 +3,7 @@
 From <http://www.x2on.de/2010/02/01/tutorial-iphone-app-with-compiled-openssl-library/> and <http://www.x2on.de/2010/07/13/tutorial-iphone-app-with-compiled-openssl-1-0-0a-library/>
 
 ## Changelog
+* 2013-03-01: OpenSSL 1.0.1e + iOS 6.1
 * 2012-09-21: Support for iOS 6.0 and iPhone 5 (armv7s) - Remove armv6 support
 * 2012-05-17: OpenSSL 1.0.1c
 * 2012-05-02: OpenSSL 1.0.1b
