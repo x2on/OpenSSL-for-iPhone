@@ -20,6 +20,7 @@
 #import "FSOpenSSL.h"
 #include <openssl/md5.h>
 #include <openssl/sha.h>
+#import <openssl/evp.h>
 
 @implementation FSOpenSSL
 
@@ -54,6 +55,52 @@
         [outStrg appendFormat:@"%02x", result[i]];
     }
     return [outStrg copy];
+}
+
++ (NSString *)base64FromString:(NSString *)string encodeWithNewlines:(BOOL)encodeWithNewlines {
+    BIO *mem = BIO_new(BIO_s_mem());
+    BIO *b64 = BIO_new(BIO_f_base64());
+
+    if (!encodeWithNewlines) {
+        BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+    }
+    mem = BIO_push(b64, mem);
+
+    NSData *stringData = [string dataUsingEncoding:NSUTF8StringEncoding];
+    NSUInteger length = stringData.length;
+    void *buffer = (void *) [stringData bytes];
+    NSUInteger bufferSize = (NSUInteger) (long) MIN(length, (NSUInteger) INT_MAX);
+
+    NSUInteger count = 0;
+
+    BOOL error = NO;
+
+    // Encode the data
+    while (!error && count < length) {
+        int result = BIO_write(mem, buffer, bufferSize);
+        if (result <= 0) {
+            error = YES;
+        }
+        else {
+            count += result;
+            buffer = (void *) [stringData bytes] + count;
+            bufferSize = (NSUInteger) MIN((length - count), (NSUInteger) INT_MAX);
+        }
+    }
+
+    int flush_result = BIO_flush(mem);
+    if (flush_result != 1) {
+        return nil;
+    }
+
+    char *base64Pointer;
+    NSUInteger base64Length = (NSUInteger) BIO_get_mem_data(mem, &base64Pointer);
+
+    NSData *base64data = [NSData dataWithBytesNoCopy:base64Pointer length:base64Length freeWhenDone:NO];
+    NSString *base64String = [[NSString alloc] initWithData:base64data encoding:NSUTF8StringEncoding];
+
+    BIO_free_all(mem);
+    return base64String;
 }
 
 @end

@@ -23,4 +23,6 @@
 + (NSString *)md5FromString:(NSString *)string;
 
 + (NSString *)sha256FromString:(NSString *)string;
+
++ (NSString *)base64FromString:(NSString *)string encodeWithNewlines:(BOOL)encodeWithNewlines;
 @end
