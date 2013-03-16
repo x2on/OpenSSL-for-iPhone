@@ -22,6 +22,7 @@
 		533ED3281528C5140005C6FA /* Icon~iPad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 533ED3271528C5140005C6FA /* Icon~iPad@2x.png */; };
 		533ED32C1528C53B0005C6FA /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED32A1528C53B0005C6FA /* libcrypto.a */; };
 		533ED32D1528C53B0005C6FA /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED32B1528C53B0005C6FA /* libssl.a */; };
+		D1E978031547EE765CD39AD2 /* FSOpenSSL.m in Sources */ = {isa = PBXBuildFile; fileRef = D1E97EE2A904D58DAE4231E2 /* FSOpenSSL.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +46,8 @@
 		533ED3271528C5140005C6FA /* Icon~iPad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon~iPad@2x.png"; path = "../Icon~iPad@2x.png"; sourceTree = "<group>"; };
 		533ED32A1528C53B0005C6FA /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = lib/libcrypto.a; sourceTree = "<group>"; };
 		533ED32B1528C53B0005C6FA /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = lib/libssl.a; sourceTree = "<group>"; };
+		D1E979D803ACC127411934DC /* FSOpenSSL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSOpenSSL.h; sourceTree = "<group>"; };
+		D1E97EE2A904D58DAE4231E2 /* FSOpenSSL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSOpenSSL.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +106,8 @@
 				533ED3141528C4840005C6FA /* ViewController_iPhone.xib */,
 				533ED3171528C4840005C6FA /* ViewController_iPad.xib */,
 				533ED3061528C4840005C6FA /* Supporting Files */,
+				D1E97EE2A904D58DAE4231E2 /* FSOpenSSL.m */,
+				D1E979D803ACC127411934DC /* FSOpenSSL.h */,
 			);
 			path = "OpenSSL-for-iOS";
 			sourceTree = "<group>";
@@ -200,6 +205,7 @@
 				533ED30C1528C4840005C6FA /* main.m in Sources */,
 				533ED3101528C4840005C6FA /* AppDelegate.m in Sources */,
 				533ED3131528C4840005C6FA /* ViewController.m in Sources */,
+				D1E978031547EE765CD39AD2 /* FSOpenSSL.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
