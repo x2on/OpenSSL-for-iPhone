@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  Automatic build script for libssl and libcrypto 
+#  Automatic build script for libssl and libcrypto
 #  for iPhoneOS and iPhoneSimulator
 #
 #  Created by Felix Schulze on 16.12.10.
@@ -22,7 +22,7 @@
 #  Change values here													  #
 #																		  #
 VERSION="1.0.1e"													      #
-SDKVERSION="6.1"														  #
+SDKVERSION="7.0"														  #
 #																		  #
 ###########################################################################
 #																		  #
@@ -32,7 +32,9 @@ SDKVERSION="6.1"														  #
 
 
 CURRENTPATH=`pwd`
-ARCHS="i386 armv7 armv7s"
+
+ARCHS="armv7 armv7s arm64"
+
 DEVELOPER=`xcode-select -print-path`
 
 if [ ! -d "$DEVELOPER" ]; then
@@ -59,6 +61,8 @@ mkdir -p "${CURRENTPATH}/lib"
 tar zxf openssl-${VERSION}.tar.gz -C "${CURRENTPATH}/src"
 cd "${CURRENTPATH}/src/openssl-${VERSION}"
 
+LIPO_SSL_FAT_LIB="lipo -create"
+LIPO_CRYPTO_FAT_LIB="lipo -create"
 
 for ARCH in ${ARCHS}
 do
@@ -69,14 +73,20 @@ do
 		sed -ie "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;!" "crypto/ui/ui_openssl.c"
 		PLATFORM="iPhoneOS"
 	fi
-	
-	export CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
+
 	export CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
 
+    if [ "${SDKVERSION}" == "7.0" ]; then
+        export BUILD_TOOLS="${DEVELOPER}"
+    else
+        export BUILD_TOOLS="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
+    fi
+
+    export CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
 	echo "Building openssl-${VERSION} for ${PLATFORM} ${SDKVERSION} ${ARCH}"
 	echo "Please stand by..."
 
-	export CC="${CROSS_TOP}/usr/bin/gcc -arch ${ARCH}"
+	export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH}"
 	mkdir -p "${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk"
 	LOG="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk/build-openssl-${VERSION}.log"
 
@@ -86,21 +96,50 @@ do
 	    ./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" > "${LOG}" 2>&1
     fi
 
-	# add -isysroot to CC=
-	sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} !" "Makefile"
+    if [ "${SDKVERSION}" == "7.0" ];
+    then
+        sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/Platforms/${PLATFORM}.platform/Developer/SDKs/${CROSS_SDK} !" "Makefile"
+    fi
+
+    if [ "${ARCH}" == "i386" ];
+    then
+        LIPO_SSL_FAT_LIB="${LIPO_SSL_FAT_LIB} ${CURRENTPATH}/bin/iPhoneSimulator${SDKVERSION}-${ARCH}.sdk/lib/libssl.a"
+        LIPO_CRYPTO_FAT_LIB="${LIPO_CRYPTO_FAT_LIB} ${CURRENTPATH}/bin/iPhoneSimulator${SDKVERSION}-${ARCH}.sdk/lib/libcrypto.a"
+    else
+        LIPO_SSL_FAT_LIB="${LIPO_SSL_FAT_LIB} ${CURRENTPATH}/bin/iPhoneOS${SDKVERSION}-${ARCH}.sdk/lib/libssl.a"
+        LIPO_CRYPTO_FAT_LIB="${LIPO_CRYPTO_FAT_LIB} ${CURRENTPATH}/bin/iPhoneOS${SDKVERSION}-${ARCH}.sdk/lib/libcrypto.a"
+    fi
 
 	make >> "${LOG}" 2>&1
 	make install >> "${LOG}" 2>&1
 	make clean >> "${LOG}" 2>&1
+
 done
 
 echo "Build library..."
-lipo -create ${CURRENTPATH}/bin/iPhoneSimulator${SDKVERSION}-i386.sdk/lib/libssl.a  ${CURRENTPATH}/bin/iPhoneOS${SDKVERSION}-armv7.sdk/lib/libssl.a ${CURRENTPATH}/bin/iPhoneOS${SDKVERSION}-armv7s.sdk/lib/libssl.a -output ${CURRENTPATH}/lib/libssl.a
 
-lipo -create ${CURRENTPATH}/bin/iPhoneSimulator${SDKVERSION}-i386.sdk/lib/libcrypto.a ${CURRENTPATH}/bin/iPhoneOS${SDKVERSION}-armv7.sdk/lib/libcrypto.a ${CURRENTPATH}/bin/iPhoneOS${SDKVERSION}-armv7s.sdk/lib/libcrypto.a -output ${CURRENTPATH}/lib/libcrypto.a
+LIPO_SSL_FAT_LIB="${LIPO_SSL_FAT_LIB} -output ${CURRENTPATH}/lib/libssl.a"
+LIPO_CRYPTO_FAT_LIB="${LIPO_CRYPTO_FAT_LIB} -output ${CURRENTPATH}/lib/libcrypto.a"
+
+eval $LIPO_SSL_FAT_LIB
+eval $LIPO_CRYPTO_FAT_LIB
 
 mkdir -p ${CURRENTPATH}/include
-cp -R ${CURRENTPATH}/bin/iPhoneSimulator${SDKVERSION}-i386.sdk/include/openssl ${CURRENTPATH}/include/
+
+for ARCH in ${ARCHS}
+do
+    if [ -e ${CURRENTPATH}/bin/iPhoneSimulator${SDKVERSION}-${ARCH}.sdk/include/openssl ];
+    then
+        cp -R ${CURRENTPATH}/bin/iPhoneSimulator${SDKVERSION}-${ARCH}.sdk/include/openssl ${CURRENTPATH}/include/
+        break
+    else
+        if [ -e ${CURRENTPATH}/bin/iPhoneOS${SDKVERSION}-${ARCH}.sdk/include/openssl ];
+        then
+            cp -R ${CURRENTPATH}/bin/iPhoneOS${SDKVERSION}-${ARCH}.sdk/include/openssl ${CURRENTPATH}/include/
+            break
+        fi
+    fi
+done
 echo "Building done."
 echo "Cleaning up..."
 rm -rf ${CURRENTPATH}/src/openssl-${VERSION}
