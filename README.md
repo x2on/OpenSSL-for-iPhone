@@ -15,11 +15,12 @@ You must build the OpenSSL-Libraries before running the sample with:
 This repository contains a iOS 6.1 XCode Project with usese the OpenSSL Libaries. The examples uses the MD5 or SHA256-algorithm to calculate an md5 or sha256 hash from an UITextfield.
 
 ## System support
-**iOS 4.3 - iOS 6.0 (i386, armv7, armv7s) is currently supported.**
+**iOS 4.3 - iOS 7.0 (i386, armv7, armv7s, armv64) is currently supported.**
 
 For iOS < 4.3 you must use iOS SDK < 6.0 and an older version of the build script.
 
 ## Changelog
+* 2013-09-23: iOS 7.0 support
 * 2013-03-01: OpenSSL 1.0.1e, iOS 6.1
 * 2012-09-21: Support for iOS 6.0 and iPhone 5 (armv7s) - Remove armv6 support
 * 2012-05-17: OpenSSL 1.0.1c
