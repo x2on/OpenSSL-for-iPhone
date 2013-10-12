@@ -44,6 +44,13 @@ if [ ! -d "$DEVELOPER" ]; then
   exit 1
 fi
 
+case $CURRENTPATH in  
+     *\ * )
+           echo "Your path contains whitespaces, which is not supported by 'make install'."
+           exit 1
+          ;;
+esac
+
 set -e
 if [ ! -e openssl-${VERSION}.tar.gz ]; then
 	echo "Downloading openssl-${VERSION}.tar.gz"
