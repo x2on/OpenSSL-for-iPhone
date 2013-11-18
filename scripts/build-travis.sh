@@ -1,4 +1,4 @@
 #!/bin/sh
 
 echo "Build"
-xcodebuild -project OpenSSL-for-iOS.xcodeproj
+xctool -project OpenSSL-for-iOS.xcodeproj -scheme OpenSSL-for-iOS -sdk iphonesimulator clean build
