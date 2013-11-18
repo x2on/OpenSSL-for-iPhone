@@ -1,2 +1,6 @@
 language: objective-c
-script: build-libssl.sh
+language: objective-c
+before_install: 
+ - ./build-libssl.sh
+script: 
+ - xctool -project OpenSSL-for-iOS.xcodeproj -scheme OpenSSL-for-iOS -sdk iphonesimulator clean build
