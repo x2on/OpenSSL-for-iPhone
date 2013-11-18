@@ -1,4 +1,6 @@
 language: objective-c
 language: objective-c
-before_install: scripts/install-travis.sh
-script: scripts/build-travis.sh
+before_install: 
+ - ./build-libssl.sh
+script: 
+ - xctool -project OpenSSL-for-iOS.xcodeproj -scheme OpenSSL-for-iOS -sdk iphonesimulator clean build
