@@ -1,2 +1,4 @@
 language: objective-c
-script: build-libssl.sh
+language: objective-c
+before_install: scripts/install-travis.sh
+script: scripts/build-travis.sh
