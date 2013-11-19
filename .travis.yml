@@ -2,5 +2,6 @@ language: objective-c
 language: objective-c
 before_install: 
  - ./build-libssl.sh
+ - xcrun -sdk iphoneos lipo -info ./lib/*.a
 script: 
  - xctool -project OpenSSL-for-iOS.xcodeproj -scheme OpenSSL-for-iOS -sdk iphonesimulator clean build
