@@ -44,6 +44,13 @@ if [ ! -d "$DEVELOPER" ]; then
   exit 1
 fi
 
+case $DEVELOPER in  
+     *\ * )
+           echo "Your Xcode path contains whitespaces, which is not supported."
+           exit 1
+          ;;
+esac
+
 case $CURRENTPATH in  
      *\ * )
            echo "Your path contains whitespaces, which is not supported by 'make install'."
