@@ -21,6 +21,7 @@ For iOS < 4.3 you must use iOS SDK < 6.0 and an older version of the build scrip
 * <http://www.x2on.de/2010/07/13/tutorial-iphone-app-with-compiled-openssl-1-0-0a-library/>
 
 ## Changelog
+* 2014-04-07: OpenSSL 1.0.1g
 * 2014-03-12: iOS 7.1 support
 * 2014-01-07: OpenSSL 1.0.1f
 * 2013-10-12: x86_64 support, Migrate project to iOS 7.0
