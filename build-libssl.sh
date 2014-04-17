@@ -113,7 +113,12 @@ do
 	# add -isysroot to CC=
 	sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -miphoneos-version-min=7.0 !" "Makefile"
 
-	make >> "${LOG}" 2>&1
+	if [ "$1" == "verbose" ];
+	then
+		make
+	else
+		make >> "${LOG}" 2>&1
+	fi
 	
 	if [ $? != 0 ];
     then 
