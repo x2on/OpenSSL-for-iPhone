@@ -15,6 +15,7 @@ This repository contains a iOS 7.1 XCode Project with usese the OpenSSL Libaries
 **iOS 4.3 - iOS 7.1 (i386, x86_64, armv7, armv7s, armv64) is currently supported.**
 
 For iOS < 4.3 you must use iOS SDK < 6.0 and an older version of the build script.
+
 If you have problems building for arm64 please uninstall MacPorts (see #28).
 
 ## Original tutorials for this project:
