@@ -91,8 +91,6 @@ do
 	then
 		PLATFORM="iPhoneSimulator"
 	else
-		unset COMPILER
-		
 		sed -ie "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;!" "crypto/ui/ui_openssl.c"
 		PLATFORM="iPhoneOS"
 		OLD_LANG=$LANG
@@ -132,14 +130,10 @@ do
 	# add -isysroot to CC=
 	OLD_LANG=$LANG
 	unset LANG
-
 	MIN_TYPE=-miphoneos-version-min=
     if [[ "${ARCH}" == "i386" || "${ARCH}" == "x86_64" ]]; then
     	MIN_TYPE=-mios-simulator-version-min=
     fi
-    
-    OLD_LANG=$LANG
-	unset LANG
 	sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -arch $ARCH -Os -fPIC $MIN_TYPE$IOS_MINIMUM !" Makefile
 	export LANG=$OLD_LANG
 
