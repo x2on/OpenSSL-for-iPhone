@@ -25,7 +25,7 @@ VERSION="1.0.1i"													      #
 SDKVERSION=`xcrun -sdk iphoneos --show-sdk-version`
 IOS_MINIMUM=7.0 # 5.0 | 5.1 | 6.0 | 6.1 | 7.0 | 7.1 | 8.0 | ++
 CSTANDARD=gnu11 # c89 | c99 | c11 | gnu11
-COMPILER_TARGET=clang # clang, gcc
+COMPILER_TYPE=clang # clang, gcc
 #																		  #
 ###########################################################################
 #																		  #
