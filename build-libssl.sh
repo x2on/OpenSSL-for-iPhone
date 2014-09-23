@@ -22,7 +22,10 @@
 #  Change values here													  #
 #				
 VERSION="1.0.1i"													      #
-SDKVERSION=`xcrun -sdk iphoneos --show-sdk-version`														  #
+SDKVERSION=`xcrun -sdk iphoneos --show-sdk-version`
+IOS_MINIMUM=7.0 # 5.0 | 5.1 | 6.0 | 6.1 | 7.0 | 7.1 | 8.0 | ++
+CSTANDARD=gnu11 # c89 | c99 | c11 | gnu11
+COMPILER_TARGET=clang # clang, gcc
 #																		  #
 ###########################################################################
 #																		  #
@@ -34,6 +37,7 @@ SDKVERSION=`xcrun -sdk iphoneos --show-sdk-version`														  #
 CURRENTPATH=`pwd`
 ARCHS="i386 x86_64 armv7 armv7s arm64"
 DEVELOPER=`xcode-select -print-path`
+TOOLCHAIN=${DEVELOPER}/Toolchains/XcodeDefault.xctoolchain
 
 if [ ! -d "$DEVELOPER" ]; then
   echo "xcode path is not set correctly $DEVELOPER does not exist (most likely because of xcode > 4.3)"
@@ -76,12 +80,25 @@ cd "${CURRENTPATH}/src/openssl-${VERSION}"
 
 for ARCH in ${ARCHS}
 do
+
+	if [ "${COMPILER_TYPE}" == "clang" ]; then
+		export COMPILER=$TOOLCHAIN/usr/bin/clang
+	else
+		export COMPILER=${BUILD_TOOLS}/usr/bin/gcc
+	fi
+	
 	if [[ "${ARCH}" == "i386" || "${ARCH}" == "x86_64" ]];
 	then
 		PLATFORM="iPhoneSimulator"
 	else
+		unset COMPILER
+		
 		sed -ie "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;!" "crypto/ui/ui_openssl.c"
 		PLATFORM="iPhoneOS"
+		OLD_LANG=$LANG
+		unset LANG
+		sed -ie "s!\"iphoneos-cross\",\"llvm-gcc:-O3!\"iphoneos-cross\",\"$COMPILER:-Os!" Configure
+		export LANG=$OLD_LANG
 	fi
 	
 	export CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
@@ -91,17 +108,19 @@ do
 	echo "Building openssl-${VERSION} for ${PLATFORM} ${SDKVERSION} ${ARCH}"
 	echo "Please stand by..."
 
-	export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH}"
+	export CC="${COMPILER} -arch ${ARCH} -std=gnu11"
 	mkdir -p "${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk"
 	LOG="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk/build-openssl-${VERSION}.log"
 
 	set +e
     if [[ "$VERSION" =~ 1.0.0. ]]; then
 	    ./Configure BSD-generic32 --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" > "${LOG}" 2>&1
+	elif [ "${ARCH}" == "i386" ]; then
+		./Configure darwin-i386-cc -no-asm --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" > "${LOG}" 2>&1
 	elif [ "${ARCH}" == "x86_64" ]; then
-	    ./Configure darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" > "${LOG}" 2>&1
+	    ./Configure darwin64-x86_64-cc -no-asm --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" > "${LOG}" 2>&1
     else
-	    ./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" > "${LOG}" 2>&1
+	    ./Configure iphoneos-cross -no-asm --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" > "${LOG}" 2>&1
     fi
     
     if [ $? != 0 ];
@@ -111,7 +130,18 @@ do
     fi
 
 	# add -isysroot to CC=
-	sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -miphoneos-version-min=7.0 !" "Makefile"
+	OLD_LANG=$LANG
+	unset LANG
+
+	MIN_TYPE=-miphoneos-version-min=
+    if [[ "${ARCH}" == "i386" || "${ARCH}" == "x86_64" ]]; then
+    	MIN_TYPE=-mios-simulator-version-min=
+    fi
+    
+    OLD_LANG=$LANG
+	unset LANG
+	sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -arch $ARCH -Os -fPIC $MIN_TYPE$IOS_MINIMUM !" Makefile
+	export LANG=$OLD_LANG
 
 	if [ "$1" == "verbose" ];
 	then
