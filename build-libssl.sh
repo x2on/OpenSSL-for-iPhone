@@ -83,8 +83,10 @@ do
 
 	if [ "${COMPILER_TYPE}" == "clang" ]; then
 		export COMPILER=$TOOLCHAIN/usr/bin/clang
+		export OPTIMIZATION=-Os
 	else
 		export COMPILER=${BUILD_TOOLS}/usr/bin/gcc
+		export OPTIMIZATION=-O3
 	fi
 	
 	if [[ "${ARCH}" == "i386" || "${ARCH}" == "x86_64" ]];
@@ -95,7 +97,7 @@ do
 		PLATFORM="iPhoneOS"
 		OLD_LANG=$LANG
 		unset LANG
-		sed -ie "s!\"iphoneos-cross\",\"llvm-gcc:-O3!\"iphoneos-cross\",\"$COMPILER:-Os!" Configure
+		sed -ie "s!\"iphoneos-cross\",\"llvm-gcc:-O3!\"iphoneos-cross\",\"$COMPILER:$OPTIMIZATION!" Configure
 		export LANG=$OLD_LANG
 	fi
 	
@@ -134,7 +136,7 @@ do
     if [[ "${ARCH}" == "i386" || "${ARCH}" == "x86_64" ]]; then
     	MIN_TYPE=-mios-simulator-version-min=
     fi
-	sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -arch $ARCH -Os -fPIC $MIN_TYPE$IOS_MINIMUM !" Makefile
+	sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -arch $ARCH $OPTIMIZATION -fPIC $MIN_TYPE$IOS_MINIMUM !" Makefile
 	export LANG=$OLD_LANG
 
 	if [ "$1" == "verbose" ];
