@@ -20,9 +20,9 @@
 #
 ###########################################################################
 #  Change values here													  #
-#				
-VERSION="1.0.1i"													      #
-SDKVERSION=`xcrun -sdk iphoneos --show-sdk-version`														  #
+#																	      #
+DEFAULT_VERSION="1.0.1i"												  #
+DEFAULT_XCODE="/Applications/Xcode.app"									  #
 #																		  #
 ###########################################################################
 #																		  #
@@ -33,7 +33,12 @@ SDKVERSION=`xcrun -sdk iphoneos --show-sdk-version`														  #
 
 CURRENTPATH=`pwd`
 ARCHS="i386 x86_64 armv7 armv7s arm64"
-DEVELOPER=`xcode-select -print-path`
+
+VERSION=${1:-"$DEFAULT_VERSION"}
+XCODE=${2:-"$DEFAULT_XCODE"}
+DEVELOPER=${2:+${XCODE}/Contents/Developer}
+DEVELOPER=${DEVELOPER:-`xcode-select -print-path`}
+SDKVERSION=`$DEVELOPER/usr/bin/xcrun -sdk iphoneos --show-sdk-version`
 
 if [ ! -d "$DEVELOPER" ]; then
   echo "xcode path is not set correctly $DEVELOPER does not exist (most likely because of xcode > 4.3)"
