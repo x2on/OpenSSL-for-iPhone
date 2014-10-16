@@ -6,3 +6,4 @@ src
 build
 OpenSSL-for-iOS.xcodeproj/project.xcworkspace/xcuserdata
 include/openssl
+*.xccheckout
