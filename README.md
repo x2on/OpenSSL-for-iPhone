@@ -9,10 +9,10 @@ You must build the OpenSSL-Libraries before running the sample with:
 ./build-libssl.sh
 ```
 
-This repository contains a iOS 7.1 XCode Project with usese the OpenSSL Libaries. The examples uses the MD5 or SHA256-algorithm to calculate an md5 or sha256 hash from an UITextfield.
+This repository contains a iOS 8.0 XCode Project with usese the OpenSSL Libaries. The examples uses the MD5 or SHA256-algorithm to calculate an md5 or sha256 hash from an UITextfield.
 
 ## System support
-**iOS 4.3 - iOS 8.0 (i386, x86_64, armv7, armv7s, armv64) is currently supported.**
+**iOS 4.3 - iOS 8.1 (i386, x86_64, armv7, armv7s, armv64) is currently supported.**
 
 For iOS < 4.3 you must use iOS SDK < 6.0 and an older version of the build script.
 
@@ -23,6 +23,7 @@ If you have problems building for arm64 please uninstall MacPorts (see #28).
 * <http://www.x2on.de/2010/07/13/tutorial-iphone-app-with-compiled-openssl-1-0-0a-library/>
 
 ## Changelog
+* 2015-01-28: OpenSSL 1.0.2
 * 2015-01-10: OpenSSL 1.0.1k
 * 2014-10-15: OpenSSL 1.0.1j
 * 2014-09-18: iOS 8.0 support
