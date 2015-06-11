@@ -23,6 +23,7 @@ If you have problems building for arm64 please uninstall MacPorts (see #28).
 * <http://www.x2on.de/2010/07/13/tutorial-iphone-app-with-compiled-openssl-1-0-0a-library/>
 
 ## Changelog
+* 2015-06-11: OpenSSL 1.0.2b
 * 2015-03-19: OpenSSL 1.0.2a
 * 2015-01-28: OpenSSL 1.0.2
 * 2015-01-10: OpenSSL 1.0.1k
