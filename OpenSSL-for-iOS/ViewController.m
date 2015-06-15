@@ -37,7 +37,7 @@
 
 - (IBAction)showInfo 
 {	
-    NSString *message = [NSString stringWithFormat:@"OpenSSL-Version: %@\nLicense: See include/LICENSE\n\nCopyright 2010-2013 by Felix Schulze\n http://www.felixschulze.de", @OPENSSL_VERSION_TEXT];
+    NSString *message = [NSString stringWithFormat:@"OpenSSL-Version: %@\nLicense: See include/LICENSE\n\nCopyright 2010-2015 by Felix Schulze\n http://www.felixschulze.de", @OPENSSL_VERSION_TEXT];
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"OpenSSL-for-iOS" message:message delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];	
 	[alert show];
 }
