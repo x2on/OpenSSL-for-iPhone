@@ -69,7 +69,7 @@
     NSData *stringData = [string dataUsingEncoding:NSUTF8StringEncoding];
     NSUInteger length = stringData.length;
     void *buffer = (void *) [stringData bytes];
-    NSUInteger bufferSize = (NSUInteger) (long) MIN(length, (NSUInteger) INT_MAX);
+    int bufferSize = (int)MIN(length, INT_MAX);
 
     NSUInteger count = 0;
 
@@ -84,7 +84,7 @@
         else {
             count += result;
             buffer = (void *) [stringData bytes] + count;
-            bufferSize = (NSUInteger) MIN((length - count), (NSUInteger) INT_MAX);
+            bufferSize = (int)MIN((length - count), INT_MAX);
         }
     }
 
