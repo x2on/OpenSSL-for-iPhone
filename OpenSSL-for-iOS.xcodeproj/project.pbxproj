@@ -286,7 +286,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ! -f lib/libcrypo.a ]; then\n    echo \"error: Please run ./build-libssl.h first\"\n    exit 1\nfi";
+			shellScript = "if [ ! -f lib/libcrypto.a ]; then\n    echo \"error: Please run ./build-libssl.h first\"\n    exit 1\nfi";
 		};
 /* End PBXShellScriptBuildPhase section */
 
