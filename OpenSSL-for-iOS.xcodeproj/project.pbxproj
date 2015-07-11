@@ -188,6 +188,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 533ED31C1528C4840005C6FA /* Build configuration list for PBXNativeTarget "OpenSSL-for-iOS" */;
 			buildPhases = (
+				535C0E0B1B51253B0043FE32 /* Run Script */,
 				533ED2F71528C4840005C6FA /* Sources */,
 				533ED2F81528C4840005C6FA /* Frameworks */,
 				533ED2F91528C4840005C6FA /* Resources */,
@@ -271,6 +272,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		535C0E0B1B51253B0043FE32 /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ! -f lib/libcrypo.a ]; then\n    echo \"error: Please run ./build-libssl.h first\"\n    exit 1\nfi";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		533ED2F71528C4840005C6FA /* Sources */ = {
