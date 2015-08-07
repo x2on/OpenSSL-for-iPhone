@@ -34,12 +34,7 @@ SDKVERSION=`xcrun -sdk iphoneos --show-sdk-version`														  #
 CURRENTPATH=`pwd`
 ARCHS="i386 x86_64 armv7 armv7s arm64"
 DEVELOPER=`xcode-select -print-path`
-
-if [ "${SDKVERSION}" == "9.0" ]; then
-	MIN_SDK_VERSION="8.0"
-else
-	MIN_SDK_VERSION="7.0"
-fi
+MIN_SDK_VERSION="7.0"
 
 if [ ! -d "$DEVELOPER" ]; then
   echo "xcode path is not set correctly $DEVELOPER does not exist (most likely because of xcode > 4.3)"
