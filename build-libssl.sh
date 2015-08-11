@@ -23,6 +23,7 @@
 #				
 VERSION="1.0.2d"													      #
 SDKVERSION=`xcrun -sdk iphoneos --show-sdk-version`														  #
+CONFIG_OPTIONS=""
 #																		  #
 ###########################################################################
 #																		  #
@@ -103,10 +104,10 @@ do
 
 	set +e
 	if [ "${ARCH}" == "x86_64" ]; then
-	    ./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" > "${LOG}" 2>&1
-    else
-	    ./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" > "${LOG}" 2>&1
-    fi
+	    ./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${CONFIG_OPTIONS} > "${LOG}" 2>&1
+    	else
+	    ./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${CONFIG_OPTIONS} > "${LOG}" 2>&1
+	fi
     
     if [ $? != 0 ];
     then 
@@ -119,8 +120,10 @@ do
 
 	if [ "$1" == "verbose" ];
 	then
+		make depend
 		make
 	else
+		make depend >> "${LOG}" 2>&1
 		make >> "${LOG}" 2>&1
 	fi
 	
@@ -131,7 +134,7 @@ do
     fi
     
     set -e
-	make install >> "${LOG}" 2>&1
+	make install_sw >> "${LOG}" 2>&1
 	make clean >> "${LOG}" 2>&1
 done
 
