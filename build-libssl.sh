@@ -120,10 +120,14 @@ do
 
 	if [ "$1" == "verbose" ];
 	then
-		make depend
+		if [[ ! -z $CONFIG_OPTIONS ]]; then
+			make depend
+		fi
 		make
 	else
-		make depend >> "${LOG}" 2>&1
+		if [[ ! -z $CONFIG_OPTIONS ]]; then
+			make depend >> "${LOG}" 2>&1
+		fi
 		make >> "${LOG}" 2>&1
 	fi
 	
