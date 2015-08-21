@@ -24,6 +24,9 @@
 VERSION="1.0.2d"													      #
 SDKVERSION=`xcrun -sdk iphoneos --show-sdk-version`														  #
 CONFIG_OPTIONS=""
+
+# To set "enable-ec_nistp_64_gcc_128" configuration for x64 archs set next variable to "true"
+ENABLE_EC_NISTP_64_GCC_128=""
 #																		  #
 ###########################################################################
 #																		  #
@@ -93,6 +96,15 @@ do
 	echo "Building openssl-${VERSION} for ${PLATFORM} ${SDKVERSION} ${ARCH}"
 	echo "Please stand by..."
 
+	LOCAL_CONFIG_OPTIONS="${CONFIG_OPTIONS}"
+	if [ "${ENABLE_EC_NISTP_64_GCC_128}" == "true" ]; then
+		case "$ARCH" in
+			*64*)
+				LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} enable-ec_nistp_64_gcc_128"
+			;;
+		esac
+	fi
+
 	if [ "${SDKVERSION}" == "9.0" ]; then
 		export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH} -fembed-bitcode"
 	else
@@ -104,9 +116,9 @@ do
 
 	set +e
 	if [ "${ARCH}" == "x86_64" ]; then
-	    ./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${CONFIG_OPTIONS} > "${LOG}" 2>&1
+	    ./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1
     	else
-	    ./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${CONFIG_OPTIONS} > "${LOG}" 2>&1
+	    ./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1
 	fi
     
     if [ $? != 0 ];
