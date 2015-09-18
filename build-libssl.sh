@@ -24,6 +24,7 @@
 VERSION="1.0.2d"													      #
 SDKVERSION=`xcrun -sdk iphoneos --show-sdk-version`														  #
 CONFIG_OPTIONS=""
+CURL_OPTIONS=""
 
 # To set "enable-ec_nistp_64_gcc_128" configuration for x64 archs set next variable to "true"
 ENABLE_EC_NISTP_64_GCC_128=""
@@ -66,7 +67,7 @@ esac
 set -e
 if [ ! -e openssl-${VERSION}.tar.gz ]; then
 	echo "Downloading openssl-${VERSION}.tar.gz"
-    curl -O https://www.openssl.org/source/openssl-${VERSION}.tar.gz
+    curl ${CURL_OPTIONS} -O https://www.openssl.org/source/openssl-${VERSION}.tar.gz
 else
 	echo "Using openssl-${VERSION}.tar.gz"
 fi
