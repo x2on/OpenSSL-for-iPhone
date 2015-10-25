@@ -106,7 +106,7 @@ do
 		esac
 	fi
 
-	if [ "${SDKVERSION}" == "9.0" ]; then
+	if [[ $SDKVERSION == 9.* ]]; then
 		export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH} -fembed-bitcode"
 	else
 		export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH}"
