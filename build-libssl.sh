@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  Automatic build script for libssl and libcrypto 
+#  Automatic build script for libssl and libcrypto
 #  for iPhoneOS and iPhoneSimulator
 #
 #  Created by Felix Schulze on 16.12.10.
@@ -20,9 +20,10 @@
 #
 ###########################################################################
 #  Change values here													  #
-#				
+#
 VERSION="1.0.2d"													      #
-SDKVERSION=`xcrun -sdk iphoneos --show-sdk-version`														  #
+IOS_SDKVERSION=`xcrun -sdk iphoneos --show-sdk-version`
+TVOS_SDKVERSION=`xcrun -sdk appletvos --show-sdk-version`											  #
 CONFIG_OPTIONS=""
 CURL_OPTIONS=""
 
@@ -37,12 +38,13 @@ ENABLE_EC_NISTP_64_GCC_128=""
 
 
 CURRENTPATH=`pwd`
-ARCHS="i386 x86_64 armv7 armv7s arm64"
+ARCHS="i386 x86_64 armv7 armv7s arm64 tv_x86_64 tv_arm64"
 DEVELOPER=`xcode-select -print-path`
-MIN_SDK_VERSION="7.0"
+IOS_MIN_SDK_VERSION="7.0"
+TVOS_MIN_SDK_VERSION="9.0"
 
 if [ ! -d "$DEVELOPER" ]; then
-  echo "xcode path is not set correctly $DEVELOPER does not exist (most likely because of xcode > 4.3)"
+  echo "xcode path is not set correctly $DEVELOPER does not exist"
   echo "run"
   echo "sudo xcode-select -switch <xcode path>"
   echo "for default installation:"
@@ -50,14 +52,14 @@ if [ ! -d "$DEVELOPER" ]; then
   exit 1
 fi
 
-case $DEVELOPER in  
+case $DEVELOPER in
      *\ * )
            echo "Your Xcode path contains whitespaces, which is not supported."
            exit 1
           ;;
 esac
 
-case $CURRENTPATH in  
+case $CURRENTPATH in
      *\ * )
            echo "Your path contains whitespaces, which is not supported by 'make install'."
            exit 1
@@ -82,14 +84,32 @@ cd "${CURRENTPATH}/src/openssl-${VERSION}"
 
 for ARCH in ${ARCHS}
 do
-	if [[ "${ARCH}" == "i386" || "${ARCH}" == "x86_64" ]];
-	then
+  if [[ "$ARCH" == tv* ]]; then
+    SDKVERSION=$TVOS_SDKVERSION
+    MIN_SDK_VERSION=$TVOS_MIN_SDK_VERSION
+    LC_ALL=C sed -i -- 's/define HAVE_FORK 1/define HAVE_FORK 0/' "./apps/speed.c"
+    LC_ALL=C sed -i -- 's/D\_REENTRANT\:iOS/D\_REENTRANT\:tvOS/' "./Configure"
+    chmod u+x ./Configure
+  else
+    SDKVERSION=$IOS_SDKVERSION
+    MIN_SDK_VERSION=$IOS_MIN_SDK_VERSION
+  fi
+
+	if [[ "${ARCH}" == "i386" || "${ARCH}" == "x86_64" ]]; then
 		PLATFORM="iPhoneSimulator"
+  elif [ "${ARCH}" == "tv_x86_64" ]; then
+    ARCH="x86_64"
+    PLATFORM="AppleTVSimulator"
+  elif [ "${ARCH}" == "tv_arm64" ]; then
+    ARCH="arm64"
+    sed -ie "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;!" "crypto/ui/ui_openssl.c"
+    PLATFORM="AppleTVOS"
 	else
 		sed -ie "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;!" "crypto/ui/ui_openssl.c"
-		PLATFORM="iPhoneOS"
+    PLATFORM="iPhoneOS"
 	fi
-	
+
+  export $PLATFORM
 	export CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
 	export CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
 	export BUILD_TOOLS="${DEVELOPER}"
@@ -121,18 +141,20 @@ do
     	else
 	    ./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1
 	fi
-    
-    if [ $? != 0 ];
-    then 
-    	echo "Problem while configure - Please check ${LOG}"
-    	exit 1
-    fi
 
-	# add -isysroot to CC=
-	sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -miphoneos-version-min=${MIN_SDK_VERSION} !" "Makefile"
+  if [ $? != 0 ]; then
+    echo "Problem while configure - Please check ${LOG}"
+    exit 1
+  fi
 
-	if [ "$1" == "verbose" ];
-	then
+  # add -isysroot to CC=
+  if [[ "${PLATFORM}" == "AppleTVSimulator" || "${PLATFORM}" == "AppleTVOS" ]]; then
+    sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -mtvos-version-min=${TVOS_MIN_SDK_VERSION} !" "Makefile"
+  else
+    sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -miphoneos-version-min=${MIN_SDK_VERSION} !" "Makefile"
+  fi
+
+	if [ "$1" == "verbose" ]; then
 		if [[ ! -z $CONFIG_OPTIONS ]]; then
 			make depend
 		fi
@@ -143,25 +165,27 @@ do
 		fi
 		make >> "${LOG}" 2>&1
 	fi
-	
-	if [ $? != 0 ];
-    then 
-    	echo "Problem while make - Please check ${LOG}"
-    	exit 1
-    fi
-    
-    set -e
+
+	if [ $? != 0 ]; then
+    echo "Problem while make - Please check ${LOG}"
+    exit 1
+  fi
+
+  set -e
 	make install_sw >> "${LOG}" 2>&1
 	make clean >> "${LOG}" 2>&1
 done
 
-echo "Build library..."
-lipo -create ${CURRENTPATH}/bin/iPhoneSimulator${SDKVERSION}-i386.sdk/lib/libssl.a ${CURRENTPATH}/bin/iPhoneSimulator${SDKVERSION}-x86_64.sdk/lib/libssl.a  ${CURRENTPATH}/bin/iPhoneOS${SDKVERSION}-armv7.sdk/lib/libssl.a ${CURRENTPATH}/bin/iPhoneOS${SDKVERSION}-armv7s.sdk/lib/libssl.a ${CURRENTPATH}/bin/iPhoneOS${SDKVERSION}-arm64.sdk/lib/libssl.a -output ${CURRENTPATH}/lib/libssl.a
+echo "Build library for iOS..."
+lipo -create ${CURRENTPATH}/bin/iPhoneSimulator${IOS_SDKVERSION}-i386.sdk/lib/libssl.a ${CURRENTPATH}/bin/iPhoneSimulator${IOS_SDKVERSION}-x86_64.sdk/lib/libssl.a  ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-armv7.sdk/lib/libssl.a ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-armv7s.sdk/lib/libssl.a ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-arm64.sdk/lib/libssl.a -output ${CURRENTPATH}/lib/libssl.a
+lipo -create ${CURRENTPATH}/bin/iPhoneSimulator${IOS_SDKVERSION}-i386.sdk/lib/libcrypto.a ${CURRENTPATH}/bin/iPhoneSimulator${IOS_SDKVERSION}-x86_64.sdk/lib/libcrypto.a ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-armv7.sdk/lib/libcrypto.a ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-armv7s.sdk/lib/libcrypto.a ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-arm64.sdk/lib/libcrypto.a -output ${CURRENTPATH}/lib/libcrypto.a
 
-lipo -create ${CURRENTPATH}/bin/iPhoneSimulator${SDKVERSION}-i386.sdk/lib/libcrypto.a ${CURRENTPATH}/bin/iPhoneSimulator${SDKVERSION}-x86_64.sdk/lib/libcrypto.a ${CURRENTPATH}/bin/iPhoneOS${SDKVERSION}-armv7.sdk/lib/libcrypto.a ${CURRENTPATH}/bin/iPhoneOS${SDKVERSION}-armv7s.sdk/lib/libcrypto.a ${CURRENTPATH}/bin/iPhoneOS${SDKVERSION}-arm64.sdk/lib/libcrypto.a -output ${CURRENTPATH}/lib/libcrypto.a
+echo "Build library for tvOS..."
+lipo -create ${CURRENTPATH}/bin/AppleTVSimulator${TVOS_SDKVERSION}-x86_64.sdk/lib/libssl.a ${CURRENTPATH}/bin/AppleTVOS${TVOS_SDKVERSION}-arm64.sdk/lib/libssl.a -output ${CURRENTPATH}/lib/libssl-tvOS.a
+lipo -create ${CURRENTPATH}/bin/AppleTVSimulator${TVOS_SDKVERSION}-x86_64.sdk/lib/libcrypto.a ${CURRENTPATH}/bin/AppleTVOS${TVOS_SDKVERSION}-arm64.sdk/lib/libcrypto.a -output ${CURRENTPATH}/lib/libcrypto-tvOS.a
 
 mkdir -p ${CURRENTPATH}/include
-cp -R ${CURRENTPATH}/bin/iPhoneSimulator${SDKVERSION}-i386.sdk/include/openssl ${CURRENTPATH}/include/
+cp -R ${CURRENTPATH}/bin/iPhoneSimulator${IOS_SDKVERSION}-i386.sdk/include/openssl ${CURRENTPATH}/include/
 echo "Building done."
 echo "Cleaning up..."
 rm -rf ${CURRENTPATH}/src/openssl-${VERSION}
