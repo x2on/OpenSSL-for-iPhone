@@ -6,8 +6,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ViewController">
             <connections>
-                <outlet property="md5TextField" destination="36" id="44"/>
-                <outlet property="sha256TextField" destination="38" id="45"/>
+                <outlet property="md5Label" destination="36" id="QHb-4g-l4G"/>
+                <outlet property="sh256Label" destination="38" id="0UK-Qg-WRr"/>
                 <outlet property="textField" destination="37" id="46"/>
                 <outlet property="view" destination="6" id="7"/>
             </connections>
