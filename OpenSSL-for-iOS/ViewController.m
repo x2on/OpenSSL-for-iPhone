@@ -14,37 +14,58 @@
 
 @implementation ViewController
 
-@synthesize textField;
-@synthesize md5TextField;
-@synthesize sha256TextField;
-
-#pragma mark -
-#pragma mark OpenSSL
-
-- (IBAction)calculateMD5:(id)sender
+- (instancetype)init
 {
-	md5TextField.text = [FSOpenSSL md5FromString:textField.text];
-	//Hide Keyboard after calculation
-	[textField resignFirstResponder];
+    NSString *nibName = @"ViewController";
+#if TARGET_OS_TV
+    nibName = @"ViewController~tv";
+#endif
+    self = [super initWithNibName:nibName bundle:nil];
+    if (self) {
+
+    }
+    return self;
 }
 
-- (IBAction)calculateSHA256:(id)sender 
+- (void)viewDidLoad
 {
-	sha256TextField.text = [FSOpenSSL sha256FromString:textField.text];
-	//Hide Keyboard after calculation
-	[textField resignFirstResponder];
+    self.title = @"OpenSSL-for-iOS";
+    UIButton *infoButton = [UIButton buttonWithType:UIButtonTypeInfoLight];
+    [infoButton addTarget:self action:@selector(showInfo) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:infoButton];
+
+    [_textField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+    
+    [self calculateHash];
+    
+    [super viewDidLoad];
 }
 
-- (IBAction)showInfo 
+- (IBAction)textFieldDidChange:(id)sender
+{
+    [self calculateHash];
+}
+
+- (void)calculateHash
+{
+    if (_textField.text.length > 0)
+    {
+        _md5TextField.text = [FSOpenSSL md5FromString:_textField.text];
+        _sha256TextField.text = [FSOpenSSL sha256FromString:_textField.text];
+    }
+    else
+    {
+        _md5TextField.text = nil;
+        _sha256TextField.text = nil;
+    }
+}
+
+- (IBAction)showInfo
 {	
     NSString *message = [NSString stringWithFormat:@"OpenSSL-Version: %@\nLicense: See include/LICENSE\n\nCopyright 2010-2015 by Felix Schulze\n http://www.felixschulze.de", @OPENSSL_VERSION_TEXT];
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"OpenSSL-for-iOS" message:message delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];	
-	[alert show];
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{   
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"OpenSSL-for-iOS" message:message preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleCancel handler:nil]];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 @end
