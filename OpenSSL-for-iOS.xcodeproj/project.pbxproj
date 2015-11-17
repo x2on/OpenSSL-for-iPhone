@@ -7,14 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A1DDC8D1BFB1C5D00F7722A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 533ED30B1528C4840005C6FA /* main.m */; };
+		2A1DDC8F1BFB1DF600F7722A /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2A1DDC8E1BFB1DF600F7722A /* ViewController.xib */; };
+		2A8A9A7E1BFA59F7002944B4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A8A9A7D1BFA59F7002944B4 /* Assets.xcassets */; };
+		2A8A9A851BFA5AFF002944B4 /* ViewController~tv.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2A8A9A841BFA5AFF002944B4 /* ViewController~tv.xib */; };
+		2A8A9A861BFA5B04002944B4 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 533ED3121528C4840005C6FA /* ViewController.m */; };
+		2A8A9A871BFA5B6A002944B4 /* FSOpenSSL.m in Sources */ = {isa = PBXBuildFile; fileRef = D1E97EE2A904D58DAE4231E2 /* FSOpenSSL.m */; };
+		2A8A9A8A1BFA5B85002944B4 /* libcrypto-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A8A9A881BFA5B85002944B4 /* libcrypto-tvOS.a */; };
+		2A8A9A8B1BFA5B85002944B4 /* libssl-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A8A9A891BFA5B85002944B4 /* libssl-tvOS.a */; };
+		2A8A9A8D1BFA7B79002944B4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 533ED30F1528C4840005C6FA /* AppDelegate.m */; };
 		533ED3001528C4840005C6FA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED2FF1528C4840005C6FA /* UIKit.framework */; };
 		533ED3021528C4840005C6FA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED3011528C4840005C6FA /* Foundation.framework */; };
 		533ED3041528C4840005C6FA /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED3031528C4840005C6FA /* CoreGraphics.framework */; };
-		533ED30A1528C4840005C6FA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 533ED3081528C4840005C6FA /* InfoPlist.strings */; };
 		533ED30C1528C4840005C6FA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 533ED30B1528C4840005C6FA /* main.m */; };
 		533ED3101528C4840005C6FA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 533ED30F1528C4840005C6FA /* AppDelegate.m */; };
 		533ED3131528C4840005C6FA /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 533ED3121528C4840005C6FA /* ViewController.m */; };
-		533ED3161528C4840005C6FA /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 533ED3141528C4840005C6FA /* ViewController.xib */; };
 		533ED32C1528C53B0005C6FA /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED32A1528C53B0005C6FA /* libcrypto.a */; };
 		533ED32D1528C53B0005C6FA /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED32B1528C53B0005C6FA /* libssl.a */; };
 		534FB2AE180975D700B5F868 /* Icons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 534FB2AD180975D700B5F868 /* Icons.xcassets */; };
@@ -37,19 +44,24 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2A1DDC8E1BFB1DF600F7722A /* ViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ViewController.xib; sourceTree = "<group>"; };
+		2A8A9A6F1BFA59F7002944B4 /* OpenSSL-for-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OpenSSL-for-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2A8A9A7D1BFA59F7002944B4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2A8A9A7F1BFA59F7002944B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2A8A9A841BFA5AFF002944B4 /* ViewController~tv.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "ViewController~tv.xib"; sourceTree = "<group>"; };
+		2A8A9A881BFA5B85002944B4 /* libcrypto-tvOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libcrypto-tvOS.a"; path = "lib/libcrypto-tvOS.a"; sourceTree = "<group>"; };
+		2A8A9A891BFA5B85002944B4 /* libssl-tvOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libssl-tvOS.a"; path = "lib/libssl-tvOS.a"; sourceTree = "<group>"; };
 		533ED2FB1528C4840005C6FA /* OpenSSL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenSSL.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		533ED2FF1528C4840005C6FA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		533ED3011528C4840005C6FA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		533ED3031528C4840005C6FA /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		533ED3071528C4840005C6FA /* OpenSSL-for-iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "OpenSSL-for-iOS-Info.plist"; sourceTree = "<group>"; };
-		533ED3091528C4840005C6FA /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		533ED30B1528C4840005C6FA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		533ED30D1528C4840005C6FA /* OpenSSL-for-iOS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "OpenSSL-for-iOS-Prefix.pch"; sourceTree = "<group>"; };
 		533ED30E1528C4840005C6FA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		533ED30F1528C4840005C6FA /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		533ED3111528C4840005C6FA /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		533ED3121528C4840005C6FA /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		533ED3151528C4840005C6FA /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController.xib; sourceTree = "<group>"; };
 		533ED32A1528C53B0005C6FA /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = lib/libcrypto.a; sourceTree = "<group>"; };
 		533ED32B1528C53B0005C6FA /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = lib/libssl.a; sourceTree = "<group>"; };
 		534FB2AD180975D700B5F868 /* Icons.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Icons.xcassets; sourceTree = "<group>"; };
@@ -67,6 +79,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2A8A9A6C1BFA59F7002944B4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2A8A9A8B1BFA5B85002944B4 /* libssl-tvOS.a in Frameworks */,
+				2A8A9A8A1BFA5B85002944B4 /* libcrypto-tvOS.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		533ED2F81528C4840005C6FA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -92,12 +113,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2A8A9A701BFA59F7002944B4 /* OpenSSL-for-tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				2A8A9A7D1BFA59F7002944B4 /* Assets.xcassets */,
+				2A8A9A7F1BFA59F7002944B4 /* Info.plist */,
+			);
+			path = "OpenSSL-for-tvOS";
+			sourceTree = "<group>";
+		};
 		533ED2F01528C4840005C6FA = {
 			isa = PBXGroup;
 			children = (
 				FD5896FC1B2F1FF900F3E5B5 /* README.md */,
 				533ED3051528C4840005C6FA /* OpenSSL-for-iOS */,
 				53572A50183AAFFE00B21832 /* OpenSSL-for-iOS_Tests */,
+				2A8A9A701BFA59F7002944B4 /* OpenSSL-for-tvOS */,
 				FD5896FD1B2F1FFC00F3E5B5 /* Scripts */,
 				533ED2FE1528C4840005C6FA /* Frameworks */,
 				533ED2FC1528C4840005C6FA /* Products */,
@@ -109,6 +140,7 @@
 			children = (
 				533ED2FB1528C4840005C6FA /* OpenSSL.app */,
 				53572A4B183AAFFE00B21832 /* OpenSSL-for-iOS_Tests.xctest */,
+				2A8A9A6F1BFA59F7002944B4 /* OpenSSL-for-tvOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -116,6 +148,8 @@
 		533ED2FE1528C4840005C6FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2A8A9A881BFA5B85002944B4 /* libcrypto-tvOS.a */,
+				2A8A9A891BFA5B85002944B4 /* libssl-tvOS.a */,
 				533ED32A1528C53B0005C6FA /* libcrypto.a */,
 				533ED32B1528C53B0005C6FA /* libssl.a */,
 				533ED2FF1528C4840005C6FA /* UIKit.framework */,
@@ -133,7 +167,8 @@
 				533ED30F1528C4840005C6FA /* AppDelegate.m */,
 				533ED3111528C4840005C6FA /* ViewController.h */,
 				533ED3121528C4840005C6FA /* ViewController.m */,
-				533ED3141528C4840005C6FA /* ViewController.xib */,
+				2A1DDC8E1BFB1DF600F7722A /* ViewController.xib */,
+				2A8A9A841BFA5AFF002944B4 /* ViewController~tv.xib */,
 				533ED3061528C4840005C6FA /* Supporting Files */,
 				D1E97EE2A904D58DAE4231E2 /* FSOpenSSL.m */,
 				D1E979D803ACC127411934DC /* FSOpenSSL.h */,
@@ -146,7 +181,6 @@
 			isa = PBXGroup;
 			children = (
 				533ED3071528C4840005C6FA /* OpenSSL-for-iOS-Info.plist */,
-				533ED3081528C4840005C6FA /* InfoPlist.strings */,
 				533ED30B1528C4840005C6FA /* main.m */,
 				533ED30D1528C4840005C6FA /* OpenSSL-for-iOS-Prefix.pch */,
 			);
@@ -184,6 +218,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		2A8A9A6E1BFA59F7002944B4 /* OpenSSL-for-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2A8A9A821BFA59F7002944B4 /* Build configuration list for PBXNativeTarget "OpenSSL-for-tvOS" */;
+			buildPhases = (
+				2A8A9A6B1BFA59F7002944B4 /* Sources */,
+				2A8A9A6C1BFA59F7002944B4 /* Frameworks */,
+				2A8A9A6D1BFA59F7002944B4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "OpenSSL-for-tvOS";
+			productName = "OpenSSL-for-tvOS";
+			productReference = 2A8A9A6F1BFA59F7002944B4 /* OpenSSL-for-tvOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 		533ED2FA1528C4840005C6FA /* OpenSSL-for-iOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 533ED31C1528C4840005C6FA /* Build configuration list for PBXNativeTarget "OpenSSL-for-iOS" */;
@@ -229,6 +280,9 @@
 				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = Immobilienscout24;
 				TargetAttributes = {
+					2A8A9A6E1BFA59F7002944B4 = {
+						CreatedOnToolsVersion = 7.1.1;
+					};
 					53572A4A183AAFFE00B21832 = {
 						TestTargetID = 533ED2FA1528C4840005C6FA;
 					};
@@ -240,6 +294,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 533ED2F01528C4840005C6FA;
 			productRefGroup = 533ED2FC1528C4840005C6FA /* Products */;
@@ -248,17 +303,26 @@
 			targets = (
 				533ED2FA1528C4840005C6FA /* OpenSSL-for-iOS */,
 				53572A4A183AAFFE00B21832 /* OpenSSL-for-iOS_Tests */,
+				2A8A9A6E1BFA59F7002944B4 /* OpenSSL-for-tvOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2A8A9A6D1BFA59F7002944B4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2A8A9A851BFA5AFF002944B4 /* ViewController~tv.xib in Resources */,
+				2A8A9A7E1BFA59F7002944B4 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		533ED2F91528C4840005C6FA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				533ED30A1528C4840005C6FA /* InfoPlist.strings in Resources */,
-				533ED3161528C4840005C6FA /* ViewController.xib in Resources */,
+				2A1DDC8F1BFB1DF600F7722A /* ViewController.xib in Resources */,
 				534FB2AE180975D700B5F868 /* Icons.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -292,6 +356,17 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2A8A9A6B1BFA59F7002944B4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2A8A9A8D1BFA7B79002944B4 /* AppDelegate.m in Sources */,
+				2A8A9A861BFA5B04002944B4 /* ViewController.m in Sources */,
+				2A1DDC8D1BFB1C5D00F7722A /* main.m in Sources */,
+				2A8A9A871BFA5B6A002944B4 /* FSOpenSSL.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		533ED2F71528C4840005C6FA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -322,22 +397,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		533ED3081528C4840005C6FA /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				533ED3091528C4840005C6FA /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		533ED3141528C4840005C6FA /* ViewController.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				533ED3151528C4840005C6FA /* en */,
-			);
-			name = ViewController.xib;
-			sourceTree = "<group>";
-		};
 		53572A53183AAFFE00B21832 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -349,6 +408,64 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		2A8A9A801BFA59F7002944B4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = "OpenSSL-for-tvOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/lib",
+				);
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "de.felixschulze.OpenSSL-for-tvOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Debug;
+		};
+		2A8A9A811BFA59F7002944B4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = "OpenSSL-for-tvOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/lib",
+				);
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "de.felixschulze.OpenSSL-for-tvOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Release;
+		};
 		533ED31A1528C4840005C6FA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -382,10 +499,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "include/**";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Debug;
 		};
@@ -414,10 +532,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "include/**";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TVOS_DEPLOYMENT_TARGET = 9.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -525,6 +644,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2A8A9A821BFA59F7002944B4 /* Build configuration list for PBXNativeTarget "OpenSSL-for-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2A8A9A801BFA59F7002944B4 /* Debug */,
+				2A8A9A811BFA59F7002944B4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		533ED2F51528C4840005C6FA /* Build configuration list for PBXProject "OpenSSL-for-iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -13,14 +13,18 @@
 
 @implementation AppDelegate
 
-@synthesize window = _window;
-@synthesize viewController = _viewController;
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.viewController = [[ViewController alloc] initWithNibName:@"ViewController" bundle:nil];
-    self.window.rootViewController = self.viewController;
+
+    UIViewController *viewController = [[ViewController alloc] init];
+#if TARGET_OS_TV
+    self.window.rootViewController = viewController;
+#else
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+    navigationController.navigationBar.translucent = NO;
+    self.window.rootViewController = navigationController;
+#endif
     [self.window makeKeyAndVisible];
     return YES;
 }

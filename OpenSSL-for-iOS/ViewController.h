@@ -17,7 +17,5 @@
 @property (nonatomic, strong) IBOutlet UILabel *sha256TextField;
 
 - (IBAction)showInfo;
-- (IBAction)calculateMD5:(id)sender;
-- (IBAction)calculateSHA256:(id)sender;
 
 @end
