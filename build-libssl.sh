@@ -114,8 +114,11 @@ do
 	export CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
 	export BUILD_TOOLS="${DEVELOPER}"
 
+  mkdir -p "${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk"
+  LOG="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk/build-openssl-${VERSION}.log"
+
 	echo "Building openssl-${VERSION} for ${PLATFORM} ${SDKVERSION} ${ARCH}"
-	echo "Please stand by..."
+  echo "  Logfile: $LOG"
 
 	LOCAL_CONFIG_OPTIONS="${CONFIG_OPTIONS}"
 	if [ "${ENABLE_EC_NISTP_64_GCC_128}" == "true" ]; then
@@ -132,9 +135,7 @@ do
 		export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH}"
 	fi
 
-	mkdir -p "${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk"
-	LOG="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk/build-openssl-${VERSION}.log"
-
+  echo "  Configure..."
 	set +e
 	if [ "${ARCH}" == "x86_64" ]; then
 	    ./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1
@@ -147,12 +148,16 @@ do
     exit 1
   fi
 
+  echo "  Patch..."
   # add -isysroot to CC=
   if [[ "${PLATFORM}" == "AppleTVSimulator" || "${PLATFORM}" == "AppleTVOS" ]]; then
     sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -mtvos-version-min=${TVOS_MIN_SDK_VERSION} !" "Makefile"
   else
     sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -miphoneos-version-min=${MIN_SDK_VERSION} !" "Makefile"
   fi
+
+  echo "  Make..."
+  echo "  Please stand by..."
 
 	if [ "$1" == "verbose" ]; then
 		if [[ ! -z $CONFIG_OPTIONS ]]; then
