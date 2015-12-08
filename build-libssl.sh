@@ -150,11 +150,19 @@ do
 
   echo "  Configure...\c"
 	set +e
-	if [ "${ARCH}" == "x86_64" ]; then
-		(./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
-	else
-		(./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
-	fi
+  if [ "$1" == "verbose" ]; then
+    if [ "${ARCH}" == "x86_64" ]; then
+		  ./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS}
+	  else
+		  ./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS}
+	  fi
+  else
+	  if [ "${ARCH}" == "x86_64" ]; then
+		  (./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
+	  else
+		  (./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
+	  fi
+  fi
 
   if [ $? != 0 ]; then
     echo "Problem while configure - Please check ${LOG}"
@@ -190,8 +198,13 @@ do
   fi
 
   set -e
-	make install_sw >> "${LOG}" 2>&1
-	make clean >> "${LOG}" 2>&1
+  if [ "$1" == "verbose" ]; then
+    make install_sw
+    make clean
+  else
+	  make install_sw >> "${LOG}" 2>&1
+	  make clean >> "${LOG}" 2>&1
+  fi
 done
 
 echo "Build library for iOS..."
