@@ -35,7 +35,20 @@ ENABLE_EC_NISTP_64_GCC_128=""
 # Don't change anything under this line!								  #
 #																		  #
 ###########################################################################
-
+spinner()
+{
+    local pid=$!
+    local delay=0.75
+    local spinstr='|/-\'
+    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+        local temp=${spinstr#?}
+        printf " [%c]  " "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b\b\b\b"
+    done
+    printf "    \b\b\b\b"
+}
 
 CURRENTPATH=`pwd`
 ARCHS="i386 x86_64 armv7 armv7s arm64 tv_x86_64 tv_arm64"
@@ -135,20 +148,28 @@ do
 		export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH}"
 	fi
 
-  echo "  Configure..."
+  echo "  Configure...\c"
 	set +e
-	if [ "${ARCH}" == "x86_64" ]; then
-	    ./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1
-    	else
-	    ./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1
-	fi
+  if [ "$1" == "verbose" ]; then
+    if [ "${ARCH}" == "x86_64" ]; then
+		  ./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS}
+	  else
+		  ./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS}
+	  fi
+  else
+	  if [ "${ARCH}" == "x86_64" ]; then
+		  (./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
+	  else
+		  (./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
+	  fi
+  fi
 
   if [ $? != 0 ]; then
     echo "Problem while configure - Please check ${LOG}"
     exit 1
   fi
 
-  echo "  Patch..."
+  echo "\n  Patch..."
   # add -isysroot to CC=
   if [[ "${PLATFORM}" == "AppleTVSimulator" || "${PLATFORM}" == "AppleTVOS" ]]; then
     sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -mtvos-version-min=${TVOS_MIN_SDK_VERSION} !" "Makefile"
@@ -156,8 +177,7 @@ do
     sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -miphoneos-version-min=${MIN_SDK_VERSION} !" "Makefile"
   fi
 
-  echo "  Make..."
-  echo "  Please stand by..."
+  echo "  Make...\c"
 
 	if [ "$1" == "verbose" ]; then
 		if [[ ! -z $CONFIG_OPTIONS ]]; then
@@ -168,8 +188,9 @@ do
 		if [[ ! -z $CONFIG_OPTIONS ]]; then
 			make depend >> "${LOG}" 2>&1
 		fi
-		make >> "${LOG}" 2>&1
+		(make >> "${LOG}" 2>&1) & spinner
 	fi
+  echo "\n"
 
 	if [ $? != 0 ]; then
     echo "Problem while make - Please check ${LOG}"
@@ -177,8 +198,13 @@ do
   fi
 
   set -e
-	make install_sw >> "${LOG}" 2>&1
-	make clean >> "${LOG}" 2>&1
+  if [ "$1" == "verbose" ]; then
+    make install_sw
+    make clean
+  else
+	  make install_sw >> "${LOG}" 2>&1
+	  make clean >> "${LOG}" 2>&1
+  fi
 done
 
 echo "Build library for iOS..."
