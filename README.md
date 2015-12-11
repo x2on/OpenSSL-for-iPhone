@@ -12,7 +12,7 @@ You must build the OpenSSL-Libraries before running the sample with:
 This repository contains a iOS 9.1 XCode Project with usese the OpenSSL Libaries. The examples uses the MD5 or SHA256-algorithm to calculate an md5 or sha256 hash from an UITextfield.
 
 ## System support
-**iOS 7.0 - iOS 9.1 (i386, x86_64, armv7, armv7s, armv64, bitcode) is currently supported.**
+**iOS 7.0 - iOS 9.2 (i386, x86_64, armv7, armv7s, armv64, bitcode) and tvOS are currently supported.**
 
 For iOS < 7.0 you must use Xcode < 7 and an older version of the build script.
 
@@ -23,6 +23,7 @@ If you have problems building for arm64 please uninstall MacPorts (see #28).
 * <http://www.x2on.de/2010/07/13/tutorial-iphone-app-with-compiled-openssl-1-0-0a-library/>
 
 ## Changelog
+* 2015-12-11: Xcode 7.2 support, iOS 9.2
 * 2015-12-03: OpenSSL 1.0.2e
 * 2015-11-17: tvOS example app, Migrate to Swift for example app
 * 2015-11-16: tvOS support
