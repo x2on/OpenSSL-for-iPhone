@@ -19,35 +19,35 @@
 #  limitations under the License.
 #
 ###########################################################################
-#  Change values here													  #
-#
-VERSION="1.0.2e"													      #
-IOS_SDKVERSION=`xcrun -sdk iphoneos --show-sdk-version`
-TVOS_SDKVERSION=`xcrun -sdk appletvos --show-sdk-version`											  #
-CONFIG_OPTIONS=""
-CURL_OPTIONS=""
+#  Change values here                                                     #
+#                                                                         #
+VERSION="1.0.2e"                                                          #
+IOS_SDKVERSION=`xcrun -sdk iphoneos --show-sdk-version`                   #
+TVOS_SDKVERSION=`xcrun -sdk appletvos --show-sdk-version`                 #
+CONFIG_OPTIONS=""                                                         #
+CURL_OPTIONS=""                                                           #
 
 # To set "enable-ec_nistp_64_gcc_128" configuration for x64 archs set next variable to "true"
-ENABLE_EC_NISTP_64_GCC_128=""
-#																		  #
+ENABLE_EC_NISTP_64_GCC_128=""                                             #
+#                                                                         #
 ###########################################################################
-#																		  #
-# Don't change anything under this line!								  #
-#																		  #
+#                                                                         #
+# Don't change anything under this line!                                  #
+#                                                                         #
 ###########################################################################
 spinner()
 {
-    local pid=$!
-    local delay=0.75
-    local spinstr='|/-\'
-    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
-        local temp=${spinstr#?}
-        printf " [%c]  " "$spinstr"
-        local spinstr=$temp${spinstr%"$temp"}
-        sleep $delay
-        printf "\b\b\b\b\b\b"
-    done
-    printf "    \b\b\b\b"
+  local pid=$!
+  local delay=0.75
+  local spinstr='|/-\'
+  while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+    local temp=${spinstr#?}
+    printf " [%c]  " "$spinstr"
+    local spinstr=$temp${spinstr%"$temp"}
+    sleep $delay
+    printf "\b\b\b\b\b\b"
+  done
+  printf "    \b\b\b\b"
 }
 
 CURRENTPATH=`pwd`
@@ -66,25 +66,25 @@ if [ ! -d "$DEVELOPER" ]; then
 fi
 
 case $DEVELOPER in
-     *\ * )
-           echo "Your Xcode path contains whitespaces, which is not supported."
-           exit 1
-          ;;
+  *\ * )
+    echo "Your Xcode path contains whitespaces, which is not supported."
+    exit 1
+  ;;
 esac
 
 case $CURRENTPATH in
-     *\ * )
-           echo "Your path contains whitespaces, which is not supported by 'make install'."
-           exit 1
-          ;;
+  *\ * )
+    echo "Your path contains whitespaces, which is not supported by 'make install'."
+    exit 1
+  ;;
 esac
 
 set -e
 if [ ! -e openssl-${VERSION}.tar.gz ]; then
-	echo "Downloading openssl-${VERSION}.tar.gz"
-    curl ${CURL_OPTIONS} -O https://www.openssl.org/source/openssl-${VERSION}.tar.gz
+  echo "Downloading openssl-${VERSION}.tar.gz"
+  curl ${CURL_OPTIONS} -O https://www.openssl.org/source/openssl-${VERSION}.tar.gz
 else
-	echo "Using openssl-${VERSION}.tar.gz"
+  echo "Using openssl-${VERSION}.tar.gz"
 fi
 
 mkdir -p "${CURRENTPATH}/src"
@@ -93,7 +93,6 @@ mkdir -p "${CURRENTPATH}/lib"
 
 tar zxf openssl-${VERSION}.tar.gz -C "${CURRENTPATH}/src"
 cd "${CURRENTPATH}/src/openssl-${VERSION}"
-
 
 for ARCH in ${ARCHS}
 do
@@ -108,8 +107,8 @@ do
     MIN_SDK_VERSION=$IOS_MIN_SDK_VERSION
   fi
 
-	if [[ "${ARCH}" == "i386" || "${ARCH}" == "x86_64" ]]; then
-		PLATFORM="iPhoneSimulator"
+  if [[ "${ARCH}" == "i386" || "${ARCH}" == "x86_64" ]]; then
+    PLATFORM="iPhoneSimulator"
   elif [ "${ARCH}" == "tv_x86_64" ]; then
     ARCH="x86_64"
     PLATFORM="AppleTVSimulator"
@@ -117,51 +116,51 @@ do
     ARCH="arm64"
     sed -ie "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;!" "crypto/ui/ui_openssl.c"
     PLATFORM="AppleTVOS"
-	else
-		sed -ie "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;!" "crypto/ui/ui_openssl.c"
+  else
+    sed -ie "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;!" "crypto/ui/ui_openssl.c"
     PLATFORM="iPhoneOS"
-	fi
+  fi
 
   export $PLATFORM
-	export CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
-	export CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
-	export BUILD_TOOLS="${DEVELOPER}"
+  export CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
+  export CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
+  export BUILD_TOOLS="${DEVELOPER}"
 
   mkdir -p "${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk"
   LOG="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk/build-openssl-${VERSION}.log"
 
-	echo "Building openssl-${VERSION} for ${PLATFORM} ${SDKVERSION} ${ARCH}"
+  echo "Building openssl-${VERSION} for ${PLATFORM} ${SDKVERSION} ${ARCH}"
   echo "  Logfile: $LOG"
 
-	LOCAL_CONFIG_OPTIONS="${CONFIG_OPTIONS}"
-	if [ "${ENABLE_EC_NISTP_64_GCC_128}" == "true" ]; then
-		case "$ARCH" in
-			*64*)
-				LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} enable-ec_nistp_64_gcc_128"
-			;;
-		esac
-	fi
+  LOCAL_CONFIG_OPTIONS="${CONFIG_OPTIONS}"
+  if [ "${ENABLE_EC_NISTP_64_GCC_128}" == "true" ]; then
+    case "$ARCH" in
+      *64*)
+        LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} enable-ec_nistp_64_gcc_128"
+      ;;
+    esac
+  fi
 
-	if [[ $SDKVERSION == 9.* ]]; then
-		export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH} -fembed-bitcode"
-	else
-		export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH}"
-	fi
+  if [[ $SDKVERSION == 9.* ]]; then
+    export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH} -fembed-bitcode"
+  else
+    export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH}"
+  fi
 
   echo "  Configure...\c"
-	set +e
+  set +e
   if [ "$1" == "verbose" ]; then
     if [ "${ARCH}" == "x86_64" ]; then
-		  ./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS}
-	  else
-		  ./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS}
-	  fi
+      ./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS}
+    else
+      ./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS}
+    fi
   else
-	  if [ "${ARCH}" == "x86_64" ]; then
-		  (./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
-	  else
-		  (./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
-	  fi
+    if [ "${ARCH}" == "x86_64" ]; then
+      (./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
+    else
+      (./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
+    fi
   fi
 
   if [ $? != 0 ]; then
@@ -179,20 +178,20 @@ do
 
   echo "  Make...\c"
 
-	if [ "$1" == "verbose" ]; then
-		if [[ ! -z $CONFIG_OPTIONS ]]; then
-			make depend
-		fi
-		make
-	else
-		if [[ ! -z $CONFIG_OPTIONS ]]; then
-			make depend >> "${LOG}" 2>&1
-		fi
-		(make >> "${LOG}" 2>&1) & spinner
-	fi
+  if [ "$1" == "verbose" ]; then
+    if [[ ! -z $CONFIG_OPTIONS ]]; then
+      make depend
+    fi
+    make
+  else
+    if [[ ! -z $CONFIG_OPTIONS ]]; then
+      make depend >> "${LOG}" 2>&1
+    fi
+    (make >> "${LOG}" 2>&1) & spinner
+  fi
   echo "\n"
 
-	if [ $? != 0 ]; then
+  if [ $? != 0 ]; then
     echo "Problem while make - Please check ${LOG}"
     exit 1
   fi
@@ -202,8 +201,8 @@ do
     make install_sw
     make clean
   else
-	  make install_sw >> "${LOG}" 2>&1
-	  make clean >> "${LOG}" 2>&1
+    make install_sw >> "${LOG}" 2>&1
+    make clean >> "${LOG}" 2>&1
   fi
 done
 
