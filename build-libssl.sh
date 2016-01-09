@@ -240,7 +240,7 @@ do
   if [[ ! -z $CONFIG_OPTIONS ]]; then
     exec_task "make depend"
   fi
-  exec_spinner_task "make"
+  exec_spinner_task "make -j 4"
 
   echo "\n"
 
