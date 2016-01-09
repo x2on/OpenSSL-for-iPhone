@@ -49,6 +49,16 @@ spinner()
   done
   printf "    \b\b\b\b"
 }
+dotting()
+{
+  local pid=$!
+  local delay=1.00
+  while kill -0 $pid > /dev/null 2>&1; do
+    echo ".\c"
+    sleep $delay
+  done
+}
+
 exec_task()
 {
   if [[ "$VERBOSE" != 0 ]]; then
@@ -60,7 +70,11 @@ exec_task()
 
 exec_spinner_task()
 {
-  (exec_task "$1") & spinner
+  if [[ "$SPINNER_ENABLED" != 0 ]]; then
+    (exec_task "$1") & spinner
+  else
+    (exec_task "$1") & dotting
+  fi
 }
 
 CURRENTPATH=`pwd`
@@ -70,6 +84,7 @@ IOS_MIN_SDK_VERSION="7.0"
 TVOS_MIN_SDK_VERSION="9.0"
 
 VERBOSE=0
+SPINNER_ENABLED=1
 
 while true ; do
   if [[ $# -lt 1 ]]; then
@@ -78,6 +93,10 @@ while true ; do
   case "$1" in
     "verbose")
       VERBOSE=1
+      shift
+    ;;
+    "--no-spinner")
+      SPINNER_ENABLED=0
       shift
     ;;
     *)
