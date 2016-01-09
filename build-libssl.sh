@@ -78,7 +78,9 @@ exec_spinner_task()
 }
 
 CURRENTPATH=`pwd`
-ARCHS="i386 x86_64 armv7 armv7s arm64 tv_x86_64 tv_arm64"
+if [ "$ARCHS" == "" ]; then
+  ARCHS="i386 x86_64 armv7 armv7s arm64 tv_x86_64 tv_arm64"
+fi
 DEVELOPER=`xcode-select -print-path`
 IOS_MIN_SDK_VERSION="7.0"
 TVOS_MIN_SDK_VERSION="9.0"
@@ -140,9 +142,31 @@ mkdir -p "${CURRENTPATH}/src"
 mkdir -p "${CURRENTPATH}/bin"
 mkdir -p "${CURRENTPATH}/lib"
 
+iphone_out_dirs=""
+tv_out_dirs=""
+
 for ARCH in ${ARCHS}
 do
-  if [[ "$ARCH" == tv* ]]; then
+  is_iphone_family=0
+  is_tv_family=0
+
+  if [[ "${ARCH}" == "i386" || "${ARCH}" == "x86_64" ]]; then
+    PLATFORM="iPhoneSimulator"
+    is_iphone_family=1
+  elif [ "${ARCH}" == "tv_x86_64" ]; then
+    ARCH="x86_64"
+    PLATFORM="AppleTVSimulator"
+    is_tv_family=1
+  elif [ "${ARCH}" == "tv_arm64" ]; then
+    ARCH="arm64"
+    PLATFORM="AppleTVOS"
+    is_tv_family=1
+  else
+    PLATFORM="iPhoneOS"
+    is_iphone_family=1
+  fi
+  
+  if [[ "$is_tv_family" != 0 ]]; then
     SDKVERSION=$TVOS_SDKVERSION
     MIN_SDK_VERSION=$TVOS_MIN_SDK_VERSION
   else
@@ -150,25 +174,21 @@ do
     MIN_SDK_VERSION=$IOS_MIN_SDK_VERSION
   fi
 
-  if [[ "${ARCH}" == "i386" || "${ARCH}" == "x86_64" ]]; then
-    PLATFORM="iPhoneSimulator"
-  elif [ "${ARCH}" == "tv_x86_64" ]; then
-    ARCH="x86_64"
-    PLATFORM="AppleTVSimulator"
-  elif [ "${ARCH}" == "tv_arm64" ]; then
-    ARCH="arm64"
-    PLATFORM="AppleTVOS"
-  else
-    PLATFORM="iPhoneOS"
-  fi
-
   export $PLATFORM
   export CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
   export CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
   export BUILD_TOOLS="${DEVELOPER}"
 
-  mkdir -p "${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk"
-  LOG="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk/build-openssl-${VERSION}.log"
+  output_dir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk"
+
+  mkdir -p "$output_dir"
+  LOG="$output_dir/build-openssl-${VERSION}.log"
+
+  if [[ "$is_iphone_family" != 0 ]]; then
+    iphone_out_dirs="$iphone_out_dirs $output_dir"
+  elif [[ "$is_tv_family" != 0 ]]; then
+    tv_out_dirs="$tv_out_dirs $output_dir"
+  fi
 
   echo "Building openssl-${VERSION} for ${PLATFORM} ${SDKVERSION} ${ARCH}"
   echo "  Logfile: $LOG"
@@ -196,7 +216,7 @@ do
   cd "${src_work_dir}/openssl-${VERSION}"
 
   chmod u+x ./Configure
-  if [[ "${PLATFORM}" == "AppleTVSimulator" || "${PLATFORM}" == "AppleTVOS" ]]; then
+  if [[ "$is_tv_family" != 0 ]]; then
     LC_ALL=C sed -i -- 's/define HAVE_FORK 1/define HAVE_FORK 0/' "./apps/speed.c"
     LC_ALL=C sed -i -- 's/D\_REENTRANT\:iOS/D\_REENTRANT\:tvOS/' "./Configure"
 
@@ -217,7 +237,7 @@ do
     args="${args} iphoneos-cross"
   fi
   args="${args} \
-    --openssldir=${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk \
+    --openssldir=$output_dir \
     ${LOCAL_CONFIG_OPTIONS}"
 
   exec_spinner_task "./Configure ${args}"
@@ -229,7 +249,7 @@ do
 
   echo "\n  Patch Makefile..."
   # add -isysroot to CC=
-  if [[ "${PLATFORM}" == "AppleTVSimulator" || "${PLATFORM}" == "AppleTVOS" ]]; then
+  if [[ "$is_tv_family" != 0 ]]; then
     sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -mtvos-version-min=${TVOS_MIN_SDK_VERSION} !" "Makefile"
   else
     sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -miphoneos-version-min=${MIN_SDK_VERSION} !" "Makefile"
@@ -255,33 +275,41 @@ do
   rm -rf "$src_work_dir"
 done
 
-echo "Build library for iOS..."
-lipo -create \
-  ${CURRENTPATH}/bin/iPhoneSimulator${IOS_SDKVERSION}-i386.sdk/lib/libssl.a \
-  ${CURRENTPATH}/bin/iPhoneSimulator${IOS_SDKVERSION}-x86_64.sdk/lib/libssl.a \
-  ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-armv7.sdk/lib/libssl.a \
-  ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-armv7s.sdk/lib/libssl.a \
-  ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-arm64.sdk/lib/libssl.a \
-  -output ${CURRENTPATH}/lib/libssl.a
-lipo -create \
-  ${CURRENTPATH}/bin/iPhoneSimulator${IOS_SDKVERSION}-i386.sdk/lib/libcrypto.a \
-  ${CURRENTPATH}/bin/iPhoneSimulator${IOS_SDKVERSION}-x86_64.sdk/lib/libcrypto.a \
-  ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-armv7.sdk/lib/libcrypto.a \
-  ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-armv7s.sdk/lib/libcrypto.a \
-  ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-arm64.sdk/lib/libcrypto.a \
-  -output ${CURRENTPATH}/lib/libcrypto.a
+if [[ "$iphone_out_dirs" != "" ]] ; then
+  echo "Build library for iOS..."
 
-echo "Build library for tvOS..."
-lipo -create \
-  ${CURRENTPATH}/bin/AppleTVSimulator${TVOS_SDKVERSION}-x86_64.sdk/lib/libssl.a \
-  ${CURRENTPATH}/bin/AppleTVOS${TVOS_SDKVERSION}-arm64.sdk/lib/libssl.a \
-  -output ${CURRENTPATH}/lib/libssl-tvOS.a
-lipo -create \
-  ${CURRENTPATH}/bin/AppleTVSimulator${TVOS_SDKVERSION}-x86_64.sdk/lib/libcrypto.a \
-  ${CURRENTPATH}/bin/AppleTVOS${TVOS_SDKVERSION}-arm64.sdk/lib/libcrypto.a \
-  -output ${CURRENTPATH}/lib/libcrypto-tvOS.a
+  args=""
+  for out_dir in $iphone_out_dirs; do
+    args="$args ${out_dir}/lib/libssl.a"
+  done
+  lipo -create $args -output ${CURRENTPATH}/lib/libssl.a
+
+  args=""
+  for out_dir in $iphone_out_dirs; do
+    args="$args ${out_dir}/lib/libcrypto.a"
+  done
+  lipo -create $args -output ${CURRENTPATH}/lib/libcrypto.a
+fi
+
+if [[ "$tv_out_dirs" != "" ]] ; then
+  echo "Build library for tvOS..."
+
+  args=""
+  for out_dir in $tv_out_dirs; do
+    args="$args ${out_dir}/lib/libssl.a"
+  done
+  lipo -create $args -output ${CURRENTPATH}/lib/libssl-tvOS.a
+
+  args=""
+  for out_dir in $tv_out_dirs; do
+    args="$args ${out_dir}/lib/libcrypto.a"
+  done
+  lipo -create $args -output ${CURRENTPATH}/lib/libcrypto-tvOS.a
+fi
 
 mkdir -p ${CURRENTPATH}/include
-cp -R ${CURRENTPATH}/bin/iPhoneSimulator${IOS_SDKVERSION}-x86_64.sdk/include/openssl ${CURRENTPATH}/include/
+for out_dir in $iphone_out_dirs $tv_out_dirs; do
+  cp -R $out_dir/include/openssl ${CURRENTPATH}/include/
+done
 
 echo "Done."
