@@ -49,12 +49,42 @@ spinner()
   done
   printf "    \b\b\b\b"
 }
+exec_task()
+{
+  if [[ "$VERBOSE" != 0 ]]; then
+    $1
+  else
+    $1 >> "${LOG}" 2>&1
+  fi
+}
+
+exec_spinner_task()
+{
+  (exec_task "$1") & spinner
+}
 
 CURRENTPATH=`pwd`
 ARCHS="i386 x86_64 armv7 armv7s arm64 tv_x86_64 tv_arm64"
 DEVELOPER=`xcode-select -print-path`
 IOS_MIN_SDK_VERSION="7.0"
 TVOS_MIN_SDK_VERSION="9.0"
+
+VERBOSE=0
+
+while true ; do
+  if [[ $# -lt 1 ]]; then
+    break
+  fi
+  case "$1" in
+    "verbose")
+      VERBOSE=1
+      shift
+    ;;
+    *)
+      break
+    ;;
+  esac
+done
 
 if [ ! -d "$DEVELOPER" ]; then
   echo "xcode path is not set correctly $DEVELOPER does not exist"
@@ -160,19 +190,18 @@ do
 
   echo "  Configure...\c"
   set +e
-  if [ "$1" == "verbose" ]; then
-    if [ "${ARCH}" == "x86_64" ]; then
-      ./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS}
-    else
-      ./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS}
-    fi
+
+  args=""
+  if [ "${ARCH}" == "x86_64" ]; then
+    args="${args} no-asm darwin64-x86_64-cc"
   else
-    if [ "${ARCH}" == "x86_64" ]; then
-      (./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
-    else
-      (./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
-    fi
+    args="${args} iphoneos-cross"
   fi
+  args="${args} \
+    --openssldir=${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk \
+    ${LOCAL_CONFIG_OPTIONS}"
+
+  exec_spinner_task "./Configure ${args}"
 
   if [ $? != 0 ]; then
     echo "Problem while configure - Please check ${LOG}"
@@ -189,17 +218,11 @@ do
 
   echo "  Make...\c"
 
-  if [ "$1" == "verbose" ]; then
-    if [[ ! -z $CONFIG_OPTIONS ]]; then
-      make depend
-    fi
-    make
-  else
-    if [[ ! -z $CONFIG_OPTIONS ]]; then
-      make depend >> "${LOG}" 2>&1
-    fi
-    (make >> "${LOG}" 2>&1) & spinner
+  if [[ ! -z $CONFIG_OPTIONS ]]; then
+    exec_task "make depend"
   fi
+  exec_spinner_task "make"
+
   echo "\n"
 
   if [ $? != 0 ]; then
@@ -208,14 +231,8 @@ do
   fi
 
   set -e
-  if [ "$1" == "verbose" ]; then
-    make install_sw
-    make clean
-  else
-    make install_sw >> "${LOG}" 2>&1
-    make clean >> "${LOG}" 2>&1
-  fi
-
+  exec_task "make install_sw"
+  exec_task "make clean"
   rm -rf "$src_work_dir"
 done
 
