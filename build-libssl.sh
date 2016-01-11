@@ -91,17 +91,11 @@ mkdir -p "${CURRENTPATH}/src"
 mkdir -p "${CURRENTPATH}/bin"
 mkdir -p "${CURRENTPATH}/lib"
 
-tar zxf openssl-${VERSION}.tar.gz -C "${CURRENTPATH}/src"
-cd "${CURRENTPATH}/src/openssl-${VERSION}"
-
 for ARCH in ${ARCHS}
 do
   if [[ "$ARCH" == tv* ]]; then
     SDKVERSION=$TVOS_SDKVERSION
     MIN_SDK_VERSION=$TVOS_MIN_SDK_VERSION
-    LC_ALL=C sed -i -- 's/define HAVE_FORK 1/define HAVE_FORK 0/' "./apps/speed.c"
-    LC_ALL=C sed -i -- 's/D\_REENTRANT\:iOS/D\_REENTRANT\:tvOS/' "./Configure"
-    chmod u+x ./Configure
   else
     SDKVERSION=$IOS_SDKVERSION
     MIN_SDK_VERSION=$IOS_MIN_SDK_VERSION
@@ -114,10 +108,8 @@ do
     PLATFORM="AppleTVSimulator"
   elif [ "${ARCH}" == "tv_arm64" ]; then
     ARCH="arm64"
-    sed -ie "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;!" "crypto/ui/ui_openssl.c"
     PLATFORM="AppleTVOS"
   else
-    sed -ie "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;!" "crypto/ui/ui_openssl.c"
     PLATFORM="iPhoneOS"
   fi
 
@@ -147,6 +139,25 @@ do
     export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH}"
   fi
 
+  echo "  Patch source code..."
+
+  src_work_dir="${CURRENTPATH}/src/${PLATFORM}-${ARCH}"
+  mkdir -p "$src_work_dir"
+  tar zxf "${CURRENTPATH}/openssl-${VERSION}.tar.gz" -C "$src_work_dir"
+  cd "${src_work_dir}/openssl-${VERSION}"
+
+  chmod u+x ./Configure
+  if [[ "${PLATFORM}" == "AppleTVSimulator" || "${PLATFORM}" == "AppleTVOS" ]]; then
+    LC_ALL=C sed -i -- 's/define HAVE_FORK 1/define HAVE_FORK 0/' "./apps/speed.c"
+    LC_ALL=C sed -i -- 's/D\_REENTRANT\:iOS/D\_REENTRANT\:tvOS/' "./Configure"
+
+    if [[ "${ARCH}" == "arm64" ]]; then
+      sed -ie "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;!" "crypto/ui/ui_openssl.c"
+    fi
+  elif [[ "$PLATFORM" == "iPhoneOS" ]]; then
+    sed -ie "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;!" "crypto/ui/ui_openssl.c"
+  fi
+
   echo "  Configure...\c"
   set +e
   if [ "$1" == "verbose" ]; then
@@ -168,7 +179,7 @@ do
     exit 1
   fi
 
-  echo "\n  Patch..."
+  echo "\n  Patch Makefile..."
   # add -isysroot to CC=
   if [[ "${PLATFORM}" == "AppleTVSimulator" || "${PLATFORM}" == "AppleTVOS" ]]; then
     sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -mtvos-version-min=${TVOS_MIN_SDK_VERSION} !" "Makefile"
@@ -204,6 +215,8 @@ do
     make install_sw >> "${LOG}" 2>&1
     make clean >> "${LOG}" 2>&1
   fi
+
+  rm -rf "$src_work_dir"
 done
 
 echo "Build library for iOS..."
@@ -234,7 +247,5 @@ lipo -create \
 
 mkdir -p ${CURRENTPATH}/include
 cp -R ${CURRENTPATH}/bin/iPhoneSimulator${IOS_SDKVERSION}-x86_64.sdk/include/openssl ${CURRENTPATH}/include/
-echo "Building done."
-echo "Cleaning up..."
-rm -rf ${CURRENTPATH}/src/openssl-${VERSION}
+
 echo "Done."
