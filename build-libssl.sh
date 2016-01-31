@@ -21,7 +21,7 @@
 ###########################################################################
 #  Change values here                                                     #
 #                                                                         #
-VERSION="1.0.2e"                                                          #
+VERSION="1.0.2f"                                                          #
 IOS_SDKVERSION=`xcrun -sdk iphoneos --show-sdk-version`                   #
 TVOS_SDKVERSION=`xcrun -sdk appletvos --show-sdk-version`                 #
 CONFIG_OPTIONS=""                                                         #
