@@ -16,7 +16,7 @@ This repository contains a iOS 9.1 XCode Project with usese the OpenSSL Libaries
 
 For iOS < 7.0 you must use Xcode < 7 and an older version of the build script.
 
-If you have problems building for arm64 please uninstall MacPorts (see #28).
+If you have problems building for arm64 please uninstall MacPorts (see [#28](https://github.com/x2on/OpenSSL-for-iPhone/issues/28)).
 
 ## Original tutorials for this project:
 * <http://www.x2on.de/2010/02/01/tutorial-iphone-app-with-compiled-openssl-library/>
