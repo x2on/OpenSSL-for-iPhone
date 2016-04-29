@@ -1,7 +1,7 @@
 osx_image: xcode7.1
 language: objective-c
 before_install: 
- - ./build-libssl.sh verbose
+ - ./build-libssl.sh --no-spinner
  - xcrun -sdk iphoneos lipo -info ./lib/*.a
  - ./create-openssl-framework.sh
  - xcrun -sdk iphoneos lipo -info openssl.framework/openssl
