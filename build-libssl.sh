@@ -80,11 +80,13 @@ case $CURRENTPATH in
 esac
 
 set -e
-if [ ! -e openssl-${VERSION}.tar.gz ]; then
-  echo "Downloading openssl-${VERSION}.tar.gz"
-  curl ${CURL_OPTIONS} -O https://www.openssl.org/source/openssl-${VERSION}.tar.gz
+OPENSSL_ARCHIVE_BASE_NAME=OpenSSL_${VERSION//./_}
+OPENSSL_ARCHIVE_FILE_NAME=${OPENSSL_ARCHIVE_BASE_NAME}.tar.gz
+if [ ! -e ${OPENSSL_ARCHIVE_FILE_NAME} ]; then
+  echo "Downloading ${OPENSSL_ARCHIVE_FILE_NAME}"
+  curl ${CURL_OPTIONS} -L -O https://github.com/openssl/openssl/archive/${OPENSSL_ARCHIVE_FILE_NAME}
 else
-  echo "Using openssl-${VERSION}.tar.gz"
+  echo "Using ${OPENSSL_ARCHIVE_FILE_NAME}"
 fi
 
 mkdir -p "${CURRENTPATH}/src"
@@ -143,8 +145,8 @@ do
 
   src_work_dir="${CURRENTPATH}/src/${PLATFORM}-${ARCH}"
   mkdir -p "$src_work_dir"
-  tar zxf "${CURRENTPATH}/openssl-${VERSION}.tar.gz" -C "$src_work_dir"
-  cd "${src_work_dir}/openssl-${VERSION}"
+  tar zxf "${CURRENTPATH}/${OPENSSL_ARCHIVE_FILE_NAME}" -C "$src_work_dir"
+  cd "${src_work_dir}/openssl-${OPENSSL_ARCHIVE_BASE_NAME}"
 
   chmod u+x ./Configure
   if [[ "${PLATFORM}" == "AppleTVSimulator" || "${PLATFORM}" == "AppleTVOS" ]]; then
