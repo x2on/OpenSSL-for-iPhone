@@ -29,10 +29,10 @@ class ViewController: UIViewController {
 
         self.title = "OpenSSL-for-iOS"
         let infoButton = UIButton(type: .InfoLight)
-        infoButton.addTarget(self, action: "showInfo", forControlEvents: .TouchDown)
+        infoButton.addTarget(self, action: #selector(ViewController.showInfo), forControlEvents: .TouchDown)
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: infoButton)
         
-        self.textField.addTarget(self, action: "textFieldDidChange", forControlEvents: .EditingChanged)
+        self.textField.addTarget(self, action: #selector(ViewController.textFieldDidChange), forControlEvents: .EditingChanged)
         self.calculateHash()
     }
     
