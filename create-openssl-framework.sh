@@ -26,3 +26,11 @@ cp -r include/$FWNAME/* $FWNAME.framework/Headers/
 DIR="$(cd "$(dirname "$0")" && pwd)"
 cp $DIR/"OpenSSL-for-iOS/OpenSSL-for-iOS-Info.plist" $FWNAME.framework/Info.plist
 echo "Created $FWNAME.framework"
+
+check_bitcode=`otool -arch arm64 -l $FWNAME.framework/$FWNAME | grep __bitcode`
+if [ -z "$check_bitcode" ]
+then
+  echo "INFO: $FWNAME.framework doesn't contains Bitcode"
+else
+  echo "INFO: $FWNAME.framework contains Bitcode"
+fi
