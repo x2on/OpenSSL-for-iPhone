@@ -120,8 +120,9 @@ case $CURRENTPATH in
 esac
 
 # -e  Abort script at first error, when a command exits with non-zero status (except in until or while loops, if-tests, list constructs)
+# -u  Attempt to use undefined variable outputs error message, and forces an exit
 # -o pipefail  Causes a pipeline to return the exit status of the last command in the pipe that returned a non-zero return value
-set -eo pipefail
+set -euo pipefail
 
 # Download OpenSSL when not present
 OPENSSL_ARCHIVE_BASE_NAME=OpenSSL_${VERSION//./_}
@@ -146,14 +147,14 @@ LIBCRYPTO_TVOS=()
 
 for ARCH in ${ARCHS}
 do
+  # Determine relevant SDK version
   if [[ "$ARCH" == tv* ]]; then
-    SDKVERSION=$TVOS_SDKVERSION
-    MIN_SDK_VERSION=$TVOS_MIN_SDK_VERSION
+    SDKVERSION=${TVOS_SDKVERSION}
   else
-    SDKVERSION=$IOS_SDKVERSION
-    MIN_SDK_VERSION=$IOS_MIN_SDK_VERSION
+    SDKVERSION=${IOS_SDKVERSION}
   fi
 
+  # Determine platform, override arch for tvOS builds
   if [[ "${ARCH}" == "i386" || "${ARCH}" == "x86_64" ]]; then
     PLATFORM="iPhoneSimulator"
   elif [ "${ARCH}" == "tv_x86_64" ]; then
@@ -166,10 +167,11 @@ do
     PLATFORM="iPhoneOS"
   fi
 
-  export $PLATFORM
+  # Set env vars for Configure
   export CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
   export CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
   export BUILD_TOOLS="${DEVELOPER}"
+  export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH}"
 
   # Prepare target dir
   TARGETDIR="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk"
@@ -179,67 +181,63 @@ do
   echo "Building openssl-${VERSION} for ${PLATFORM} ${SDKVERSION} ${ARCH}..."
   echo "  Logfile: ${LOG}"
 
+  # Prepare source dir
+  SOURCEDIR="${CURRENTPATH}/src/${PLATFORM}-${ARCH}"
+  mkdir -p "${SOURCEDIR}"
+  tar zxf "${CURRENTPATH}/${OPENSSL_ARCHIVE_FILE_NAME}" -C "${SOURCEDIR}"
+  cd "${SOURCEDIR}/openssl-${OPENSSL_ARCHIVE_BASE_NAME}"
+  chmod u+x ./Configure
 
+  # Add optional enable-ec_nistp_64_gcc_128 configure option for 64 bit builds
   LOCAL_CONFIG_OPTIONS="${CONFIG_OPTIONS}"
   if [ "${ENABLE_EC_NISTP_64_GCC_128}" == "true" ]; then
-    case "$ARCH" in
+    case "${ARCH}" in
       *64*)
         LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} enable-ec_nistp_64_gcc_128"
       ;;
     esac
   fi
 
-  if [[ $SDKVERSION == 9.* || $SDKVERSION == [0-9][0-9].* ]]; then
-    export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH} -fembed-bitcode"
-  else
-    export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH}"
+  # Embed bitcode for SDK >= 9
+  if [[ "${SDKVERSION}" == 9.* || "${SDKVERSION}" == [0-9][0-9].* ]]; then
+    LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} -fembed-bitcode"
   fi
 
-  echo "  Patch source code..."
-
-  src_work_dir="${CURRENTPATH}/src/${PLATFORM}-${ARCH}"
-  mkdir -p "$src_work_dir"
-  tar zxf "${CURRENTPATH}/${OPENSSL_ARCHIVE_FILE_NAME}" -C "$src_work_dir"
-  cd "${src_work_dir}/openssl-${OPENSSL_ARCHIVE_BASE_NAME}"
-
-  chmod u+x ./Configure
-  if [[ "${PLATFORM}" == "AppleTVSimulator" || "${PLATFORM}" == "AppleTVOS" ]]; then
-    LC_ALL=C sed -i -- 's/define HAVE_FORK 1/define HAVE_FORK 0/' "./apps/speed.c"
+  # Add platform specific config options
+  if [[ "${PLATFORM}" == AppleTV* ]]; then
+    LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} -DHAVE_FORK=0 -mtvos-version-min=${TVOS_MIN_SDK_VERSION}"
+    echo "  Patching Configure..."
     LC_ALL=C sed -i -- 's/D\_REENTRANT\:iOS/D\_REENTRANT\:tvOS/' "./Configure"
-
-    if [[ "${ARCH}" == "arm64" ]]; then
-      sed -ie "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;!" "crypto/ui/ui_openssl.c"
+  else
+    LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} -miphoneos-version-min=${IOS_MIN_SDK_VERSION}"
     fi
-  elif [[ "$PLATFORM" == "iPhoneOS" ]]; then
-    sed -ie "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;!" "crypto/ui/ui_openssl.c"
+
+  # Add --openssldir option
+  LOCAL_CONFIG_OPTIONS="--openssldir=${TARGETDIR} ${LOCAL_CONFIG_OPTIONS}"
+
+  # Determine configure target
+  if [ "${ARCH}" == "x86_64" ]; then
+    LOCAL_CONFIG_OPTIONS="darwin64-x86_64-cc no-asm ${LOCAL_CONFIG_OPTIONS}"
+  else
+    LOCAL_CONFIG_OPTIONS="iphoneos-cross ${LOCAL_CONFIG_OPTIONS}"
   fi
 
   # Run Configure
   echo "  Configure...\c"
   set +e
   if [ "${LOG_VERBOSE}" == "verbose" ]; then
-    if [ "${ARCH}" == "x86_64" ]; then
-      ./Configure no-asm darwin64-x86_64-cc --openssldir="${TARGETDIR}" ${LOCAL_CONFIG_OPTIONS} | tee "${LOG}"
-    else
-      ./Configure iphoneos-cross --openssldir="${TARGETDIR}" ${LOCAL_CONFIG_OPTIONS} | tee "${LOG}"
-    fi
+    ./Configure ${LOCAL_CONFIG_OPTIONS} | tee "${LOG}"
   else
-    if [ "${ARCH}" == "x86_64" ]; then
-      (./Configure no-asm darwin64-x86_64-cc --openssldir="${TARGETDIR}" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
-    else
-      (./Configure iphoneos-cross --openssldir="${TARGETDIR}" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
-    fi
+    (./Configure ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
   fi
   
   # Check for error status
   check_status $? "Configure"
 
-  echo "  Patch Makefile..."
-  # add -isysroot to CC=
-  if [[ "${PLATFORM}" == "AppleTVSimulator" || "${PLATFORM}" == "AppleTVOS" ]]; then
-    sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -mtvos-version-min=${TVOS_MIN_SDK_VERSION} !" "Makefile"
-  else
-    sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -miphoneos-version-min=${MIN_SDK_VERSION} !" "Makefile"
+  # Only required for Darwin64 builds (-isysroot is automatically added by iphoneos-cross target)
+  if [ "${ARCH}" == "x86_64" ]; then
+    echo "  Patching Makefile..."
+    sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} !" "Makefile"
   fi
 
   # Run make depend if relevant
@@ -275,7 +273,7 @@ do
   fi
 
   # Remove source dir
-  rm -rf "$src_work_dir"
+  rm -r "${SOURCEDIR}"
 
   # Add references to library files to relevant arrays
   if [[ "${PLATFORM}" == AppleTV* ]]; then
