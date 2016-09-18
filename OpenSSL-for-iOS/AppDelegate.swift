@@ -15,15 +15,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
-        self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
+        self.window = UIWindow(frame: UIScreen.main.bounds)
         
         #if os(tvOS)
             self.window?.rootViewController = ViewController(nibName: "ViewController~tv", bundle:  nil)
         #else
             let navigationController = UINavigationController(rootViewController: ViewController())
-            navigationController.navigationBar.translucent = false
+            navigationController.navigationBar.isTranslucent = false
             self.window?.rootViewController = navigationController
         #endif
         
