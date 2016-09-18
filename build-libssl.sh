@@ -18,31 +18,38 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-###########################################################################
-#  Change values here                                                     #
-#                                                                         #
-VERSION="1.0.2h"                                                          #
-IOS_SDKVERSION=`xcrun -sdk iphoneos --show-sdk-version`                   #
-TVOS_SDKVERSION=`xcrun -sdk appletvos --show-sdk-version`                 #
-CONFIG_OPTIONS=""                                                         #
-CURL_OPTIONS=""                                                           #
 
-# ARCHS is a space-separated list of architectures to build
-# Options: x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64
-# Please note: The framework will contain include files from the architecture listed first
-ARCHS="x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
+# -u  Attempt to use undefined variable outputs error message, and forces an exit
+set -u
 
-# Set to false to disable make with multiple parallel jobs
-PARALLEL="true"
+DEFAULTBRANCH="1.0.2" # Default branch in case no version or branch is specified
+IOS_MIN_SDK_VERSION="7.0" # Minimum iOS SDK version to build for
+TVOS_MIN_SDK_VERSION="9.0" # Minimum tvOS SDK version to build for
 
-# To set "enable-ec_nistp_64_gcc_128" configuration for x64 archs set next variable to "true"
-ENABLE_EC_NISTP_64_GCC_128=""                                             #
-#                                                                         #
-###########################################################################
-#                                                                         #
-# Don't change anything under this line!                                  #
-#                                                                         #
-###########################################################################
+# Init optional env variables
+CURL_OPTIONS="${CURL_OPTIONS:-}"
+CONFIG_OPTIONS="${CONFIG_OPTIONS:-}"
+
+echo_help()
+{
+  echo "Usage: $0 [options...]"
+  echo "     --archs=\"ARCH ARCH ...\"       Space-separated list of architectures to build"
+  echo "                                     Options: x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
+  echo "                                     Note: The framework will contain include files from the architecture listed first"
+  echo "     --ec-nistp-64-gcc-128         Enable config option enable-ec_nistp_64_gcc_128 for 64 bit builds"
+  echo " -h, --help                        Print help (this message)"
+  echo "     --ios-sdk=SDKVERSION          Override iOS SDK version"
+  echo "     --noparallel                  Disable running make with parallel jobs (make -j)"
+  echo "     --tvos-sdk=SDKVERSION         Override tvOS SDK version"
+  echo " -v, --verbose                     Enable verbose logging"
+  echo "     --verbose-on-error            Dump last 500 lines from log file if an error occurs (for Travis builds)"
+  echo "     --version=VERSION             OpenSSL version to build (defaults to latest version in branch ${DEFAULTBRANCH}"
+  echo
+  echo "For custom configure options, set variable CONFIG_OPTIONS"
+  echo "For custom cURL options, set variable CURL_OPTIONS"
+  echo "  Example: CURL_OPTIONS=\"--proxy 192.168.1.1:8080\" ./build-libssl.sh"
+}
+
 spinner()
 {
   local pid=$!
@@ -84,11 +91,100 @@ check_status()
   fi
 }
 
-CURRENTPATH=`pwd`
-DEVELOPER=`xcode-select -print-path`
-IOS_MIN_SDK_VERSION="7.0"
-TVOS_MIN_SDK_VERSION="9.0"
-LOG_VERBOSE="$1" # Options: verbose (full output) or verbose-on-error (echo last 500 logged lines when error occurs)
+# Init optional command line vars
+ARCHS=""
+CONFIG_ENABLE_EC_NISTP_64_GCC_128=""
+IOS_SDKVERSION=""
+PARALLEL=""
+LOG_VERBOSE=""
+TVOS_SDKVERSION=""
+VERSION=""
+
+# Process command line arguments
+for i in "$@"
+do
+case $i in
+  --archs=*)
+    ARCHS="${i#*=}"
+    shift
+    ;;
+  --ec-nistp-64-gcc-128)
+    CONFIG_ENABLE_EC_NISTP_64_GCC_128="true"
+    ;;
+  -h|--help)
+    echo_help
+    exit
+    ;;
+  --ios-sdk=*)
+    IOS_SDKVERSION="${i#*=}"
+    shift
+    ;;
+  --noparallel)
+    PARALLEL="false"
+    shift
+    ;;
+  --tvos-sdk=*)
+    TVOS_SDKVERSION="${i#*=}"
+    shift
+    ;;
+  -v|--verbose)
+    LOG_VERBOSE="verbose"
+    ;;
+  --verbose-on-error)
+    LOG_VERBOSE="verbose-on-error"
+    ;;
+  --version=*)
+    VERSION="${i#*=}"
+    shift
+    ;;
+  *)
+    echo "Unknown argument: ${i}"
+    ;;
+esac
+done
+
+# Preprocess/validate OpenSSL version
+if [ -n "${VERSION}" ]; then
+  # Verify version number format. Expected: dot notation
+  if [[ ! "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+[a-z]*$ ]]; then
+    echo "Unknown version number format. Examples: 1.0.2, 1.0.2h"
+    exit 1
+  fi
+
+# Default OpenSSL version
+else
+  # Default branch or user provided (in latter case verify number format)
+  # For future use (when adding 1.1.0), so the user can select a default branch
+  BRANCH="${DEFAULTBRANCH}"
+
+  # Determine latest version of selected branch
+  echo "Checking latest version of ${BRANCH} branch on GitHub..."
+  GITHUB_VERSION=$(curl ${CURL_OPTIONS} -Ls https://github.com/openssl/openssl/releases.atom | grep "<title>OpenSSL_${BRANCH//./_}" | head -1 | sed -E "s|^.*title>OpenSSL_(${BRANCH//./_}[a-z]*)</title.*$|\1|g")
+
+  # Verify result
+  if [ -z "${GITHUB_VERSION}" ]; then
+    echo "Could not determine latest version, please check https://github.com/openssl/openssl/releases and use --version option"
+    exit 1
+  fi
+
+  VERSION="${GITHUB_VERSION//_/.}"
+fi
+
+# Set GITHUB_VERSION (version with underscores instead of dots)
+GITHUB_VERSION="${VERSION//./_}"
+
+# Determine SDK versions
+if [ ! -n "${IOS_SDKVERSION}" ]; then
+  IOS_SDKVERSION=$(xcrun -sdk iphoneos --show-sdk-version)
+fi
+if [ ! -n "${TVOS_SDKVERSION}" ]; then
+  TVOS_SDKVERSION=$(xcrun -sdk appletvos --show-sdk-version)
+fi
+
+# Set default for ARCHS if not specified
+if [ ! -n "${ARCHS}" ]; then
+  ARCHS="x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
+fi
 
 # Determine number of cores for (parallel) build
 BUILD_THREADS=1
@@ -96,47 +192,84 @@ if [ "${PARALLEL}" != "false" ]; then
   BUILD_THREADS=$(sysctl hw.ncpu | awk '{print $2}')
 fi
 
-if [ ! -d "$DEVELOPER" ]; then
-  echo "xcode path is not set correctly $DEVELOPER does not exist"
+# Write files relative to script location and validate directory
+CURRENTPATH=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
+case "${CURRENTPATH}" in
+  *\ * )
+    echo "Your path contains whitespaces, which is not supported by 'make install'."
+    exit 1
+  ;;
+esac
+if [[ "${CURRENTPATH}" == "/" || "${CURRENTPATH}" == "/usr" || "${CURRENTPATH}" == "/usr/local" ]]; then
+  echo "This script should not be executed from directory ${CURRENTPATH}"
+  exit 1
+fi
+cd "${CURRENTPATH}"
+
+# Validate Xcode Developer path
+DEVELOPER=$(xcode-select -print-path)
+if [ ! -d "${DEVELOPER}" ]; then
+  echo "Xcode path is not set correctly ${DEVELOPER} does not exist"
   echo "run"
-  echo "sudo xcode-select -switch <xcode path>"
+  echo "sudo xcode-select -switch <Xcode path>"
   echo "for default installation:"
   echo "sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer"
   exit 1
 fi
 
-case $DEVELOPER in
+case "${DEVELOPER}" in
   *\ * )
     echo "Your Xcode path contains whitespaces, which is not supported."
     exit 1
   ;;
 esac
 
-case $CURRENTPATH in
-  *\ * )
-    echo "Your path contains whitespaces, which is not supported by 'make install'."
-    exit 1
-  ;;
-esac
+# Show build options
+echo
+echo "Build options"
+echo "  OpenSSL version: ${VERSION}"
+echo "  Architectures: ${ARCHS}"
+echo "  iOS SDK: ${IOS_SDKVERSION}"
+echo "  tvOS SDK: ${TVOS_SDKVERSION}"
+echo "  Number of make threads: ${BUILD_THREADS}"
+if [ -n "${CONFIG_OPTIONS}" ]; then
+  echo "  Configure options: ${CONFIG_OPTIONS}"
+fi
+echo "  Script directory and build location: ${CURRENTPATH}"
+echo
 
 # -e  Abort script at first error, when a command exits with non-zero status (except in until or while loops, if-tests, list constructs)
-# -u  Attempt to use undefined variable outputs error message, and forces an exit
 # -o pipefail  Causes a pipeline to return the exit status of the last command in the pipe that returned a non-zero return value
-set -euo pipefail
+set -eo pipefail
 
 # Download OpenSSL when not present
-OPENSSL_ARCHIVE_BASE_NAME=OpenSSL_${VERSION//./_}
+OPENSSL_ARCHIVE_BASE_NAME=OpenSSL_${GITHUB_VERSION}
 OPENSSL_ARCHIVE_FILE_NAME=${OPENSSL_ARCHIVE_BASE_NAME}.tar.gz
 if [ ! -e ${OPENSSL_ARCHIVE_FILE_NAME} ]; then
-  echo "Downloading ${OPENSSL_ARCHIVE_FILE_NAME}"
+  echo "Downloading ${OPENSSL_ARCHIVE_FILE_NAME}..."
   curl ${CURL_OPTIONS} -L -O https://github.com/openssl/openssl/archive/${OPENSSL_ARCHIVE_FILE_NAME}
 else
   echo "Using ${OPENSSL_ARCHIVE_FILE_NAME}"
 fi
 
-mkdir -p "${CURRENTPATH}/src"
+# Clean up target directories if present
+if [ -d "${CURRENTPATH}/bin" ]; then
+  rm -r "${CURRENTPATH}/bin"
+fi
+if [ -d "${CURRENTPATH}/include/openssl" ]; then
+  rm -r "${CURRENTPATH}/include/openssl"
+fi
+if [ -d "${CURRENTPATH}/lib" ]; then
+  rm -r "${CURRENTPATH}/lib"
+fi
+if [ -d "${CURRENTPATH}/src" ]; then
+  rm -r "${CURRENTPATH}/src"
+fi
+
+# (Re-)create target directories
 mkdir -p "${CURRENTPATH}/bin"
 mkdir -p "${CURRENTPATH}/lib"
+mkdir -p "${CURRENTPATH}/src"
 
 # Init vars for library references
 INCLUDE_DIR=""
@@ -190,7 +323,7 @@ do
 
   # Add optional enable-ec_nistp_64_gcc_128 configure option for 64 bit builds
   LOCAL_CONFIG_OPTIONS="${CONFIG_OPTIONS}"
-  if [ "${ENABLE_EC_NISTP_64_GCC_128}" == "true" ]; then
+  if [ "${CONFIG_ENABLE_EC_NISTP_64_GCC_128}" == "true" ]; then
     case "${ARCH}" in
       *64*)
         LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} enable-ec_nistp_64_gcc_128"
