@@ -36,6 +36,8 @@ echo_help()
   echo "     --archs=\"ARCH ARCH ...\"       Space-separated list of architectures to build"
   echo "                                     Options: x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
   echo "                                     Note: The framework will contain include files from the architecture listed first"
+  echo "     --branch=BRANCH               Select OpenSSL branch to build. The script will determine and download the latest release for that branch"
+  echo "                                     Note: This script does not yet work with OpenSSL 1.1.0"
   echo "     --cleanup                     Clean up build directories (bin, include/openssl, lib, src) before starting build"
   echo "     --ec-nistp-64-gcc-128         Enable config option enable-ec_nistp_64_gcc_128 for 64 bit builds"
   echo " -h, --help                        Print help (this message)"
@@ -95,6 +97,7 @@ check_status()
 
 # Init optional command line vars
 ARCHS=""
+BRANCH=""
 CLEANUP=""
 CONFIG_ENABLE_EC_NISTP_64_GCC_128=""
 IOS_SDKVERSION=""
@@ -109,6 +112,10 @@ do
 case $i in
   --archs=*)
     ARCHS="${i#*=}"
+    shift
+    ;;
+  --branch=*)
+    BRANCH="${i#*=}"
     shift
     ;;
   --cleanup)
@@ -149,15 +156,50 @@ case $i in
 esac
 done
 
-# Preprocess/validate OpenSSL version
-if [ -n "${VERSION}" ]; then
+# Don't mix version and branch
+if [[ -n "${VERSION}" && -n "${BRANCH}" ]]; then
+  echo "Either select a branch (the script will determine and build the latest version) or select a specific version, but not both."
+  exit 1
+
+# Specific version: Verify version number format. Expected: dot notation
+elif [[ -n "${VERSION}" && ! "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+[a-z]*$ ]]; then
+  echo "Unknown version number format. Examples: 1.0.2, 1.0.2h"
+  exit 1
+
+# Specific branch
+elif [ -n "${BRANCH}" ]; then
   # Verify version number format. Expected: dot notation
-  if [[ ! "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+[a-z]*$ ]]; then
-    echo "Unknown version number format. Examples: 1.0.2, 1.0.2h"
+  if [[ ! "${BRANCH}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo "Unknown branch version number format. Examples: 1.0.2, 1.0.1"
     exit 1
+    
+  # Valid version number, determine latest version
+  else
+    echo "Checking latest version of ${BRANCH} branch on GitHub..."
+    # Request all git tags for the openssl repostory, get all tags that match the current branch version (with an optional alphabetic suffix), remove everything except the version number, sort the list and get the last item
+    GITHUB_VERSION=$(curl -Ls https://api.github.com/repos/openssl/openssl/git/refs/tags | grep -Eo "\"ref\": \"refs/tags/OpenSSL_${BRANCH//./_}[a-z]*\"" | sed -E 's|^.*"refs/tags/OpenSSL_([^"]+)".*$|\1|g' | sort | tail -1)
+
+    # Verify result
+    if [ -z "${GITHUB_VERSION}" ]; then
+      echo "Could not determine latest version, please check https://github.com/openssl/openssl/releases and use --version option"
+      exit 1
+    fi
+    
+    VERSION="${GITHUB_VERSION//_/.}"
+    
+    # Check whether download exists
+    # -I = HEAD, -L follow Location header, -f fail silently for 4xx errors and return status 22, -s silent
+    curl ${CURL_OPTIONS} -ILfs "https://github.com/openssl/openssl/archive/OpenSSL_${GITHUB_VERSION}.tar.gz" > /dev/null
+    
+    # Check for success status
+    if [ $? -ne 0 ]; then
+      echo "Script determined latest version ${VERSION}, but the download archive does not seem to be available."
+      echo "Please check https://github.com/openssl/openssl/releases and use --version option"
+      exit 1
+    fi
   fi
 
-# Default OpenSSL version
+# Script default
 else
   VERSION="${DEFAULTVERSION}"
 fi
