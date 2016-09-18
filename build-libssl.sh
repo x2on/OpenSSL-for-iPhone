@@ -32,6 +32,9 @@ CURL_OPTIONS=""                                                           #
 # Please note: The framework will contain include files from the architecture listed first
 ARCHS="x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
 
+# Set to false to disable make with multiple parallel jobs
+PARALLEL="true"
+
 # To set "enable-ec_nistp_64_gcc_128" configuration for x64 archs set next variable to "true"
 ENABLE_EC_NISTP_64_GCC_128=""                                             #
 #                                                                         #
@@ -86,6 +89,12 @@ DEVELOPER=`xcode-select -print-path`
 IOS_MIN_SDK_VERSION="7.0"
 TVOS_MIN_SDK_VERSION="9.0"
 LOG_VERBOSE="$1" # Options: verbose (full output) or verbose-on-error (echo last 500 logged lines when error occurs)
+
+# Determine number of cores for (parallel) build
+BUILD_THREADS=1
+if [ "${PARALLEL}" != "false" ]; then
+  BUILD_THREADS=$(sysctl hw.ncpu | awk '{print $2}')
+fi
 
 if [ ! -d "$DEVELOPER" ]; then
   echo "xcode path is not set correctly $DEVELOPER does not exist"
@@ -249,9 +258,9 @@ do
   # Run make
   echo "  Make...\c"
   if [ "${LOG_VERBOSE}" == "verbose" ]; then
-    make | tee -a "${LOG}"
+    make -j "${BUILD_THREADS}" | tee -a "${LOG}"
   else
-    (make >> "${LOG}" 2>&1) & spinner
+    (make -j "${BUILD_THREADS}" >> "${LOG}" 2>&1) & spinner
   fi
 
   # Check for error status
