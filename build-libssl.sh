@@ -27,6 +27,11 @@ TVOS_SDKVERSION=`xcrun -sdk appletvos --show-sdk-version`                 #
 CONFIG_OPTIONS=""                                                         #
 CURL_OPTIONS=""                                                           #
 
+# ARCHS is a space-separated list of architectures to build
+# Options: x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64
+# Please note: The framework will contain include files from the architecture listed first
+ARCHS="x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
+
 # To set "enable-ec_nistp_64_gcc_128" configuration for x64 archs set next variable to "true"
 ENABLE_EC_NISTP_64_GCC_128=""                                             #
 #                                                                         #
@@ -77,7 +82,6 @@ check_status()
 }
 
 CURRENTPATH=`pwd`
-ARCHS="x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
 DEVELOPER=`xcode-select -print-path`
 IOS_MIN_SDK_VERSION="7.0"
 TVOS_MIN_SDK_VERSION="9.0"
