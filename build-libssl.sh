@@ -42,12 +42,38 @@ spinner()
   local spinstr='|/-\'
   while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
     local temp=${spinstr#?}
-    printf " [%c]  " "$spinstr"
+    printf " [%c]" "$spinstr"
     local spinstr=$temp${spinstr%"$temp"}
     sleep $delay
-    printf "\b\b\b\b\b\b"
+    printf "\b\b\b\b"
   done
-  printf "    \b\b\b\b"
+  printf "    \b\b"
+
+  wait $pid
+  return $?
+}
+
+# Check for error status
+check_status()
+{
+  local STATUS=$1
+  local COMMAND=$2
+
+  echo "\n"
+  if [ "${STATUS}" != 0 ]; then
+    if [[ "${LOG_VERBOSE}" != "verbose"* ]]; then
+      echo "Problem during ${COMMAND} - Please check ${LOG}"
+    fi
+
+    # Dump last 500 lines from log file for verbose-on-error
+    if [ "${LOG_VERBOSE}" == "verbose-on-error" ]; then
+      echo "Problem during ${COMMAND} - Dumping last 500 lines from log file"
+      echo
+      tail -n 500 "${LOG}"
+    fi
+
+    exit 1
+  fi
 }
 
 CURRENTPATH=`pwd`
@@ -55,6 +81,7 @@ ARCHS="i386 x86_64 armv7 armv7s arm64 tv_x86_64 tv_arm64"
 DEVELOPER=`xcode-select -print-path`
 IOS_MIN_SDK_VERSION="7.0"
 TVOS_MIN_SDK_VERSION="9.0"
+LOG_VERBOSE="$1" # Options: verbose (full output) or verbose-on-error (echo last 500 logged lines when error occurs)
 
 if [ ! -d "$DEVELOPER" ]; then
   echo "xcode path is not set correctly $DEVELOPER does not exist"
@@ -79,7 +106,11 @@ case $CURRENTPATH in
   ;;
 esac
 
-set -e
+# -e  Abort script at first error, when a command exits with non-zero status (except in until or while loops, if-tests, list constructs)
+# -o pipefail  Causes a pipeline to return the exit status of the last command in the pipe that returned a non-zero return value
+set -eo pipefail
+
+# Download OpenSSL when not present
 OPENSSL_ARCHIVE_BASE_NAME=OpenSSL_${VERSION//./_}
 OPENSSL_ARCHIVE_FILE_NAME=${OPENSSL_ARCHIVE_BASE_NAME}.tar.gz
 if [ ! -e ${OPENSSL_ARCHIVE_FILE_NAME} ]; then
@@ -160,13 +191,14 @@ do
     sed -ie "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;!" "crypto/ui/ui_openssl.c"
   fi
 
+  # Run Configure
   echo "  Configure...\c"
   set +e
-  if [ "$1" == "verbose" ]; then
+  if [ "${LOG_VERBOSE}" == "verbose" ]; then
     if [ "${ARCH}" == "x86_64" ]; then
-      ./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS}
+      ./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} | tee "${LOG}"
     else
-      ./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS}
+      ./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} | tee "${LOG}"
     fi
   else
     if [ "${ARCH}" == "x86_64" ]; then
@@ -175,13 +207,11 @@ do
       (./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
     fi
   fi
+  
+  # Check for error status
+  check_status $? "Configure"
 
-  if [ $? != 0 ]; then
-    echo "Problem while configure - Please check ${LOG}"
-    exit 1
-  fi
-
-  echo "\n  Patch Makefile..."
+  echo "  Patch Makefile..."
   # add -isysroot to CC=
   if [[ "${PLATFORM}" == "AppleTVSimulator" || "${PLATFORM}" == "AppleTVOS" ]]; then
     sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -mtvos-version-min=${TVOS_MIN_SDK_VERSION} !" "Makefile"
@@ -189,35 +219,39 @@ do
     sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -miphoneos-version-min=${MIN_SDK_VERSION} !" "Makefile"
   fi
 
-  echo "  Make...\c"
+  # Run make depend if relevant
+  if [[ ! -z "${CONFIG_OPTIONS}" ]]; then
+    echo "  Make depend...\c"
+    if [ "${LOG_VERBOSE}" == "verbose" ]; then
+      make depend | tee -a "${LOG}"
+    else
+      (make depend >> "${LOG}" 2>&1) & spinner
+    fi
 
-  if [ "$1" == "verbose" ]; then
-    if [[ ! -z $CONFIG_OPTIONS ]]; then
-      make depend
-    fi
-    make
+    # Check for error status
+    check_status $? "make depend"
+  fi
+
+  # Run make
+  echo "  Make...\c"
+  if [ "${LOG_VERBOSE}" == "verbose" ]; then
+    make | tee -a "${LOG}"
   else
-    if [[ ! -z $CONFIG_OPTIONS ]]; then
-      make depend >> "${LOG}" 2>&1
-    fi
     (make >> "${LOG}" 2>&1) & spinner
   fi
-  echo "\n"
 
-  if [ $? != 0 ]; then
-    echo "Problem while make - Please check ${LOG}"
-    exit 1
-  fi
+  # Check for error status
+  check_status $? "make"
 
+  # Run make install
   set -e
-  if [ "$1" == "verbose" ]; then
-    make install_sw
-    make clean
+  if [ "${LOG_VERBOSE}" == "verbose" ]; then
+    make install_sw | tee -a "${LOG}"
   else
     make install_sw >> "${LOG}" 2>&1
-    make clean >> "${LOG}" 2>&1
   fi
 
+  # Remove source dir
   rm -rf "$src_work_dir"
 done
 
