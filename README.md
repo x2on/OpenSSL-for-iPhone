@@ -9,6 +9,11 @@ You must build the OpenSSL-Libraries before running the sample with:
 ./build-libssl.sh
 ```
 
+For all options see the help
+```bash
+./build-libssl.sh --help
+```
+
 This repository contains an iOS 10.0 Xcode Project which uses the OpenSSL Libraries. The examples uses the MD5 or SHA256-algorithm to calculate an md5 or sha256 hash from an UITextfield.
 
 ## System support
@@ -23,7 +28,7 @@ If you have problems building for arm64 please uninstall MacPorts (see [#28](htt
 * <http://www.x2on.de/2010/07/13/tutorial-iphone-app-with-compiled-openssl-1-0-0a-library/>
 
 ## Changelog
-* 2016-09-18: Xcode 8 support, iOS 10.0
+* 2016-09-18: Xcode 8 support, iOS 10.0, Add command line options, Optimize build
 * 2016-08-09: Xcode 7.3 support, iOS 9.3
 * 2016-05-04: OpenSSL 1.0.2h
 * 2015-12-11: Xcode 7.2 support, iOS 9.2
