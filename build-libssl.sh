@@ -22,7 +22,7 @@
 # -u  Attempt to use undefined variable outputs error message, and forces an exit
 set -u
 
-DEFAULTBRANCH="1.0.2" # Default branch in case no version or branch is specified
+DEFAULTVERSION="1.0.2h" # Default version in case no version is specified
 IOS_MIN_SDK_VERSION="7.0" # Minimum iOS SDK version to build for
 TVOS_MIN_SDK_VERSION="9.0" # Minimum tvOS SDK version to build for
 
@@ -36,6 +36,7 @@ echo_help()
   echo "     --archs=\"ARCH ARCH ...\"       Space-separated list of architectures to build"
   echo "                                     Options: x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
   echo "                                     Note: The framework will contain include files from the architecture listed first"
+  echo "     --cleanup                     Clean up build directories (bin, include/openssl, lib, src) before starting build"
   echo "     --ec-nistp-64-gcc-128         Enable config option enable-ec_nistp_64_gcc_128 for 64 bit builds"
   echo " -h, --help                        Print help (this message)"
   echo "     --ios-sdk=SDKVERSION          Override iOS SDK version"
@@ -43,7 +44,8 @@ echo_help()
   echo "     --tvos-sdk=SDKVERSION         Override tvOS SDK version"
   echo " -v, --verbose                     Enable verbose logging"
   echo "     --verbose-on-error            Dump last 500 lines from log file if an error occurs (for Travis builds)"
-  echo "     --version=VERSION             OpenSSL version to build (defaults to latest version in branch ${DEFAULTBRANCH}"
+  echo "     --version=VERSION             OpenSSL version to build (defaults to ${DEFAULTVERSION})"
+  echo "                                     Note: This script does not yet work with OpenSSL 1.1.0"
   echo
   echo "For custom configure options, set variable CONFIG_OPTIONS"
   echo "For custom cURL options, set variable CURL_OPTIONS"
@@ -93,6 +95,7 @@ check_status()
 
 # Init optional command line vars
 ARCHS=""
+CLEANUP=""
 CONFIG_ENABLE_EC_NISTP_64_GCC_128=""
 IOS_SDKVERSION=""
 PARALLEL=""
@@ -107,6 +110,9 @@ case $i in
   --archs=*)
     ARCHS="${i#*=}"
     shift
+    ;;
+  --cleanup)
+    CLEANUP="true"
     ;;
   --ec-nistp-64-gcc-128)
     CONFIG_ENABLE_EC_NISTP_64_GCC_128="true"
@@ -153,21 +159,7 @@ if [ -n "${VERSION}" ]; then
 
 # Default OpenSSL version
 else
-  # Default branch or user provided (in latter case verify number format)
-  # For future use (when adding 1.1.0), so the user can select a default branch
-  BRANCH="${DEFAULTBRANCH}"
-
-  # Determine latest version of selected branch
-  echo "Checking latest version of ${BRANCH} branch on GitHub..."
-  GITHUB_VERSION=$(curl ${CURL_OPTIONS} -Ls https://github.com/openssl/openssl/releases.atom | grep "<title>OpenSSL_${BRANCH//./_}" | head -1 | sed -E "s|^.*title>OpenSSL_(${BRANCH//./_}[a-z]*)</title.*$|\1|g")
-
-  # Verify result
-  if [ -z "${GITHUB_VERSION}" ]; then
-    echo "Could not determine latest version, please check https://github.com/openssl/openssl/releases and use --version option"
-    exit 1
-  fi
-
-  VERSION="${GITHUB_VERSION//_/.}"
+  VERSION="${DEFAULTVERSION}"
 fi
 
 # Set GITHUB_VERSION (version with underscores instead of dots)
@@ -193,17 +185,13 @@ if [ "${PARALLEL}" != "false" ]; then
 fi
 
 # Write files relative to script location and validate directory
-CURRENTPATH=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
+CURRENTPATH=$(pwd)
 case "${CURRENTPATH}" in
   *\ * )
     echo "Your path contains whitespaces, which is not supported by 'make install'."
     exit 1
   ;;
 esac
-if [[ "${CURRENTPATH}" == "/" || "${CURRENTPATH}" == "/usr" || "${CURRENTPATH}" == "/usr/local" ]]; then
-  echo "This script should not be executed from directory ${CURRENTPATH}"
-  exit 1
-fi
 cd "${CURRENTPATH}"
 
 # Validate Xcode Developer path
@@ -252,18 +240,20 @@ else
   echo "Using ${OPENSSL_ARCHIVE_FILE_NAME}"
 fi
 
-# Clean up target directories if present
-if [ -d "${CURRENTPATH}/bin" ]; then
-  rm -r "${CURRENTPATH}/bin"
-fi
-if [ -d "${CURRENTPATH}/include/openssl" ]; then
-  rm -r "${CURRENTPATH}/include/openssl"
-fi
-if [ -d "${CURRENTPATH}/lib" ]; then
-  rm -r "${CURRENTPATH}/lib"
-fi
-if [ -d "${CURRENTPATH}/src" ]; then
-  rm -r "${CURRENTPATH}/src"
+# Clean up target directories if requested and present
+if [ "${CLEANUP}" == "true" ]; then
+	if [ -d "${CURRENTPATH}/bin" ]; then
+	  rm -r "${CURRENTPATH}/bin"
+	fi
+	if [ -d "${CURRENTPATH}/include/openssl" ]; then
+	  rm -r "${CURRENTPATH}/include/openssl"
+	fi
+	if [ -d "${CURRENTPATH}/lib" ]; then
+	  rm -r "${CURRENTPATH}/lib"
+	fi
+	if [ -d "${CURRENTPATH}/src" ]; then
+	  rm -r "${CURRENTPATH}/src"
+	fi
 fi
 
 # (Re-)create target directories
