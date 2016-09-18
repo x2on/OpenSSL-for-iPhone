@@ -1,4 +1,4 @@
-osx_image: xcode7.3
+osx_image: xcode8
 language: objective-c
 before_install:
  - ./build-libssl.sh verbose-on-error
@@ -7,4 +7,6 @@ before_install:
  - xcrun -sdk iphoneos lipo -info openssl.framework/openssl
 
 script:
- - xctool -project OpenSSL-for-iOS.xcodeproj -scheme OpenSSL-for-iOS -sdk iphonesimulator clean build
+  - xcodebuild -project OpenSSL-for-iOS.xcodeproj -scheme OpenSSL-for-iOS -sdk iphonesimulator clean build
+ # xctool 0.2.9 doesn't support Xcode 8 yet (see https://github.com/facebook/xctool/issues/704)
+ #- xctool -project OpenSSL-for-iOS.xcodeproj -scheme OpenSSL-for-iOS -sdk iphonesimulator clean build
