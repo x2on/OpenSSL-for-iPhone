@@ -27,6 +27,11 @@ TVOS_SDKVERSION=`xcrun -sdk appletvos --show-sdk-version`                 #
 CONFIG_OPTIONS=""                                                         #
 CURL_OPTIONS=""                                                           #
 
+# ARCHS is a space-separated list of architectures to build
+# Options: x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64
+# Please note: The framework will contain include files from the architecture listed first
+ARCHS="x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
+
 # To set "enable-ec_nistp_64_gcc_128" configuration for x64 archs set next variable to "true"
 ENABLE_EC_NISTP_64_GCC_128=""                                             #
 #                                                                         #
@@ -77,7 +82,6 @@ check_status()
 }
 
 CURRENTPATH=`pwd`
-ARCHS="i386 x86_64 armv7 armv7s arm64 tv_x86_64 tv_arm64"
 DEVELOPER=`xcode-select -print-path`
 IOS_MIN_SDK_VERSION="7.0"
 TVOS_MIN_SDK_VERSION="9.0"
@@ -124,6 +128,13 @@ mkdir -p "${CURRENTPATH}/src"
 mkdir -p "${CURRENTPATH}/bin"
 mkdir -p "${CURRENTPATH}/lib"
 
+# Init vars for library references
+INCLUDE_DIR=""
+LIBSSL_IOS=()
+LIBCRYPTO_IOS=()
+LIBSSL_TVOS=()
+LIBCRYPTO_TVOS=()
+
 for ARCH in ${ARCHS}
 do
   if [[ "$ARCH" == tv* ]]; then
@@ -151,11 +162,14 @@ do
   export CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
   export BUILD_TOOLS="${DEVELOPER}"
 
-  mkdir -p "${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk"
-  LOG="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk/build-openssl-${VERSION}.log"
+  # Prepare target dir
+  TARGETDIR="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk"
+  mkdir -p "${TARGETDIR}"
+  LOG="${TARGETDIR}/build-openssl-${VERSION}.log"
 
-  echo "Building openssl-${VERSION} for ${PLATFORM} ${SDKVERSION} ${ARCH}"
-  echo "  Logfile: $LOG"
+  echo "Building openssl-${VERSION} for ${PLATFORM} ${SDKVERSION} ${ARCH}..."
+  echo "  Logfile: ${LOG}"
+
 
   LOCAL_CONFIG_OPTIONS="${CONFIG_OPTIONS}"
   if [ "${ENABLE_EC_NISTP_64_GCC_128}" == "true" ]; then
@@ -196,15 +210,15 @@ do
   set +e
   if [ "${LOG_VERBOSE}" == "verbose" ]; then
     if [ "${ARCH}" == "x86_64" ]; then
-      ./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} | tee "${LOG}"
+      ./Configure no-asm darwin64-x86_64-cc --openssldir="${TARGETDIR}" ${LOCAL_CONFIG_OPTIONS} | tee "${LOG}"
     else
-      ./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} | tee "${LOG}"
+      ./Configure iphoneos-cross --openssldir="${TARGETDIR}" ${LOCAL_CONFIG_OPTIONS} | tee "${LOG}"
     fi
   else
     if [ "${ARCH}" == "x86_64" ]; then
-      (./Configure no-asm darwin64-x86_64-cc --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
+      (./Configure no-asm darwin64-x86_64-cc --openssldir="${TARGETDIR}" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
     else
-      (./Configure iphoneos-cross --openssldir="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
+      (./Configure iphoneos-cross --openssldir="${TARGETDIR}" ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
     fi
   fi
   
@@ -253,35 +267,37 @@ do
 
   # Remove source dir
   rm -rf "$src_work_dir"
+
+  # Add references to library files to relevant arrays
+  if [[ "${PLATFORM}" == AppleTV* ]]; then
+    LIBSSL_TVOS+=("${TARGETDIR}/lib/libssl.a")
+    LIBCRYPTO_TVOS+=("${TARGETDIR}/lib/libcrypto.a")
+  else
+    LIBSSL_IOS+=("${TARGETDIR}/lib/libssl.a")
+    LIBCRYPTO_IOS+=("${TARGETDIR}/lib/libcrypto.a")
+  fi
+
+  # Keep reference to first build target for include file
+  if [ -z "${INCLUDE_DIR}" ]; then
+    INCLUDE_DIR="${TARGETDIR}/include/openssl"
+  fi
 done
 
-echo "Build library for iOS..."
-lipo -create \
-  ${CURRENTPATH}/bin/iPhoneSimulator${IOS_SDKVERSION}-i386.sdk/lib/libssl.a \
-  ${CURRENTPATH}/bin/iPhoneSimulator${IOS_SDKVERSION}-x86_64.sdk/lib/libssl.a \
-  ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-armv7.sdk/lib/libssl.a \
-  ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-armv7s.sdk/lib/libssl.a \
-  ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-arm64.sdk/lib/libssl.a \
-  -output ${CURRENTPATH}/lib/libssl.a
-lipo -create \
-  ${CURRENTPATH}/bin/iPhoneSimulator${IOS_SDKVERSION}-i386.sdk/lib/libcrypto.a \
-  ${CURRENTPATH}/bin/iPhoneSimulator${IOS_SDKVERSION}-x86_64.sdk/lib/libcrypto.a \
-  ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-armv7.sdk/lib/libcrypto.a \
-  ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-armv7s.sdk/lib/libcrypto.a \
-  ${CURRENTPATH}/bin/iPhoneOS${IOS_SDKVERSION}-arm64.sdk/lib/libcrypto.a \
-  -output ${CURRENTPATH}/lib/libcrypto.a
+# Build iOS library if selected for build
+if [ ${#LIBSSL_IOS} -gt 0 ]; then
+  echo "Build library for iOS..."
+  lipo -create ${LIBSSL_IOS[@]} -output "${CURRENTPATH}/lib/libssl.a"
+  lipo -create ${LIBCRYPTO_IOS[@]} -output "${CURRENTPATH}/lib/libcrypto.a"
+fi
 
-echo "Build library for tvOS..."
-lipo -create \
-  ${CURRENTPATH}/bin/AppleTVSimulator${TVOS_SDKVERSION}-x86_64.sdk/lib/libssl.a \
-  ${CURRENTPATH}/bin/AppleTVOS${TVOS_SDKVERSION}-arm64.sdk/lib/libssl.a \
-  -output ${CURRENTPATH}/lib/libssl-tvOS.a
-lipo -create \
-  ${CURRENTPATH}/bin/AppleTVSimulator${TVOS_SDKVERSION}-x86_64.sdk/lib/libcrypto.a \
-  ${CURRENTPATH}/bin/AppleTVOS${TVOS_SDKVERSION}-arm64.sdk/lib/libcrypto.a \
-  -output ${CURRENTPATH}/lib/libcrypto-tvOS.a
+# Build tvOS library if selected for build
+if [ ${#LIBSSL_TVOS} -gt 0 ] ; then
+    echo "Build library for tvOS..."
+    lipo -create ${LIBSSL_TVOS[@]} -output "${CURRENTPATH}/lib/libssl-tvOS.a"
+    lipo -create ${LIBCRYPTO_TVOS[@]} -output "${CURRENTPATH}/lib/libcrypto-tvOS.a"
+fi
 
-mkdir -p ${CURRENTPATH}/include
-cp -R ${CURRENTPATH}/bin/iPhoneSimulator${IOS_SDKVERSION}-x86_64.sdk/include/openssl ${CURRENTPATH}/include/
+# Copy include directory
+cp -R "${INCLUDE_DIR}" ${CURRENTPATH}/include/
 
 echo "Done."
