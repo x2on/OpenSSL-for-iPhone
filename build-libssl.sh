@@ -172,7 +172,7 @@ elif [ -n "${BRANCH}" ]; then
   if [[ ! "${BRANCH}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     echo "Unknown branch version number format. Examples: 1.0.2, 1.0.1"
     exit 1
-    
+
   # Valid version number, determine latest version
   else
     echo "Checking latest version of ${BRANCH} branch on GitHub..."
@@ -184,13 +184,13 @@ elif [ -n "${BRANCH}" ]; then
       echo "Could not determine latest version, please check https://github.com/openssl/openssl/releases and use --version option"
       exit 1
     fi
-    
+
     VERSION="${GITHUB_VERSION//_/.}"
-    
+
     # Check whether download exists
     # -I = HEAD, -L follow Location header, -f fail silently for 4xx errors and return status 22, -s silent
     curl ${CURL_OPTIONS} -ILfs "https://github.com/openssl/openssl/archive/OpenSSL_${GITHUB_VERSION}.tar.gz" > /dev/null
-    
+
     # Check for success status
     if [ $? -ne 0 ]; then
       echo "Script determined latest version ${VERSION}, but the download archive does not seem to be available."
@@ -200,7 +200,7 @@ elif [ -n "${BRANCH}" ]; then
   fi
 
 # Script default
-else
+elif [ -z "${VERSION}" ]; then
   VERSION="${DEFAULTVERSION}"
 fi
 
@@ -268,34 +268,43 @@ fi
 echo "  Script directory and build location: ${CURRENTPATH}"
 echo
 
-# -e  Abort script at first error, when a command exits with non-zero status (except in until or while loops, if-tests, list constructs)
-# -o pipefail  Causes a pipeline to return the exit status of the last command in the pipe that returned a non-zero return value
-set -eo pipefail
-
 # Download OpenSSL when not present
 OPENSSL_ARCHIVE_BASE_NAME=OpenSSL_${GITHUB_VERSION}
 OPENSSL_ARCHIVE_FILE_NAME=${OPENSSL_ARCHIVE_BASE_NAME}.tar.gz
 if [ ! -e ${OPENSSL_ARCHIVE_FILE_NAME} ]; then
   echo "Downloading ${OPENSSL_ARCHIVE_FILE_NAME}..."
-  curl ${CURL_OPTIONS} -L -O https://github.com/openssl/openssl/archive/${OPENSSL_ARCHIVE_FILE_NAME}
+  OPENSSL_ARCHIVE_URL="https://github.com/openssl/openssl/archive/${OPENSSL_ARCHIVE_FILE_NAME}"
+  # -L follow Location header, -f fail silently for 4xx errors and return status 22, -O Use server-specified filename for download
+  curl ${CURL_OPTIONS} -LfO "${OPENSSL_ARCHIVE_URL}"
+  
+  # Check for success status
+  if [ $? -ne 0 ]; then
+    echo "An error occured when trying to download OpenSSL ${VERSION} from ${OPENSSL_ARCHIVE_URL}."
+    echo "Please check cURL's error message and/or your network connection."
+    exit 1
+  fi
 else
   echo "Using ${OPENSSL_ARCHIVE_FILE_NAME}"
 fi
 
+# -e  Abort script at first error, when a command exits with non-zero status (except in until or while loops, if-tests, list constructs)
+# -o pipefail  Causes a pipeline to return the exit status of the last command in the pipe that returned a non-zero return value
+set -eo pipefail
+
 # Clean up target directories if requested and present
 if [ "${CLEANUP}" == "true" ]; then
-	if [ -d "${CURRENTPATH}/bin" ]; then
-	  rm -r "${CURRENTPATH}/bin"
-	fi
-	if [ -d "${CURRENTPATH}/include/openssl" ]; then
-	  rm -r "${CURRENTPATH}/include/openssl"
-	fi
-	if [ -d "${CURRENTPATH}/lib" ]; then
-	  rm -r "${CURRENTPATH}/lib"
-	fi
-	if [ -d "${CURRENTPATH}/src" ]; then
-	  rm -r "${CURRENTPATH}/src"
-	fi
+  if [ -d "${CURRENTPATH}/bin" ]; then
+    rm -r "${CURRENTPATH}/bin"
+  fi
+  if [ -d "${CURRENTPATH}/include/openssl" ]; then
+    rm -r "${CURRENTPATH}/include/openssl"
+  fi
+  if [ -d "${CURRENTPATH}/lib" ]; then
+    rm -r "${CURRENTPATH}/lib"
+  fi
+  if [ -d "${CURRENTPATH}/src" ]; then
+    rm -r "${CURRENTPATH}/src"
+  fi
 fi
 
 # (Re-)create target directories
@@ -395,7 +404,7 @@ do
   else
     (./Configure ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
   fi
-  
+
   # Check for error status
   check_status $? "Configure"
 
