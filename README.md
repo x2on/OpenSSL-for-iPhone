@@ -1,4 +1,4 @@
-# OpenSSL-for-iOS [![Build Status](https://travis-ci.org/x2on/OpenSSL-for-iPhone.svg)](https://travis-ci.org/x2on/OpenSSL-for-iPhone) [![license](https://img.shields.io/github/license/x2on/OpenSSL-for-iPhone.svg)](https://github.com/x2on/OpenSSL-for-iPhone/blob/master/LICENSE) [![OpenSSL version](https://img.shields.io/badge/OpenSSL-1.0.2h-lightgrey.svg)]() [![iOS support](https://img.shields.io/badge/iOS-7.0%20--%2010.0-lightgrey.svg)]() [![tvOS support](https://img.shields.io/badge/tvOS-9.2--%2010.0-lightgrey.svg)]()
+# OpenSSL-for-iOS [![Build Status](https://travis-ci.org/x2on/OpenSSL-for-iPhone.svg)](https://travis-ci.org/x2on/OpenSSL-for-iPhone) [![license](https://img.shields.io/github/license/x2on/OpenSSL-for-iPhone.svg)](https://github.com/x2on/OpenSSL-for-iPhone/blob/master/LICENSE) [![OpenSSL version](https://img.shields.io/badge/OpenSSL-1.0.2i-lightgrey.svg)]() [![iOS support](https://img.shields.io/badge/iOS-7.0%20--%2010.0-lightgrey.svg)]() [![tvOS support](https://img.shields.io/badge/tvOS-9.2--%2010.0-lightgrey.svg)]()
 
 This is a script for using self-compiled builds of the OpenSSL-library on the iPhone. You can build apps with Xcode and the official SDK from Apple with this. I also made a small example-app for using the libraries with Xcode and the iPhone/iPhone-Simulator.
 
@@ -28,6 +28,7 @@ If you have problems building for arm64 please uninstall MacPorts (see [#28](htt
 * <http://www.x2on.de/2010/07/13/tutorial-iphone-app-with-compiled-openssl-1-0-0a-library/>
 
 ## Changelog
+* 2016-09-22: OpenSSL 1.0.2i
 * 2016-09-18: Xcode 8 support, iOS 10.0, Add command line options, Optimize build
 * 2016-08-09: Xcode 7.3 support, iOS 9.3
 * 2016-05-04: OpenSSL 1.0.2h
