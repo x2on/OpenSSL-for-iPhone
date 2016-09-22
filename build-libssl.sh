@@ -75,6 +75,25 @@ spinner()
   return $?
 }
 
+# Prepare target and source dir in build loop
+prepare_target_source_dirs()
+{
+  # Prepare target dir
+  TARGETDIR="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk"
+  mkdir -p "${TARGETDIR}"
+  LOG="${TARGETDIR}/build-openssl-${VERSION}.log"
+
+  echo "Building openssl-${VERSION} for ${PLATFORM} ${SDKVERSION} ${ARCH}..."
+  echo "  Logfile: ${LOG}"
+
+  # Prepare source dir
+  SOURCEDIR="${CURRENTPATH}/src/${PLATFORM}-${ARCH}"
+  mkdir -p "${SOURCEDIR}"
+  tar zxf "${CURRENTPATH}/${OPENSSL_ARCHIVE_FILE_NAME}" -C "${SOURCEDIR}"
+  cd "${SOURCEDIR}/openssl-${OPENSSL_ARCHIVE_BASE_NAME}"
+  chmod u+x ./Configure
+}
+
 # Check for error status
 check_status()
 {
@@ -95,6 +114,56 @@ check_status()
     fi
 
     exit 1
+  fi
+}
+
+# Run Configure in build loop
+run_configure()
+{
+  echo "  Configure...\c"
+  set +e
+  if [ "${LOG_VERBOSE}" == "verbose" ]; then
+    ./Configure ${LOCAL_CONFIG_OPTIONS} | tee "${LOG}"
+  else
+    (./Configure ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
+  fi
+
+  # Check for error status
+  check_status $? "Configure"
+}
+
+# Run make in build loop
+run_make()
+{
+  echo "  Make...\c"
+  if [ "${LOG_VERBOSE}" == "verbose" ]; then
+    make -j "${BUILD_THREADS}" | tee -a "${LOG}"
+  else
+    (make -j "${BUILD_THREADS}" >> "${LOG}" 2>&1) & spinner
+  fi
+
+  # Check for error status
+  check_status $? "make"
+}
+
+# Cleanup and bookkeeping at end of build loop
+finish_build_loop()
+{
+  # Remove source dir
+  rm -r "${SOURCEDIR}"
+
+  # Add references to library files to relevant arrays
+  if [[ "${PLATFORM}" == AppleTV* ]]; then
+    LIBSSL_TVOS+=("${TARGETDIR}/lib/libssl.a")
+    LIBCRYPTO_TVOS+=("${TARGETDIR}/lib/libcrypto.a")
+  else
+    LIBSSL_IOS+=("${TARGETDIR}/lib/libssl.a")
+    LIBCRYPTO_IOS+=("${TARGETDIR}/lib/libcrypto.a")
+  fi
+
+  # Keep reference to first build target for include file
+  if [ -z "${INCLUDE_DIR}" ]; then
+    INCLUDE_DIR="${TARGETDIR}/include/openssl"
   fi
 }
 
@@ -297,7 +366,7 @@ echo "  Number of make threads: ${BUILD_THREADS}"
 if [ -n "${CONFIG_OPTIONS}" ]; then
   echo "  Configure options: ${CONFIG_OPTIONS}"
 fi
-echo "  Script directory and build location: ${CURRENTPATH}"
+echo "  Build location: ${CURRENTPATH}"
 echo
 
 # Download OpenSSL when not present
@@ -379,20 +448,8 @@ do
   export BUILD_TOOLS="${DEVELOPER}"
   export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH}"
 
-  # Prepare target dir
-  TARGETDIR="${CURRENTPATH}/bin/${PLATFORM}${SDKVERSION}-${ARCH}.sdk"
-  mkdir -p "${TARGETDIR}"
-  LOG="${TARGETDIR}/build-openssl-${VERSION}.log"
-
-  echo "Building openssl-${VERSION} for ${PLATFORM} ${SDKVERSION} ${ARCH}..."
-  echo "  Logfile: ${LOG}"
-
-  # Prepare source dir
-  SOURCEDIR="${CURRENTPATH}/src/${PLATFORM}-${ARCH}"
-  mkdir -p "${SOURCEDIR}"
-  tar zxf "${CURRENTPATH}/${OPENSSL_ARCHIVE_FILE_NAME}" -C "${SOURCEDIR}"
-  cd "${SOURCEDIR}/openssl-${OPENSSL_ARCHIVE_BASE_NAME}"
-  chmod u+x ./Configure
+  # Prepare TARGETDIR and SOURCEDIR
+  prepare_target_source_dirs
 
   # Add optional enable-ec_nistp_64_gcc_128 configure option for 64 bit builds
   LOCAL_CONFIG_OPTIONS="${CONFIG_OPTIONS}"
@@ -429,16 +486,7 @@ do
   fi
 
   # Run Configure
-  echo "  Configure...\c"
-  set +e
-  if [ "${LOG_VERBOSE}" == "verbose" ]; then
-    ./Configure ${LOCAL_CONFIG_OPTIONS} | tee "${LOG}"
-  else
-    (./Configure ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
-  fi
-
-  # Check for error status
-  check_status $? "Configure"
+  run_configure
 
   # Only required for Darwin64 builds (-isysroot is automatically added by iphoneos-cross target)
   if [ "${ARCH}" == "x86_64" ]; then
@@ -460,15 +508,7 @@ do
   fi
 
   # Run make
-  echo "  Make...\c"
-  if [ "${LOG_VERBOSE}" == "verbose" ]; then
-    make -j "${BUILD_THREADS}" | tee -a "${LOG}"
-  else
-    (make -j "${BUILD_THREADS}" >> "${LOG}" 2>&1) & spinner
-  fi
-
-  # Check for error status
-  check_status $? "make"
+  run_make
 
   # Run make install
   set -e
@@ -478,22 +518,9 @@ do
     make install_sw >> "${LOG}" 2>&1
   fi
 
-  # Remove source dir
-  rm -r "${SOURCEDIR}"
-
-  # Add references to library files to relevant arrays
-  if [[ "${PLATFORM}" == AppleTV* ]]; then
-    LIBSSL_TVOS+=("${TARGETDIR}/lib/libssl.a")
-    LIBCRYPTO_TVOS+=("${TARGETDIR}/lib/libcrypto.a")
-  else
-    LIBSSL_IOS+=("${TARGETDIR}/lib/libssl.a")
-    LIBCRYPTO_IOS+=("${TARGETDIR}/lib/libcrypto.a")
-  fi
-
+  # Remove source dir, add references to library files to relevant arrays
   # Keep reference to first build target for include file
-  if [ -z "${INCLUDE_DIR}" ]; then
-    INCLUDE_DIR="${TARGETDIR}/include/openssl"
-  fi
+  finish_build_loop
 done
 
 # Build iOS library if selected for build
