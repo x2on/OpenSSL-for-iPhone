@@ -33,21 +33,24 @@ CONFIG_OPTIONS="${CONFIG_OPTIONS:-}"
 echo_help()
 {
   echo "Usage: $0 [options...]"
-  echo "     --archs=\"ARCH ARCH ...\"       Space-separated list of architectures to build"
+  echo "     --archs=\"ARCH ARCH ...\"       OpenSSL 1.0.2 and lower ONLY: space-separated list of architectures to build"
   echo "                                     Options: x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
   echo "                                     Note: The framework will contain include files from the architecture listed first"
   echo "     --branch=BRANCH               Select OpenSSL branch to build. The script will determine and download the latest release for that branch"
-  echo "                                     Note: This script does not yet work with OpenSSL 1.1.0"
+  echo "     --deprecated                  OpenSSL 1.1.0 and higher ONLY: exclude no-deprecated configure option and build with deprecated methods"
   echo "     --cleanup                     Clean up build directories (bin, include/openssl, lib, src) before starting build"
   echo "     --ec-nistp-64-gcc-128         Enable config option enable-ec_nistp_64_gcc_128 for 64 bit builds"
   echo " -h, --help                        Print help (this message)"
   echo "     --ios-sdk=SDKVERSION          Override iOS SDK version"
   echo "     --noparallel                  Disable running make with parallel jobs (make -j)"
+  echo "     --targets=\"TARGET TARGET ...\" OpenSSL 1.1.0 and higher ONLY: space-separated list of build targets"
+  echo "                                     Options: ios-sim-cross-x86_64 ios-sim-cross-i386 ios64-cross-arm64 ios-cross-armv7s ios-cross-armv7"
+  echo "                                              tvos-sim-cross-x86_64 tvos64-cross-arm64"
+  echo "                                     Note: The library will use include files from the target listed first"
   echo "     --tvos-sdk=SDKVERSION         Override tvOS SDK version"
   echo " -v, --verbose                     Enable verbose logging"
   echo "     --verbose-on-error            Dump last 500 lines from log file if an error occurs (for Travis builds)"
   echo "     --version=VERSION             OpenSSL version to build (defaults to ${DEFAULTVERSION})"
-  echo "                                     Note: This script does not yet work with OpenSSL 1.1.0"
   echo
   echo "For custom configure options, set variable CONFIG_OPTIONS"
   echo "For custom cURL options, set variable CURL_OPTIONS"
@@ -100,9 +103,11 @@ ARCHS=""
 BRANCH=""
 CLEANUP=""
 CONFIG_ENABLE_EC_NISTP_64_GCC_128=""
+CONFIG_NO_DEPRECATED=""
 IOS_SDKVERSION=""
 PARALLEL=""
 LOG_VERBOSE=""
+TARGETS=""
 TVOS_SDKVERSION=""
 VERSION=""
 
@@ -121,6 +126,9 @@ case $i in
   --cleanup)
     CLEANUP="true"
     ;;
+  --deprecated)
+    CONFIG_NO_DEPRECATED="false"
+    ;;
   --ec-nistp-64-gcc-128)
     CONFIG_ENABLE_EC_NISTP_64_GCC_128="true"
     ;;
@@ -134,6 +142,10 @@ case $i in
     ;;
   --noparallel)
     PARALLEL="false"
+    shift
+    ;;
+  --targets=*)
+    TARGETS="${i#*=}"
     shift
     ;;
   --tvos-sdk=*)
@@ -207,6 +219,12 @@ fi
 # Set GITHUB_VERSION (version with underscores instead of dots)
 GITHUB_VERSION="${VERSION//./_}"
 
+# Determine build type
+BUILD_TYPE="targets"
+if [[ "${GITHUB_VERSION}" =~ ^(0_9|1_0) ]]; then
+  BUILD_TYPE="archs"
+fi
+
 # Determine SDK versions
 if [ ! -n "${IOS_SDKVERSION}" ]; then
   IOS_SDKVERSION=$(xcrun -sdk iphoneos --show-sdk-version)
@@ -220,13 +238,23 @@ if [ ! -n "${ARCHS}" ]; then
   ARCHS="x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
 fi
 
+# Set default for TARGETS if not specified
+if [ ! -n "${TARGETS}" ]; then
+  TARGETS="ios-sim-cross-x86_64 ios-sim-cross-i386 ios64-cross-arm64 ios-cross-armv7s ios-cross-armv7 tvos-sim-cross-x86_64 tvos64-cross-arm64"
+fi
+
+# Add no-deprecated config option for "targets" build type (if not overwritten)
+if [[ "${BUILD_TYPE}" == "targets" && "${CONFIG_NO_DEPRECATED}" != "false" ]]; then
+  CONFIG_OPTIONS="${CONFIG_OPTIONS} no-deprecated"
+fi
+
 # Determine number of cores for (parallel) build
 BUILD_THREADS=1
 if [ "${PARALLEL}" != "false" ]; then
   BUILD_THREADS=$(sysctl hw.ncpu | awk '{print $2}')
 fi
 
-# Write files relative to script location and validate directory
+# Write files relative to current location and validate directory
 CURRENTPATH=$(pwd)
 case "${CURRENTPATH}" in
   *\ * )
@@ -258,7 +286,11 @@ esac
 echo
 echo "Build options"
 echo "  OpenSSL version: ${VERSION}"
-echo "  Architectures: ${ARCHS}"
+if [ "${BUILD_TYPE}" == "archs" ]; then
+  echo "  Architectures: ${ARCHS}"
+else
+  echo "  Targets: ${TARGETS}"
+fi
 echo "  iOS SDK: ${IOS_SDKVERSION}"
 echo "  tvOS SDK: ${TVOS_SDKVERSION}"
 echo "  Number of make threads: ${BUILD_THREADS}"
