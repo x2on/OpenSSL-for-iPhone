@@ -388,6 +388,10 @@ else
   echo "Using ${OPENSSL_ARCHIVE_FILE_NAME}"
 fi
 
+# Set reference to custom configuration (OpenSSL 1.1.0)
+# See: https://github.com/openssl/openssl/commit/afce395cba521e395e6eecdaf9589105f61e4411
+export OPENSSL_LOCAL_CONFIG_DIR="${CURRENTPATH}/config"
+
 # -e  Abort script at first error, when a command exits with non-zero status (except in until or while loops, if-tests, list constructs)
 # -o pipefail  Causes a pipeline to return the exit status of the last command in the pipe that returned a non-zero return value
 set -eo pipefail
