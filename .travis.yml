@@ -1,14 +1,7 @@
 osx_image: xcode8
 language: objective-c
 before_install:
-# First build 1.1.0 to verify library build process. This should succeed with parallel build.
- - ./build-libssl.sh --version=1.1.0a --verbose-on-error
- - xcrun -sdk iphoneos lipo -info ./lib/*.a
- - ./create-openssl-framework.sh
- - xcrun -sdk iphoneos lipo -info openssl.framework/openssl
-
-# Continue with 1.0.2 build, but cleanup first. Parallel build can run into errors here.
- - ./build-libssl.sh --cleanup --noparallel --verbose-on-error
+ - ./build-libssl.sh --noparallel --verbose-on-error
  - xcrun -sdk iphoneos lipo -info ./lib/*.a
  - ./create-openssl-framework.sh
  - xcrun -sdk iphoneos lipo -info openssl.framework/openssl
