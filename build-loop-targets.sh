@@ -28,8 +28,10 @@ do
     SDKVERSION="${IOS_SDKVERSION}"
   fi
 
-  # This variable is used in the configuration file to determine whether to include bitcode
+  # These variables are used in the configuration file
   export SDKVERSION
+  export IOS_MIN_SDK_VERSION
+  export TVOS_MIN_SDK_VERSION
 
   # Determine platform
   if [[ "${TARGET}" == "ios-sim-cross-"* ]]; then
@@ -60,13 +62,6 @@ do
   # Only relevant for 64 bit builds
   if [[ "${CONFIG_ENABLE_EC_NISTP_64_GCC_128}" == "true" && "${ARCH}" == *64  ]]; then
     LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} enable-ec_nistp_64_gcc_128"
-  fi
-  
-  # Add platform specific config option for SDK version
-  if [[ "${PLATFORM}" == AppleTV* ]]; then
-    LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} -mtvos-version-min=${TVOS_MIN_SDK_VERSION}"
-  else
-    LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} -mios-version-min=${IOS_MIN_SDK_VERSION}"
   fi
 
   # Run Configure
