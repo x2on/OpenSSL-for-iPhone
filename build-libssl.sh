@@ -64,12 +64,11 @@ spinner()
   local spinstr='|/-\'
   while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
     local temp=${spinstr#?}
-    printf " [%c]" "$spinstr"
+    printf "  [%c]" "$spinstr"
     local spinstr=$temp${spinstr%"$temp"}
     sleep $delay
-    printf "\b\b\b\b"
+    printf "\b\b\b\b\b"
   done
-  printf "    \b\b"
 
   wait $pid
   return $?
@@ -100,7 +99,6 @@ check_status()
   local STATUS=$1
   local COMMAND=$2
 
-  echo "\n"
   if [ "${STATUS}" != 0 ]; then
     if [[ "${LOG_VERBOSE}" != "verbose"* ]]; then
       echo "Problem during ${COMMAND} - Please check ${LOG}"
@@ -120,7 +118,7 @@ check_status()
 # Run Configure in build loop
 run_configure()
 {
-  echo "  Configure...\c"
+  echo "  Configure..."
   set +e
   if [ "${LOG_VERBOSE}" == "verbose" ]; then
     ./Configure ${LOCAL_CONFIG_OPTIONS} | tee "${LOG}"
@@ -135,7 +133,7 @@ run_configure()
 # Run make in build loop
 run_make()
 {
-  echo "  Make...\c"
+  echo "  Make..."
   if [ "${LOG_VERBOSE}" == "verbose" ]; then
     make -j "${BUILD_THREADS}" | tee -a "${LOG}"
   else
@@ -174,8 +172,8 @@ CLEANUP=""
 CONFIG_ENABLE_EC_NISTP_64_GCC_128=""
 CONFIG_NO_DEPRECATED=""
 IOS_SDKVERSION=""
-PARALLEL=""
 LOG_VERBOSE=""
+PARALLEL=""
 TARGETS=""
 TVOS_SDKVERSION=""
 VERSION=""
@@ -211,7 +209,6 @@ case $i in
     ;;
   --noparallel)
     PARALLEL="false"
-    shift
     ;;
   --targets=*)
     TARGETS="${i#*=}"
@@ -323,6 +320,9 @@ if [ "${PARALLEL}" != "false" ]; then
   BUILD_THREADS=$(sysctl hw.ncpu | awk '{print $2}')
 fi
 
+# Determine script directory
+SCRIPTDIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
+
 # Write files relative to current location and validate directory
 CURRENTPATH=$(pwd)
 case "${CURRENTPATH}" in
@@ -390,7 +390,7 @@ fi
 
 # Set reference to custom configuration (OpenSSL 1.1.0)
 # See: https://github.com/openssl/openssl/commit/afce395cba521e395e6eecdaf9589105f61e4411
-export OPENSSL_LOCAL_CONFIG_DIR="${CURRENTPATH}/config"
+export OPENSSL_LOCAL_CONFIG_DIR="${SCRIPTDIR}/config"
 
 # -e  Abort script at first error, when a command exits with non-zero status (except in until or while loops, if-tests, list constructs)
 # -o pipefail  Causes a pipeline to return the exit status of the last command in the pipe that returned a non-zero return value
@@ -426,9 +426,9 @@ LIBCRYPTO_TVOS=()
 
 # Run relevant build loop (archs = 1.0 style, targets = 1.1 style)
 if [ "${BUILD_TYPE}" == "archs" ]; then
-  source build-loop-archs.sh 
+  source "${SCRIPTDIR}/build-loop-archs.sh"
 else
-  source build-loop-targets.sh
+  source "${SCRIPTDIR}/build-loop-targets.sh"
 fi
 
 # Build iOS library if selected for build

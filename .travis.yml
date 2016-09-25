@@ -1,7 +1,7 @@
 osx_image: xcode8
 language: objective-c
 before_install:
- - ./build-libssl.sh --noparallel --verbose-on-error
+ - ./travis-build.sh
  - xcrun -sdk iphoneos lipo -info ./lib/*.a
  - ./create-openssl-framework.sh
  - xcrun -sdk iphoneos lipo -info openssl.framework/openssl
