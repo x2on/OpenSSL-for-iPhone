@@ -147,7 +147,8 @@ run_make()
 # Cleanup and bookkeeping at end of build loop
 finish_build_loop()
 {
-  # Remove source dir
+  # Return to ${CURRENTPATH} and remove source dir
+  cd "${CURRENTPATH}"
   rm -r "${SOURCEDIR}"
 
   # Add references to library files to relevant arrays

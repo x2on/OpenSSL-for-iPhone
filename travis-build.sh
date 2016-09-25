@@ -18,6 +18,7 @@ PID_ARCHS=$!
 # Build 1.1.0 in (temporary) subdirectory
 mkdir targets
 cd targets
+cp -r ../include .
 ../build-libssl.sh --noparallel --verbose-on-error --ec-nistp-64-gcc-128 --version=1.1.0a | log_output "TARGETS" &
 PID_TARGETS=$!
 
