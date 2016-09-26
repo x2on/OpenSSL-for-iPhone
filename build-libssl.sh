@@ -427,9 +427,9 @@ LIBCRYPTO_TVOS=()
 
 # Run relevant build loop (archs = 1.0 style, targets = 1.1 style)
 if [ "${BUILD_TYPE}" == "archs" ]; then
-  source "${SCRIPTDIR}/build-loop-archs.sh"
+  source "${SCRIPTDIR}/scripts/build-loop-archs.sh"
 else
-  source "${SCRIPTDIR}/build-loop-targets.sh"
+  source "${SCRIPTDIR}/scripts/build-loop-targets.sh"
 fi
 
 # Build iOS library if selected for build
