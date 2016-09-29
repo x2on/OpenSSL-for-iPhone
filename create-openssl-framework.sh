@@ -30,7 +30,7 @@ echo "Created $FWNAME.framework"
 check_bitcode=`otool -arch arm64 -l $FWNAME.framework/$FWNAME | grep __bitcode`
 if [ -z "$check_bitcode" ]
 then
-  echo "INFO: $FWNAME.framework doesn't contains Bitcode"
+  echo "INFO: $FWNAME.framework doesn't contain Bitcode"
 else
   echo "INFO: $FWNAME.framework contains Bitcode"
 fi

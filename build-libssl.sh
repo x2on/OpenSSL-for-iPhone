@@ -22,7 +22,7 @@
 # -u  Attempt to use undefined variable outputs error message, and forces an exit
 set -u
 
-DEFAULTVERSION="1.0.2i" # Default version in case no version is specified
+DEFAULTVERSION="1.0.2j" # Default version in case no version is specified
 IOS_MIN_SDK_VERSION="7.0" # Minimum iOS SDK version to build for
 TVOS_MIN_SDK_VERSION="9.0" # Minimum tvOS SDK version to build for
 
