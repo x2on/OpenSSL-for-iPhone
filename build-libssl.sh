@@ -133,7 +133,7 @@ run_configure()
 # Run make in build loop
 run_make()
 {
-  echo "  Make..."
+  echo "  Make (using ${BUILD_THREADS} thread(s))..."
   if [ "${LOG_VERBOSE}" == "verbose" ]; then
     make -j "${BUILD_THREADS}" | tee -a "${LOG}"
   else
@@ -286,10 +286,36 @@ fi
 # Set GITHUB_VERSION (version with underscores instead of dots)
 GITHUB_VERSION="${VERSION//./_}"
 
-# Determine build type
-BUILD_TYPE="targets"
+# Build type:
+# In short, type "archs" is used for OpenSSL versions in the 1.0 branch and type "targets" for later versions.
+#
+# Significant changes to the build process were introduced with OpenSSL 1.1.0. As a result, this script was updated
+# to include two separate build loops for versions <= 1.0 and versions >= 1.1. The type "archs" matches the key variable
+# used to determine for which platforms to build for the 1.0 branch. Since 1.1, all platforms are defined in a separate/
+# custom configuration file as build targets. Therefore the key variable and type are called targets for 1.1 (and later).
+
+# OpenSSL branches <= 1.0
 if [[ "${GITHUB_VERSION}" =~ ^(0_9|1_0) ]]; then
   BUILD_TYPE="archs"
+
+  # Set default for ARCHS if not specified
+  if [ ! -n "${ARCHS}" ]; then
+    ARCHS="x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
+  fi
+
+# OpenSSL branches >= 1.1
+else
+  BUILD_TYPE="targets"
+
+  # Set default for TARGETS if not specified
+  if [ ! -n "${TARGETS}" ]; then
+    TARGETS="ios-sim-cross-x86_64 ios-sim-cross-i386 ios64-cross-arm64 ios-cross-armv7s ios-cross-armv7 tvos-sim-cross-x86_64 tvos64-cross-arm64"
+  fi
+
+  # Add no-deprecated config option (if not overwritten)
+  if [ "${CONFIG_NO_DEPRECATED}" != "false" ]; then
+    CONFIG_OPTIONS="${CONFIG_OPTIONS} no-deprecated"
+  fi
 fi
 
 # Determine SDK versions
@@ -298,21 +324,6 @@ if [ ! -n "${IOS_SDKVERSION}" ]; then
 fi
 if [ ! -n "${TVOS_SDKVERSION}" ]; then
   TVOS_SDKVERSION=$(xcrun -sdk appletvos --show-sdk-version)
-fi
-
-# Set default for ARCHS if not specified
-if [ ! -n "${ARCHS}" ]; then
-  ARCHS="x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
-fi
-
-# Set default for TARGETS if not specified
-if [ ! -n "${TARGETS}" ]; then
-  TARGETS="ios-sim-cross-x86_64 ios-sim-cross-i386 ios64-cross-arm64 ios-cross-armv7s ios-cross-armv7 tvos-sim-cross-x86_64 tvos64-cross-arm64"
-fi
-
-# Add no-deprecated config option for "targets" build type (if not overwritten)
-if [[ "${BUILD_TYPE}" == "targets" && "${CONFIG_NO_DEPRECATED}" != "false" ]]; then
-  CONFIG_OPTIONS="${CONFIG_OPTIONS} no-deprecated"
 fi
 
 # Determine number of cores for (parallel) build
