@@ -390,8 +390,8 @@ do
     # make sure DES_LONG is set to unsigned long, also for the darwin64-x86_64 build, as otherwise opensslconf.h
     # will have a different value (unsigned int) for x86_64, whereas every iphoneos-cross build has unsigned long.
     # this would lead to various stack corruptions when using DES methods on devices.
-    # enable RC4_CHAR, BN_LLONG and BF_PTR for the same reason
-    LC_ALL=C sed -ie 's/^"darwin64-x86_64-cc"\(.*\)DES_INT\(.*\)/"darwin64-x86_64-cc"\1RC4_CHAR BN_LLONG BF_PTR\2/' "./Configure"
+    # enable RC4_CHAR and BF_PTR for the same reason
+    LC_ALL=C sed -ie 's/^"darwin64-x86_64-cc"\(.*\)DES_INT\(.*\)/"darwin64-x86_64-cc"\1RC4_CHAR BF_PTR\2/' "./Configure"
   fi
 
   # Add --openssldir option
@@ -473,8 +473,8 @@ do
     # make sure the just-compiled version has a compatible opensslconf.h
     TEMP1=`mktemp`
     TEMP2=`mktemp`
-    grep -v 'ENGINESDIR\|OPENSSLDIR\|SYSNAME\|SIXTY_FOUR_BIT_LONG\|THIRTY_TWO_BIT' ${INCLUDE_DIR}/opensslconf.h > $TEMP1
-    grep -v 'ENGINESDIR\|OPENSSLDIR\|SYSNAME\|SIXTY_FOUR_BIT_LONG\|THIRTY_TWO_BIT' ${TARGETDIR}/include/openssl/opensslconf.h > $TEMP2
+    grep -v 'ENGINESDIR\|OPENSSLDIR\|SYSNAME\|SIXTY_FOUR_BIT_LONG\|THIRTY_TWO_BIT\|BN_LLONG' ${INCLUDE_DIR}/opensslconf.h > $TEMP1
+    grep -v 'ENGINESDIR\|OPENSSLDIR\|SYSNAME\|SIXTY_FOUR_BIT_LONG\|THIRTY_TWO_BIT\|BN_LLONG' ${TARGETDIR}/include/openssl/opensslconf.h > $TEMP2
     if ! cmp $TEMP1 $TEMP2 > /dev/null ; then
       echo "opensslconf.h is different between platforms! this is bad!"
       diff -uN $TEMP1 $TEMP2;
