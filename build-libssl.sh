@@ -22,35 +22,48 @@
 # -u  Attempt to use undefined variable outputs error message, and forces an exit
 set -u
 
-DEFAULTVERSION="1.0.2j" # Default version in case no version is specified
-IOS_MIN_SDK_VERSION="7.0" # Minimum iOS SDK version to build for
-TVOS_MIN_SDK_VERSION="9.0" # Minimum tvOS SDK version to build for
+# SCRIPT DEFAULTS
 
-# Init optional env variables
+# Default version in case no version is specified
+DEFAULTVERSION="1.0.2j"
+
+# Default (=full) set of architectures (OpenSSL <= 1.0.2) or targets (OpenSSL >= 1.1.0) to build
+DEFAULTARCHS="x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
+DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-i386 ios64-cross-arm64 ios-cross-armv7s ios-cross-armv7 tvos-sim-cross-x86_64 tvos64-cross-arm64"
+
+# Minimum iOS/tvOS SDK version to build for
+IOS_MIN_SDK_VERSION="7.0"
+TVOS_MIN_SDK_VERSION="9.0"
+
+# Init optional env variables (use available variable or default to empty string)
 CURL_OPTIONS="${CURL_OPTIONS:-}"
 CONFIG_OPTIONS="${CONFIG_OPTIONS:-}"
 
 echo_help()
 {
   echo "Usage: $0 [options...]"
-  echo "     --archs=\"ARCH ARCH ...\"       OpenSSL 1.0.2 and lower ONLY: space-separated list of architectures to build"
-  echo "                                     Options: x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
-  echo "                                     Note: The framework will contain include files from the architecture listed first"
+  echo "Generic options"
   echo "     --branch=BRANCH               Select OpenSSL branch to build. The script will determine and download the latest release for that branch"
-  echo "     --deprecated                  OpenSSL 1.1.0 and higher ONLY: exclude no-deprecated configure option and build with deprecated methods"
   echo "     --cleanup                     Clean up build directories (bin, include/openssl, lib, src) before starting build"
-  echo "     --ec-nistp-64-gcc-128         Enable config option enable-ec_nistp_64_gcc_128 for 64 bit builds"
+  echo "     --ec-nistp-64-gcc-128         Enable configure option enable-ec_nistp_64_gcc_128 for 64 bit builds"
   echo " -h, --help                        Print help (this message)"
   echo "     --ios-sdk=SDKVERSION          Override iOS SDK version"
   echo "     --noparallel                  Disable running make with parallel jobs (make -j)"
-  echo "     --targets=\"TARGET TARGET ...\" OpenSSL 1.1.0 and higher ONLY: space-separated list of build targets"
-  echo "                                     Options: ios-sim-cross-x86_64 ios-sim-cross-i386 ios64-cross-arm64 ios-cross-armv7s ios-cross-armv7"
-  echo "                                              tvos-sim-cross-x86_64 tvos64-cross-arm64"
-  echo "                                     Note: The library will use include files from the target listed first"
   echo "     --tvos-sdk=SDKVERSION         Override tvOS SDK version"
   echo " -v, --verbose                     Enable verbose logging"
   echo "     --verbose-on-error            Dump last 500 lines from log file if an error occurs (for Travis builds)"
   echo "     --version=VERSION             OpenSSL version to build (defaults to ${DEFAULTVERSION})"
+  echo
+  echo "Options for OpenSSL 1.0.2 and lower ONLY"
+  echo "     --archs=\"ARCH ARCH ...\"       Space-separated list of architectures to build"
+  echo "                                     Options: ${DEFAULTARCHS}"
+  echo "                                     Note: The framework will contain include files from the architecture listed first"
+  echo
+  echo "Options for OpenSSL 1.1.0 and higher ONLY"
+  echo "     --deprecated                  Exclude no-deprecated configure option and build with deprecated methods"
+  echo "     --targets=\"TARGET TARGET ...\" Space-separated list of build targets"
+  echo "                                     Options: ${DEFAULTTARGETS}"
+  echo "                                     Note: The library will use include files from the target listed first"
   echo
   echo "For custom configure options, set variable CONFIG_OPTIONS"
   echo "For custom cURL options, set variable CURL_OPTIONS"
@@ -300,7 +313,7 @@ if [[ "${GITHUB_VERSION}" =~ ^(0_9|1_0) ]]; then
 
   # Set default for ARCHS if not specified
   if [ ! -n "${ARCHS}" ]; then
-    ARCHS="x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
+    ARCHS="${DEFAULTARCHS}"
   fi
 
 # OpenSSL branches >= 1.1
@@ -309,7 +322,7 @@ else
 
   # Set default for TARGETS if not specified
   if [ ! -n "${TARGETS}" ]; then
-    TARGETS="ios-sim-cross-x86_64 ios-sim-cross-i386 ios64-cross-arm64 ios-cross-armv7s ios-cross-armv7 tvos-sim-cross-x86_64 tvos64-cross-arm64"
+    TARGETS="${DEFAULTTARGETS}"
   fi
 
   # Add no-deprecated config option (if not overwritten)
