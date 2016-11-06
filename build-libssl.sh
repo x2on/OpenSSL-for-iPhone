@@ -22,24 +22,30 @@
 # -u  Attempt to use undefined variable outputs error message, and forces an exit
 set -u
 
-DEFAULTVERSION="1.0.2j" # Default version in case no version is specified
-IOS_MIN_SDK_VERSION="7.0" # Minimum iOS SDK version to build for
-TVOS_MIN_SDK_VERSION="9.0" # Minimum tvOS SDK version to build for
+# SCRIPT DEFAULTS
 
-# Init optional env variables
+# Default version in case no version is specified
+DEFAULTVERSION="1.0.2j"
+
+# Default (=full) set of architectures (OpenSSL <= 1.0.2) or targets (OpenSSL >= 1.1.0) to build
+DEFAULTARCHS="x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
+DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-i386 ios64-cross-arm64 ios-cross-armv7s ios-cross-armv7 tvos-sim-cross-x86_64 tvos64-cross-arm64"
+
+# Minimum iOS/tvOS SDK version to build for
+IOS_MIN_SDK_VERSION="7.0"
+TVOS_MIN_SDK_VERSION="9.0"
+
+# Init optional env variables (use available variable or default to empty string)
 CURL_OPTIONS="${CURL_OPTIONS:-}"
 CONFIG_OPTIONS="${CONFIG_OPTIONS:-}"
 
 echo_help()
 {
   echo "Usage: $0 [options...]"
-  echo "     --archs=\"ARCH ARCH ...\"       Space-separated list of architectures to build"
-  echo "                                     Options: x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
-  echo "                                     Note: The framework will contain include files from the architecture listed first"
+  echo "Generic options"
   echo "     --branch=BRANCH               Select OpenSSL branch to build. The script will determine and download the latest release for that branch"
-  echo "                                     Note: This script does not yet work with OpenSSL 1.1.0"
   echo "     --cleanup                     Clean up build directories (bin, include/openssl, lib, src) before starting build"
-  echo "     --ec-nistp-64-gcc-128         Enable config option enable-ec_nistp_64_gcc_128 for 64 bit builds"
+  echo "     --ec-nistp-64-gcc-128         Enable configure option enable-ec_nistp_64_gcc_128 for 64 bit builds"
   echo " -h, --help                        Print help (this message)"
   echo "     --ios-sdk=SDKVERSION          Override iOS SDK version"
   echo "     --noparallel                  Disable running make with parallel jobs (make -j)"
@@ -47,7 +53,17 @@ echo_help()
   echo " -v, --verbose                     Enable verbose logging"
   echo "     --verbose-on-error            Dump last 500 lines from log file if an error occurs (for Travis builds)"
   echo "     --version=VERSION             OpenSSL version to build (defaults to ${DEFAULTVERSION})"
-  echo "                                     Note: This script does not yet work with OpenSSL 1.1.0"
+  echo
+  echo "Options for OpenSSL 1.0.2 and lower ONLY"
+  echo "     --archs=\"ARCH ARCH ...\"       Space-separated list of architectures to build"
+  echo "                                     Options: ${DEFAULTARCHS}"
+  echo "                                     Note: The framework will contain include files from the architecture listed first"
+  echo
+  echo "Options for OpenSSL 1.1.0 and higher ONLY"
+  echo "     --deprecated                  Exclude no-deprecated configure option and build with deprecated methods"
+  echo "     --targets=\"TARGET TARGET ...\" Space-separated list of build targets"
+  echo "                                     Options: ${DEFAULTTARGETS}"
+  echo "                                     Note: The library will use include files from the target listed first"
   echo
   echo "For custom configure options, set variable CONFIG_OPTIONS"
   echo "For custom cURL options, set variable CURL_OPTIONS"
@@ -61,12 +77,11 @@ spinner()
   local spinstr='|/-\'
   while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
     local temp=${spinstr#?}
-    printf " [%c]" "$spinstr"
+    printf "  [%c]" "$spinstr"
     local spinstr=$temp${spinstr%"$temp"}
     sleep $delay
-    printf "\b\b\b\b"
+    printf "\b\b\b\b\b"
   done
-  printf "    \b\b"
 
   wait $pid
   return $?
@@ -78,7 +93,6 @@ check_status()
   local STATUS=$1
   local COMMAND=$2
 
-  echo "\n"
   if [ "${STATUS}" != 0 ]; then
     if [[ "${LOG_VERBOSE}" != "verbose"* ]]; then
       echo "Problem during ${COMMAND} - Please check ${LOG}"
@@ -100,9 +114,11 @@ ARCHS=""
 BRANCH=""
 CLEANUP=""
 CONFIG_ENABLE_EC_NISTP_64_GCC_128=""
+CONFIG_NO_DEPRECATED=""
 IOS_SDKVERSION=""
-PARALLEL=""
 LOG_VERBOSE=""
+PARALLEL=""
+TARGETS=""
 TVOS_SDKVERSION=""
 VERSION=""
 
@@ -121,6 +137,9 @@ case $i in
   --cleanup)
     CLEANUP="true"
     ;;
+  --deprecated)
+    CONFIG_NO_DEPRECATED="false"
+    ;;
   --ec-nistp-64-gcc-128)
     CONFIG_ENABLE_EC_NISTP_64_GCC_128="true"
     ;;
@@ -134,6 +153,9 @@ case $i in
     ;;
   --noparallel)
     PARALLEL="false"
+    ;;
+  --targets=*)
+    TARGETS="${i#*=}"
     shift
     ;;
   --tvos-sdk=*)
@@ -207,6 +229,38 @@ fi
 # Set GITHUB_VERSION (version with underscores instead of dots)
 GITHUB_VERSION="${VERSION//./_}"
 
+# Build type:
+# In short, type "archs" is used for OpenSSL versions in the 1.0 branch and type "targets" for later versions.
+#
+# Significant changes to the build process were introduced with OpenSSL 1.1.0. As a result, this script was updated
+# to include two separate build loops for versions <= 1.0 and versions >= 1.1. The type "archs" matches the key variable
+# used to determine for which platforms to build for the 1.0 branch. Since 1.1, all platforms are defined in a separate/
+# custom configuration file as build targets. Therefore the key variable and type are called targets for 1.1 (and later).
+
+# OpenSSL branches <= 1.0
+if [[ "${GITHUB_VERSION}" =~ ^(0_9|1_0) ]]; then
+  BUILD_TYPE="archs"
+
+  # Set default for ARCHS if not specified
+  if [ ! -n "${ARCHS}" ]; then
+    ARCHS="${DEFAULTARCHS}"
+  fi
+
+# OpenSSL branches >= 1.1
+else
+  BUILD_TYPE="targets"
+
+  # Set default for TARGETS if not specified
+  if [ ! -n "${TARGETS}" ]; then
+    TARGETS="${DEFAULTTARGETS}"
+  fi
+
+  # Add no-deprecated config option (if not overwritten)
+  if [ "${CONFIG_NO_DEPRECATED}" != "false" ]; then
+    CONFIG_OPTIONS="${CONFIG_OPTIONS} no-deprecated"
+  fi
+fi
+
 # Determine SDK versions
 if [ ! -n "${IOS_SDKVERSION}" ]; then
   IOS_SDKVERSION=$(xcrun -sdk iphoneos --show-sdk-version)
@@ -215,18 +269,16 @@ if [ ! -n "${TVOS_SDKVERSION}" ]; then
   TVOS_SDKVERSION=$(xcrun -sdk appletvos --show-sdk-version)
 fi
 
-# Set default for ARCHS if not specified
-if [ ! -n "${ARCHS}" ]; then
-  ARCHS="x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
-fi
-
 # Determine number of cores for (parallel) build
 BUILD_THREADS=1
 if [ "${PARALLEL}" != "false" ]; then
   BUILD_THREADS=$(sysctl hw.ncpu | awk '{print $2}')
 fi
 
-# Write files relative to script location and validate directory
+# Determine script directory
+SCRIPTDIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
+
+# Write files relative to current location and validate directory
 CURRENTPATH=$(pwd)
 case "${CURRENTPATH}" in
   *\ * )
@@ -258,14 +310,18 @@ esac
 echo
 echo "Build options"
 echo "  OpenSSL version: ${VERSION}"
-echo "  Architectures: ${ARCHS}"
+if [ "${BUILD_TYPE}" == "archs" ]; then
+  echo "  Architectures: ${ARCHS}"
+else
+  echo "  Targets: ${TARGETS}"
+fi
 echo "  iOS SDK: ${IOS_SDKVERSION}"
 echo "  tvOS SDK: ${TVOS_SDKVERSION}"
 echo "  Number of make threads: ${BUILD_THREADS}"
 if [ -n "${CONFIG_OPTIONS}" ]; then
   echo "  Configure options: ${CONFIG_OPTIONS}"
 fi
-echo "  Script directory and build location: ${CURRENTPATH}"
+echo "  Build location: ${CURRENTPATH}"
 echo
 
 # Download OpenSSL when not present
@@ -276,7 +332,7 @@ if [ ! -e ${OPENSSL_ARCHIVE_FILE_NAME} ]; then
   OPENSSL_ARCHIVE_URL="https://github.com/openssl/openssl/archive/${OPENSSL_ARCHIVE_FILE_NAME}"
   # -L follow Location header, -f fail silently for 4xx errors and return status 22, -O Use server-specified filename for download
   curl ${CURL_OPTIONS} -LfO "${OPENSSL_ARCHIVE_URL}"
-  
+
   # Check for success status
   if [ $? -ne 0 ]; then
     echo "An error occured when trying to download OpenSSL ${VERSION} from ${OPENSSL_ARCHIVE_URL}."
@@ -384,7 +440,7 @@ do
     LC_ALL=C sed -i -- 's/D\_REENTRANT\:iOS/D\_REENTRANT\:tvOS/' "./Configure"
   else
     LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} -miphoneos-version-min=${IOS_MIN_SDK_VERSION}"
-    fi
+  fi
 
   # Add --openssldir option
   LOCAL_CONFIG_OPTIONS="--openssldir=${TARGETDIR} ${LOCAL_CONFIG_OPTIONS}"
@@ -397,7 +453,7 @@ do
   fi
 
   # Run Configure
-  echo "  Configure...\c"
+  echo "  Configure..."
   set +e
   if [ "${LOG_VERBOSE}" == "verbose" ]; then
     ./Configure ${LOCAL_CONFIG_OPTIONS} | tee "${LOG}"
@@ -428,7 +484,7 @@ do
   fi
 
   # Run make
-  echo "  Make...\c"
+  echo "  Make (using ${BUILD_THREADS} thread(s))..."
   if [ "${LOG_VERBOSE}" == "verbose" ]; then
     make -j "${BUILD_THREADS}" | tee -a "${LOG}"
   else
@@ -446,7 +502,8 @@ do
     make install_sw >> "${LOG}" 2>&1
   fi
 
-  # Remove source dir
+  # Return to ${CURRENTPATH} and remove source dir
+  cd "${CURRENTPATH}"
   rm -r "${SOURCEDIR}"
 
   # Add references to library files to relevant arrays
