@@ -19,7 +19,7 @@ PID_ARCHS=$!
 mkdir targets
 cd targets
 cp -r ../include .
-../build-libssl.sh --noparallel --verbose-on-error --ec-nistp-64-gcc-128 --version=1.1.0b | log_output "TARGETS" &
+../build-libssl.sh --noparallel --verbose-on-error --ec-nistp-64-gcc-128 --version=1.1.0c | log_output "TARGETS" &
 PID_TARGETS=$!
 
 echo "SCRIPT  Started jobs, waiting for jobs to finish"
