@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #  Automatic build script for libssl and libcrypto
 #  for iPhoneOS and iPhoneSimulator
@@ -78,7 +78,7 @@ check_status()
   local STATUS=$1
   local COMMAND=$2
 
-  echo "\n"
+  echo -e "\n"
   if [ "${STATUS}" != 0 ]; then
     if [[ "${LOG_VERBOSE}" != "verbose"* ]]; then
       echo "Problem during ${COMMAND} - Please check ${LOG}"
@@ -405,7 +405,7 @@ do
   fi
 
   # Run Configure
-  echo "  Configure...\c"
+  echo -e "  Configure...\c"
   set +e
   if [ "${LOG_VERBOSE}" == "verbose" ]; then
     ./Configure ${LOCAL_CONFIG_OPTIONS} | tee "${LOG}"
@@ -424,7 +424,7 @@ do
 
   # Run make depend if relevant
   if [[ ! -z "${CONFIG_OPTIONS}" ]]; then
-    echo "  Make depend...\c"
+    echo -e "  Make depend...\c"
     if [ "${LOG_VERBOSE}" == "verbose" ]; then
       make depend | tee -a "${LOG}"
     else
@@ -436,7 +436,7 @@ do
   fi
 
   # Run make
-  echo "  Make...\c"
+  echo -e "  Make...\c"
   if [ "${LOG_VERBOSE}" == "verbose" ]; then
     make -j "${BUILD_THREADS}" | tee -a "${LOG}"
   else
@@ -471,17 +471,13 @@ do
     INCLUDE_DIR="${TARGETDIR}/include/openssl"
   else
     # make sure the just-compiled version has a compatible opensslconf.h
-    TEMP1=`mktemp`
-    TEMP2=`mktemp`
-    grep -v 'ENGINESDIR\|OPENSSLDIR\|SYSNAME\|SIXTY_FOUR_BIT_LONG\|THIRTY_TWO_BIT\|BN_LLONG' ${INCLUDE_DIR}/opensslconf.h > $TEMP1
-    grep -v 'ENGINESDIR\|OPENSSLDIR\|SYSNAME\|SIXTY_FOUR_BIT_LONG\|THIRTY_TWO_BIT\|BN_LLONG' ${TARGETDIR}/include/openssl/opensslconf.h > $TEMP2
-    if ! cmp $TEMP1 $TEMP2 > /dev/null ; then
+    EXISTING=$(grep -v 'ENGINESDIR\|OPENSSLDIR\|SYSNAME\|SIXTY_FOUR_BIT_LONG\|THIRTY_TWO_BIT\|BN_LLONG' ${INCLUDE_DIR}/opensslconf.h)
+    THIS_BUILD=$(grep -v 'ENGINESDIR\|OPENSSLDIR\|SYSNAME\|SIXTY_FOUR_BIT_LONG\|THIRTY_TWO_BIT\|BN_LLONG' ${TARGETDIR}/include/openssl/opensslconf.h)
+    if [ "$EXISTING" != "$THIS_BUILD" ] ; then
       echo "opensslconf.h is different between platforms! this is bad!"
-      diff -uN $TEMP1 $TEMP2;
-      rm $TEMP1 $TEMP2;
+      diff -uN <(echo "$EXISTING") <(echo "$THIS_BUILD")
       exit 1;
     fi
-    rm $TEMP1 $TEMP2;
   fi
 done
 
