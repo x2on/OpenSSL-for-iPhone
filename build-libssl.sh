@@ -168,14 +168,41 @@ finish_build_loop()
   if [[ "${PLATFORM}" == AppleTV* ]]; then
     LIBSSL_TVOS+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_TVOS+=("${TARGETDIR}/lib/libcrypto.a")
+    mv ${TARGETDIR}/include/openssl/opensslconf.h ${TARGETDIR}/include/openssl/opensslconf_tvos_${ARCH}.h
   else
     LIBSSL_IOS+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_IOS+=("${TARGETDIR}/lib/libcrypto.a")
+    mv ${TARGETDIR}/include/openssl/opensslconf.h ${TARGETDIR}/include/openssl/opensslconf_${ARCH}.h
   fi
 
   # Keep reference to first build target for include file
   if [ -z "${INCLUDE_DIR}" ]; then
     INCLUDE_DIR="${TARGETDIR}/include/openssl"
+    cat > ${TARGETDIR}/include/openssl/opensslconf.h <<EOF
+#if defined(__arm__)
+# if defined(__ARM_ARCH_7S__)
+#  include <openssl/opensslconf_armv7s.h>
+# else
+#  include <openssl/opensslconf_armv7.h>
+# endif
+#elif defined(__aarch64__)
+# if defined(TARGET_OS_TV)
+#  include <openssl/opensslconf_tvos_arm64.h>
+# else
+#  include <openssl/opensslconf_arm64.h>
+# endif
+#elif defined(__x86_64__)
+# if defined(TARGET_OS_TV)
+#  include <openssl/opensslconf_tvos_x86_64.h>
+# else
+#  include <openssl/opensslconf_x86_64.h>
+# endif
+#else
+# include <openssl/opensslconf_i386.h>
+#endif
+EOF
+  else
+    cp ${TARGETDIR}/include/openssl/opensslconf_*.h ${INCLUDE_DIR}
   fi
 }
 
