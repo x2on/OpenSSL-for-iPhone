@@ -4,7 +4,7 @@
 #  for iPhoneOS and iPhoneSimulator
 #
 #  Created by Felix Schulze on 16.12.10.
-#  Copyright 2010-2016 Felix Schulze. All rights reserved.
+#  Copyright 2010-2017 Felix Schulze. All rights reserved.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ set -u
 # SCRIPT DEFAULTS
 
 # Default version in case no version is specified
-DEFAULTVERSION="1.0.2j"
+DEFAULTVERSION="1.0.2k"
 
 # Default (=full) set of architectures (OpenSSL <= 1.0.2) or targets (OpenSSL >= 1.1.0) to build
 DEFAULTARCHS="x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
