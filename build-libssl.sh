@@ -102,7 +102,7 @@ prepare_target_source_dirs()
   SOURCEDIR="${CURRENTPATH}/src/${PLATFORM}-${ARCH}"
   mkdir -p "${SOURCEDIR}"
   tar zxf "${CURRENTPATH}/${OPENSSL_ARCHIVE_FILE_NAME}" -C "${SOURCEDIR}"
-  cd "${SOURCEDIR}/openssl-${OPENSSL_ARCHIVE_BASE_NAME}"
+  cd "${SOURCEDIR}/${OPENSSL_ARCHIVE_BASE_NAME}"
   chmod u+x ./Configure
 }
 
@@ -262,31 +262,19 @@ elif [[ -n "${VERSION}" && ! "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+[a-z]*$ ]]; 
 elif [ -n "${BRANCH}" ]; then
   # Verify version number format. Expected: dot notation
   if [[ ! "${BRANCH}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    echo "Unknown branch version number format. Examples: 1.0.2, 1.0.1"
+    echo "Unknown branch version number format. Examples: 1.0.2, 1.1.0"
     exit 1
 
   # Valid version number, determine latest version
   else
-    echo "Checking latest version of ${BRANCH} branch on GitHub..."
-    # Request all git tags for the openssl repostory, get all tags that match the current branch version (with an optional alphabetic suffix), remove everything except the version number, sort the list and get the last item
-    GITHUB_VERSION=$(curl -Ls https://api.github.com/repos/openssl/openssl/git/refs/tags | grep -Eo "\"ref\": \"refs/tags/OpenSSL_${BRANCH//./_}[a-z]*\"" | sed -E 's|^.*"refs/tags/OpenSSL_([^"]+)".*$|\1|g' | sort | tail -1)
+    echo "Checking latest version of ${BRANCH} branch on ftp.openssl.org..."
+    # Get directory content of /source/ (only contains latest version per branch), limit list to archives (so one archive per branch),
+    # filter for the requested branch, sort the list and get the last item (last two steps to ensure there is always 1 result)
+    VERSION=$(curl ${CURL_OPTIONS} -ls ftp://ftp.openssl.org/source/ | grep -Eo '^openssl-[0-9]\.[0-9]\.[0-9][a-z]*\.tar\.gz$' | grep -Eo "${BRANCH//./\.}[a-z]*" | sort | tail -1)
 
     # Verify result
-    if [ -z "${GITHUB_VERSION}" ]; then
-      echo "Could not determine latest version, please check https://github.com/openssl/openssl/releases and use --version option"
-      exit 1
-    fi
-
-    VERSION="${GITHUB_VERSION//_/.}"
-
-    # Check whether download exists
-    # -I = HEAD, -L follow Location header, -f fail silently for 4xx errors and return status 22, -s silent
-    curl ${CURL_OPTIONS} -ILfs "https://github.com/openssl/openssl/archive/OpenSSL_${GITHUB_VERSION}.tar.gz" > /dev/null
-
-    # Check for success status
-    if [ $? -ne 0 ]; then
-      echo "Script determined latest version ${VERSION}, but the download archive does not seem to be available."
-      echo "Please check https://github.com/openssl/openssl/releases and use --version option"
+    if [ -z "${VERSION}" ]; then
+      echo "Could not determine latest version, please check https://openssl.org/source/ and use --version option"
       exit 1
     fi
   fi
@@ -295,9 +283,6 @@ elif [ -n "${BRANCH}" ]; then
 elif [ -z "${VERSION}" ]; then
   VERSION="${DEFAULTVERSION}"
 fi
-
-# Set GITHUB_VERSION (version with underscores instead of dots)
-GITHUB_VERSION="${VERSION//./_}"
 
 # Build type:
 # In short, type "archs" is used for OpenSSL versions in the 1.0 branch and type "targets" for later versions.
@@ -308,7 +293,7 @@ GITHUB_VERSION="${VERSION//./_}"
 # custom configuration file as build targets. Therefore the key variable and type are called targets for 1.1 (and later).
 
 # OpenSSL branches <= 1.0
-if [[ "${GITHUB_VERSION}" =~ ^(0_9|1_0) ]]; then
+if [[ "${VERSION}" =~ ^(0\.9|1\.0) ]]; then
   BUILD_TYPE="archs"
 
   # Set default for ARCHS if not specified
@@ -395,20 +380,35 @@ echo "  Build location: ${CURRENTPATH}"
 echo
 
 # Download OpenSSL when not present
-OPENSSL_ARCHIVE_BASE_NAME=OpenSSL_${GITHUB_VERSION}
-OPENSSL_ARCHIVE_FILE_NAME=${OPENSSL_ARCHIVE_BASE_NAME}.tar.gz
+OPENSSL_ARCHIVE_BASE_NAME="openssl-${VERSION}"
+OPENSSL_ARCHIVE_FILE_NAME="${OPENSSL_ARCHIVE_BASE_NAME}.tar.gz"
 if [ ! -e ${OPENSSL_ARCHIVE_FILE_NAME} ]; then
   echo "Downloading ${OPENSSL_ARCHIVE_FILE_NAME}..."
-  OPENSSL_ARCHIVE_URL="https://github.com/openssl/openssl/archive/${OPENSSL_ARCHIVE_FILE_NAME}"
-  # -L follow Location header, -f fail silently for 4xx errors and return status 22, -O Use server-specified filename for download
-  curl ${CURL_OPTIONS} -LfO "${OPENSSL_ARCHIVE_URL}"
+  OPENSSL_ARCHIVE_URL="ftp://ftp.openssl.org/source/${OPENSSL_ARCHIVE_FILE_NAME}"
 
-  # Check for success status
+  # Check whether file exists here
+  # -s be silent, -f return non-zero exit status on failure, -I get header (do not download)
+  curl ${CURL_OPTIONS} -sfI "${OPENSSL_ARCHIVE_URL}" > /dev/null
+
+  # If unsuccessful, try the archive
+  if [ $? -ne 0 ]; then
+    BRANCH=$(echo "${VERSION}" | grep -Eo '^[0-9]\.[0-9]\.[0-9]')
+    OPENSSL_ARCHIVE_URL="ftp://ftp.openssl.org/source/old/${BRANCH}/${OPENSSL_ARCHIVE_FILE_NAME}"
+
+    curl ${CURL_OPTIONS} -sfI "${OPENSSL_ARCHIVE_URL}" > /dev/null
+  fi
+
+  # Both attempts failed, so report the error
   if [ $? -ne 0 ]; then
     echo "An error occured when trying to download OpenSSL ${VERSION} from ${OPENSSL_ARCHIVE_URL}."
-    echo "Please check cURL's error message and/or your network connection."
+    echo "Please verify that the version you are trying to build exists, check cURL's error message and/or your network connection."
     exit 1
   fi
+
+  # Archive was found, so proceed with download
+  # -O Use server-specified filename for download
+  curl ${CURL_OPTIONS} -O "${OPENSSL_ARCHIVE_URL}"
+
 else
   echo "Using ${OPENSSL_ARCHIVE_FILE_NAME}"
 fi
