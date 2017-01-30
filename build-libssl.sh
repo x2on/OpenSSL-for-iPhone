@@ -384,30 +384,30 @@ OPENSSL_ARCHIVE_BASE_NAME="openssl-${VERSION}"
 OPENSSL_ARCHIVE_FILE_NAME="${OPENSSL_ARCHIVE_BASE_NAME}.tar.gz"
 if [ ! -e ${OPENSSL_ARCHIVE_FILE_NAME} ]; then
   echo "Downloading ${OPENSSL_ARCHIVE_FILE_NAME}..."
-  OPENSSL_ARCHIVE_URL="ftp://ftp.openssl.org/source/${OPENSSL_ARCHIVE_FILE_NAME}"
+  OPENSSL_ARCHIVE_URL="source/${OPENSSL_ARCHIVE_FILE_NAME}"
 
   # Check whether file exists here
   # -s be silent, -f return non-zero exit status on failure, -I get header (do not download)
-  curl ${CURL_OPTIONS} -sfI "${OPENSSL_ARCHIVE_URL}" > /dev/null
+  curl ${CURL_OPTIONS} -sfI "ftp://ftp.openssl.org/${OPENSSL_ARCHIVE_URL}" > /dev/null
 
   # If unsuccessful, try the archive
   if [ $? -ne 0 ]; then
     BRANCH=$(echo "${VERSION}" | grep -Eo '^[0-9]\.[0-9]\.[0-9]')
-    OPENSSL_ARCHIVE_URL="ftp://ftp.openssl.org/source/old/${BRANCH}/${OPENSSL_ARCHIVE_FILE_NAME}"
+    OPENSSL_ARCHIVE_URL="source/old/${BRANCH}/${OPENSSL_ARCHIVE_FILE_NAME}"
 
-    curl ${CURL_OPTIONS} -sfI "${OPENSSL_ARCHIVE_URL}" > /dev/null
+    curl ${CURL_OPTIONS} -sfI "ftp://ftp.openssl.org/${OPENSSL_ARCHIVE_URL}" > /dev/null
   fi
 
   # Both attempts failed, so report the error
   if [ $? -ne 0 ]; then
-    echo "An error occured when trying to download OpenSSL ${VERSION} from ${OPENSSL_ARCHIVE_URL}."
+    echo "An error occurred trying to find OpenSSL ${VERSION} on ftp://ftp.openssl.org/${OPENSSL_ARCHIVE_URL}"
     echo "Please verify that the version you are trying to build exists, check cURL's error message and/or your network connection."
     exit 1
   fi
 
-  # Archive was found, so proceed with download
+  # Archive was found, so proceed with download. Download over https
   # -O Use server-specified filename for download
-  curl ${CURL_OPTIONS} -O "${OPENSSL_ARCHIVE_URL}"
+  curl ${CURL_OPTIONS} -O "https://www.openssl.org/${OPENSSL_ARCHIVE_URL}"
 
 else
   echo "Using ${OPENSSL_ARCHIVE_FILE_NAME}"
