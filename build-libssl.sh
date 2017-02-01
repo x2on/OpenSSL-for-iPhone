@@ -267,14 +267,14 @@ elif [ -n "${BRANCH}" ]; then
 
   # Valid version number, determine latest version
   else
-    echo "Checking latest version of ${BRANCH} branch on ftp.openssl.org..."
-    # Get directory content of /source/ (only contains latest version per branch), limit list to archives (so one archive per branch),
+    echo "Checking latest version of ${BRANCH} branch on openssl.org..."
+    # Get directory content listing of /source/ (only contains latest version per branch), limit list to archives (so one archive per branch),
     # filter for the requested branch, sort the list and get the last item (last two steps to ensure there is always 1 result)
-    VERSION=$(curl ${CURL_OPTIONS} -ls ftp://ftp.openssl.org/source/ | grep -Eo '^openssl-[0-9]\.[0-9]\.[0-9][a-z]*\.tar\.gz$' | grep -Eo "${BRANCH//./\.}[a-z]*" | sort | tail -1)
+    VERSION=$(curl ${CURL_OPTIONS} -s https://ftp.openssl.org/source/ | grep -Eo '>openssl-[0-9]\.[0-9]\.[0-9][a-z]*\.tar\.gz<' | grep -Eo "${BRANCH//./\.}[a-z]*" | sort | tail -1)
 
     # Verify result
     if [ -z "${VERSION}" ]; then
-      echo "Could not determine latest version, please check https://openssl.org/source/ and use --version option"
+      echo "Could not determine latest version, please check https://www.openssl.org/source/ and use --version option"
       exit 1
     fi
   fi
