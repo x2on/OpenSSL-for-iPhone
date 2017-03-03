@@ -60,6 +60,7 @@ echo_help()
   echo "                                     Note: The framework will contain include files from the architecture listed first"
   echo
   echo "Options for OpenSSL 1.1.0 and higher ONLY"
+  echo "     --async                       Exclude no-async configure option and build with async support - do not use if submitting to App Store"
   echo "     --deprecated                  Exclude no-deprecated configure option and build with deprecated methods"
   echo "     --targets=\"TARGET TARGET ...\" Space-separated list of build targets"
   echo "                                     Options: ${DEFAULTTARGETS}"
@@ -184,6 +185,7 @@ ARCHS=""
 BRANCH=""
 CLEANUP=""
 CONFIG_ENABLE_EC_NISTP_64_GCC_128=""
+CONFIG_NO_ASYNC=""
 CONFIG_NO_DEPRECATED=""
 IOS_SDKVERSION=""
 LOG_VERBOSE=""
@@ -199,6 +201,9 @@ case $i in
   --archs=*)
     ARCHS="${i#*=}"
     shift
+    ;;
+  --async)
+    CONFIG_NO_ASYNC="false"
     ;;
   --branch=*)
     BRANCH="${i#*=}"
@@ -308,6 +313,11 @@ else
   # Set default for TARGETS if not specified
   if [ ! -n "${TARGETS}" ]; then
     TARGETS="${DEFAULTTARGETS}"
+  fi
+
+  # Add no-async config option (if not overwritten) - async being enabled leads to App Store rejection
+  if [ "${CONFIG_NO_ASYNC}" != "false" ]; then
+    CONFIG_OPTIONS="${CONFIG_OPTIONS} no-async"
   fi
 
   # Add no-deprecated config option (if not overwritten)

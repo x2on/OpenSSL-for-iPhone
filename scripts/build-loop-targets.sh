@@ -64,11 +64,6 @@ do
     LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} enable-ec_nistp_64_gcc_128"
   fi
 
-  # Disable unavailable async for tvOS builds
-  if [[ "${PLATFORM}" == AppleTV* ]]; then
-    LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} no-async"
-  fi
-
   # Run Configure
   run_configure
 
