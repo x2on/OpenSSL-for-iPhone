@@ -536,7 +536,9 @@ if [ ${#OPENSSLCONF_ALL[@]} -gt 1 ]; then
     echo "# include <openssl/${OPENSSLCONF_CURRENT}>" >> "${OPENSSLCONF_INTERMEDIATE}"
   done
 
-  # Finish with #endif
+  # Finish
+  echo "#else" >> "${OPENSSLCONF_INTERMEDIATE}"
+  echo '# error Unable to determine target or target not included in OpenSSL build' >> "${OPENSSLCONF_INTERMEDIATE}"
   echo "#endif" >> "${OPENSSLCONF_INTERMEDIATE}"
 fi
 
