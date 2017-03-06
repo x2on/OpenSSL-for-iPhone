@@ -57,13 +57,11 @@ echo_help()
   echo "Options for OpenSSL 1.0.2 and lower ONLY"
   echo "     --archs=\"ARCH ARCH ...\"       Space-separated list of architectures to build"
   echo "                                     Options: ${DEFAULTARCHS}"
-  echo "                                     Note: The framework will contain include files from the architecture listed first"
   echo
   echo "Options for OpenSSL 1.1.0 and higher ONLY"
   echo "     --deprecated                  Exclude no-deprecated configure option and build with deprecated methods"
   echo "     --targets=\"TARGET TARGET ...\" Space-separated list of build targets"
   echo "                                     Options: ${DEFAULTTARGETS}"
-  echo "                                     Note: The library will use include files from the target listed first"
   echo
   echo "For custom configure options, set variable CONFIG_OPTIONS"
   echo "For custom cURL options, set variable CURL_OPTIONS"
@@ -168,10 +166,17 @@ finish_build_loop()
   if [[ "${PLATFORM}" == AppleTV* ]]; then
     LIBSSL_TVOS+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_TVOS+=("${TARGETDIR}/lib/libcrypto.a")
+    OPENSSLCONF_SUFFIX="tvos_${ARCH}"
   else
     LIBSSL_IOS+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_IOS+=("${TARGETDIR}/lib/libcrypto.a")
+    OPENSSLCONF_SUFFIX="ios_${ARCH}"
   fi
+
+  # Copy opensslconf.h to bin directory and add to array
+  OPENSSLCONF="opensslconf_${OPENSSLCONF_SUFFIX}.h"
+  cp "${TARGETDIR}/include/openssl/opensslconf.h" "${CURRENTPATH}/bin/${OPENSSLCONF}"
+  OPENSSLCONF_ALL+=("${OPENSSLCONF}")
 
   # Keep reference to first build target for include file
   if [ -z "${INCLUDE_DIR}" ]; then
@@ -444,6 +449,7 @@ mkdir -p "${CURRENTPATH}/src"
 
 # Init vars for library references
 INCLUDE_DIR=""
+OPENSSLCONF_ALL=()
 LIBSSL_IOS=()
 LIBCRYPTO_IOS=()
 LIBSSL_TVOS=()
@@ -457,21 +463,84 @@ else
 fi
 
 # Build iOS library if selected for build
-if [ ${#LIBSSL_IOS} -gt 0 ]; then
+if [ ${#LIBSSL_IOS[@]} -gt 0 ]; then
   echo "Build library for iOS..."
   lipo -create ${LIBSSL_IOS[@]} -output "${CURRENTPATH}/lib/libssl.a"
   lipo -create ${LIBCRYPTO_IOS[@]} -output "${CURRENTPATH}/lib/libcrypto.a"
 fi
 
 # Build tvOS library if selected for build
-if [ ${#LIBSSL_TVOS} -gt 0 ] ; then
-    echo "Build library for tvOS..."
-    lipo -create ${LIBSSL_TVOS[@]} -output "${CURRENTPATH}/lib/libssl-tvOS.a"
-    lipo -create ${LIBCRYPTO_TVOS[@]} -output "${CURRENTPATH}/lib/libcrypto-tvOS.a"
+if [ ${#LIBSSL_TVOS[@]} -gt 0 ]; then
+  echo "Build library for tvOS..."
+  lipo -create ${LIBSSL_TVOS[@]} -output "${CURRENTPATH}/lib/libssl-tvOS.a"
+  lipo -create ${LIBCRYPTO_TVOS[@]} -output "${CURRENTPATH}/lib/libcrypto-tvOS.a"
 fi
 
 # Copy include directory
-cp -R "${INCLUDE_DIR}" ${CURRENTPATH}/include/
+cp -R "${INCLUDE_DIR}" "${CURRENTPATH}/include/"
+
+# Only create intermediate file when building for multiple targets
+# For a single target, opensslconf.h is still present in $INCLUDE_DIR (and has just been copied to the target include dir)
+if [ ${#OPENSSLCONF_ALL[@]} -gt 1 ]; then
+
+  # Prepare intermediate header file
+  # This overwrites opensslconf.h that was copied from $INCLUDE_DIR
+  OPENSSLCONF_INTERMEDIATE="${CURRENTPATH}/include/openssl/opensslconf.h"
+  cp "${CURRENTPATH}/include/opensslconf-template.h" "${OPENSSLCONF_INTERMEDIATE}"
+
+  # Loop all header files
+  LOOPCOUNT=0
+  for OPENSSLCONF_CURRENT in "${OPENSSLCONF_ALL[@]}" ; do
+
+    # Copy specific opensslconf file to include dir
+    cp "${CURRENTPATH}/bin/${OPENSSLCONF_CURRENT}" "${CURRENTPATH}/include/openssl"
+
+    # Determine define condition
+    case "${OPENSSLCONF_CURRENT}" in
+      *_ios_x86_64.h)
+        DEFINE_CONDITION="TARGET_OS_IOS && TARGET_OS_SIMULATOR && TARGET_CPU_X86_64"
+      ;;
+      *_ios_i386.h)
+        DEFINE_CONDITION="TARGET_OS_IOS && TARGET_OS_SIMULATOR && TARGET_CPU_X86"
+      ;;
+      *_ios_arm64.h)
+        DEFINE_CONDITION="TARGET_OS_IOS && TARGET_OS_EMBEDDED && TARGET_CPU_ARM64"
+      ;;
+      *_ios_armv7s.h)
+        DEFINE_CONDITION="TARGET_OS_IOS && TARGET_OS_EMBEDDED && TARGET_CPU_ARM && defined(__ARM_ARCH_7S__)"
+      ;;
+      *_ios_armv7.h)
+        DEFINE_CONDITION="TARGET_OS_IOS && TARGET_OS_EMBEDDED && TARGET_CPU_ARM && !defined(__ARM_ARCH_7S__)"
+      ;;
+      *_tvos_x86_64.h)
+        DEFINE_CONDITION="TARGET_OS_TV && TARGET_OS_SIMULATOR && TARGET_CPU_X86_64"
+      ;;
+      *_tvos_arm64.h)
+        DEFINE_CONDITION="TARGET_OS_TV && TARGET_OS_EMBEDDED && TARGET_CPU_ARM64"
+      ;;
+      *)
+        # Don't run into unexpected cases by setting the default condition to false
+        DEFINE_CONDITION="0"
+      ;;
+    esac
+
+    # Determine loopcount; start with if and continue with elif
+    LOOPCOUNT=$((LOOPCOUNT + 1))
+    if [ ${LOOPCOUNT} -eq 1 ]; then
+      echo "#if ${DEFINE_CONDITION}" >> "${OPENSSLCONF_INTERMEDIATE}"
+    else
+      echo "#elif ${DEFINE_CONDITION}" >> "${OPENSSLCONF_INTERMEDIATE}"
+    fi
+
+    # Add include
+    echo "# include <openssl/${OPENSSLCONF_CURRENT}>" >> "${OPENSSLCONF_INTERMEDIATE}"
+  done
+
+  # Finish
+  echo "#else" >> "${OPENSSLCONF_INTERMEDIATE}"
+  echo '# error Unable to determine target or target not included in OpenSSL build' >> "${OPENSSLCONF_INTERMEDIATE}"
+  echo "#endif" >> "${OPENSSLCONF_INTERMEDIATE}"
+fi
 
 echo "Done."
 
