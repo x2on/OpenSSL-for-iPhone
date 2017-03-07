@@ -57,6 +57,7 @@ echo_help()
   echo "Options for OpenSSL 1.0.2 and lower ONLY"
   echo "     --archs=\"ARCH ARCH ...\"       Space-separated list of architectures to build"
   echo "                                     Options: ${DEFAULTARCHS}"
+  echo "     --disable-bitcode             Disable embedding Bitcode"
   echo
   echo "Options for OpenSSL 1.1.0 and higher ONLY"
   echo "     --deprecated                  Exclude no-deprecated configure option and build with deprecated methods"
@@ -189,6 +190,7 @@ ARCHS=""
 BRANCH=""
 CLEANUP=""
 CONFIG_ENABLE_EC_NISTP_64_GCC_128=""
+CONFIG_DISABLE_BITCODE=""
 CONFIG_NO_DEPRECATED=""
 IOS_SDKVERSION=""
 LOG_VERBOSE=""
@@ -217,6 +219,9 @@ case $i in
     ;;
   --ec-nistp-64-gcc-128)
     CONFIG_ENABLE_EC_NISTP_64_GCC_128="true"
+    ;;
+  --disable-bitcode)
+    CONFIG_DISABLE_BITCODE="true"
     ;;
   -h|--help)
     echo_help
@@ -372,6 +377,11 @@ echo "Build options"
 echo "  OpenSSL version: ${VERSION}"
 if [ "${BUILD_TYPE}" == "archs" ]; then
   echo "  Architectures: ${ARCHS}"
+  if [ "${CONFIG_DISABLE_BITCODE}" == "true" ]; then
+    echo "  Bitcode disabled"
+  else
+    echo "  Bitcode enabled"
+  fi
 else
   echo "  Targets: ${TARGETS}"
 fi
