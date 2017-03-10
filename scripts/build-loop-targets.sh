@@ -56,17 +56,14 @@ do
   prepare_target_source_dirs
 
   ## Determine config options
-  # Add build target, --prefix and prevent creation of shared libraries (default since 1.1.0)
-  LOCAL_CONFIG_OPTIONS="${TARGET} --prefix=${TARGETDIR} ${CONFIG_OPTIONS} no-shared"
+  # Add build target, --prefix and prevent async (references to getcontext(),
+  # setcontext() and makecontext() result in App Store rejections) and creation
+  # of shared libraries (default since 1.1.0)
+  LOCAL_CONFIG_OPTIONS="${TARGET} --prefix=${TARGETDIR} ${CONFIG_OPTIONS} no-async no-shared"
 
   # Only relevant for 64 bit builds
   if [[ "${CONFIG_ENABLE_EC_NISTP_64_GCC_128}" == "true" && "${ARCH}" == *64  ]]; then
     LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} enable-ec_nistp_64_gcc_128"
-  fi
-
-  # Disable unavailable async for tvOS builds
-  if [[ "${PLATFORM}" == AppleTV* ]]; then
-    LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} no-async"
   fi
 
   # Run Configure
