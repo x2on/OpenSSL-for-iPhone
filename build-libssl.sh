@@ -50,6 +50,7 @@ echo_help()
   echo "     --ios-sdk=SDKVERSION          Override iOS SDK version"
   echo "     --noparallel                  Disable running make with parallel jobs (make -j)"
   echo "     --tvos-sdk=SDKVERSION         Override tvOS SDK version"
+  echo "     --disable-bitcode             Disable embedding Bitcode"
   echo " -v, --verbose                     Enable verbose logging"
   echo "     --verbose-on-error            Dump last 500 lines from log file if an error occurs (for Travis builds)"
   echo "     --version=VERSION             OpenSSL version to build (defaults to ${DEFAULTVERSION})"
@@ -57,7 +58,6 @@ echo_help()
   echo "Options for OpenSSL 1.0.2 and lower ONLY"
   echo "     --archs=\"ARCH ARCH ...\"       Space-separated list of architectures to build"
   echo "                                     Options: ${DEFAULTARCHS}"
-  echo "     --disable-bitcode             Disable embedding Bitcode"
   echo
   echo "Options for OpenSSL 1.1.0 and higher ONLY"
   echo "     --deprecated                  Exclude no-deprecated configure option and build with deprecated methods"
@@ -377,16 +377,14 @@ echo "Build options"
 echo "  OpenSSL version: ${VERSION}"
 if [ "${BUILD_TYPE}" == "archs" ]; then
   echo "  Architectures: ${ARCHS}"
-  if [ "${CONFIG_DISABLE_BITCODE}" == "true" ]; then
-    echo "  Bitcode disabled"
-  else
-    echo "  Bitcode enabled"
-  fi
 else
   echo "  Targets: ${TARGETS}"
 fi
 echo "  iOS SDK: ${IOS_SDKVERSION}"
 echo "  tvOS SDK: ${TVOS_SDKVERSION}"
+if [ "${CONFIG_DISABLE_BITCODE}" == "true" ]; then
+  echo "  Bitcode embedding disabled"
+fi
 echo "  Number of make threads: ${BUILD_THREADS}"
 if [ -n "${CONFIG_OPTIONS}" ]; then
   echo "  Configure options: ${CONFIG_OPTIONS}"

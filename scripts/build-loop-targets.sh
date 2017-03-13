@@ -32,6 +32,7 @@ do
   export SDKVERSION
   export IOS_MIN_SDK_VERSION
   export TVOS_MIN_SDK_VERSION
+  export CONFIG_DISABLE_BITCODE
 
   # Determine platform
   if [[ "${TARGET}" == "ios-sim-cross-"* ]]; then
