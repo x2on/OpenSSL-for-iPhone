@@ -50,6 +50,7 @@ echo_help()
   echo "     --ios-sdk=SDKVERSION          Override iOS SDK version"
   echo "     --noparallel                  Disable running make with parallel jobs (make -j)"
   echo "     --tvos-sdk=SDKVERSION         Override tvOS SDK version"
+  echo "     --disable-bitcode             Disable embedding Bitcode"
   echo " -v, --verbose                     Enable verbose logging"
   echo "     --verbose-on-error            Dump last 500 lines from log file if an error occurs (for Travis builds)"
   echo "     --version=VERSION             OpenSSL version to build (defaults to ${DEFAULTVERSION})"
@@ -189,6 +190,7 @@ ARCHS=""
 BRANCH=""
 CLEANUP=""
 CONFIG_ENABLE_EC_NISTP_64_GCC_128=""
+CONFIG_DISABLE_BITCODE=""
 CONFIG_NO_DEPRECATED=""
 IOS_SDKVERSION=""
 LOG_VERBOSE=""
@@ -217,6 +219,9 @@ case $i in
     ;;
   --ec-nistp-64-gcc-128)
     CONFIG_ENABLE_EC_NISTP_64_GCC_128="true"
+    ;;
+  --disable-bitcode)
+    CONFIG_DISABLE_BITCODE="true"
     ;;
   -h|--help)
     echo_help
@@ -377,6 +382,9 @@ else
 fi
 echo "  iOS SDK: ${IOS_SDKVERSION}"
 echo "  tvOS SDK: ${TVOS_SDKVERSION}"
+if [ "${CONFIG_DISABLE_BITCODE}" == "true" ]; then
+  echo "  Bitcode embedding disabled"
+fi
 echo "  Number of make threads: ${BUILD_THREADS}"
 if [ -n "${CONFIG_OPTIONS}" ]; then
   echo "  Configure options: ${CONFIG_OPTIONS}"
