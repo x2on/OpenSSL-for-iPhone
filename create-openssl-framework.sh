@@ -1,19 +1,19 @@
 #!/bin/bash
 
 FWNAME=openssl
+FWDIR=frameworks
 
 if [ ! -d lib ]; then
     echo "Please run build-libssl.sh first!"
     exit 1
 fi
 
-if [ -d $FWNAME.framework ]; then
-    echo "Removing previous $FWNAME.framework copy"
-    rm -rf $FWNAME.framework
+if [ -d $FWDIR ]; then
+    echo "Removing previous $FWNAME.framework copies"
+    rm -rf $FWDIR
 fi
 
-echo "Creating $FWNAME.framework"
-mkdir -p $FWNAME.framework/Headers
+ALL_SYSTEMS=("iPhone" "AppleTV")
 
 if [ "$1" == "dynamic" ]; then
     DEVELOPER=`xcode-select -print-path`
@@ -22,7 +22,6 @@ if [ "$1" == "dynamic" ]; then
     COMPAT_VERSION="1.0.0"
     CURRENT_VERSION="1.0.0"
 
-    LIBTOOL_FLAGS="-dynamic -lSystem -ios_version_min 8.0"
     RX='([A-z]+)([0-9]+(\.[0-9]+)*)-([A-z0-9]+)\.sdk'
 
     cd bin
@@ -39,8 +38,14 @@ if [ "$1" == "dynamic" ]; then
         CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
         SDK="${CROSS_TOP}/SDKs/${CROSS_SDK}"
 
+        if [[ $PLATFORM == AppleTV* ]]; then
+            MIN_SDK="-tvos_version_min 9.0"
+        else
+            MIN_SDK="-ios_version_min 8.0"
+        fi
+
         #cd $TARGETDIR
-        #libtool $LIBTOOL_FLAGS -L"$SDK/usr/lib/" -install_name $INSTALL_NAME -compatibility_version $COMPAT_VERSION -current_version $CURRENT_VERSION lib/*.a -o $FWNAME.dylib
+        #libtool -dynamic -lSystem $MIN_SDK -L"$SDK/usr/lib/" -install_name $INSTALL_NAME -compatibility_version $COMPAT_VERSION -current_version $CURRENT_VERSION lib/*.a -o $FWNAME.dylib
 
         TARGETOBJ="${TARGETDIR}/obj"
         rm -rf $TARGETOBJ
@@ -49,27 +54,43 @@ if [ "$1" == "dynamic" ]; then
         ar -x ../lib/libcrypto.a
         ar -x ../lib/libssl.a
         cd ..
-        ld obj/*.o -dylib -lSystem -ios_version_min 8.0 -L"$SDK/usr/lib/" -compatibility_version $COMPAT_VERSION -current_version $CURRENT_VERSION -application_extension -o $FWNAME.dylib
+        ld obj/*.o -dylib -lSystem $MIN_SDK -L"$SDK/usr/lib/" -compatibility_version $COMPAT_VERSION -current_version $CURRENT_VERSION -application_extension -o $FWNAME.dylib
         install_name_tool -id $INSTALL_NAME $FWNAME.dylib
 
         cd ..
     done
     cd ..
 
-    lipo -create bin/*/$FWNAME.dylib -output $FWNAME.framework/$FWNAME
+    for SYS in ${ALL_SYSTEMS[@]}; do
+        SYSDIR=$FWDIR/$SYS
+
+        # FIXME: skip if no device objects
+
+        echo "Creating framework for $SYS"
+        mkdir -p $SYSDIR/$FWNAME.framework/Headers
+        lipo -create bin/${SYS}*/$FWNAME.dylib -output $SYSDIR/$FWNAME.framework/$FWNAME
+        cp -r include/$FWNAME/* $SYSDIR/$FWNAME.framework/Headers/
+        cp -L assets/$SYS/Info.plist $SYSDIR/$FWNAME.framework/Info.plist
+        echo "Created $SYSDIR/$FWNAME.framework"
+    done
+
     rm bin/*/$FWNAME.dylib
 else
-    LIBTOOL_FLAGS="-static"
-    libtool $LIBTOOL_FLAGS -o $FWNAME.framework/$FWNAME lib/libcrypto.a lib/libssl.a
+    for SYS in ${ALL_SYSTEMS[@]}; do
+        SYSDIR=$FWDIR/$SYS
+
+        # FIXME: skip if no device objects
+
+        echo "Creating framework for $SYS"
+        mkdir -p $SYSDIR/$FWNAME.framework/Headers
+        libtool -static -o $SYSDIR/$FWNAME.framework/$FWNAME lib/libcrypto-$SYS.a lib/libssl-$SYS.a
+        cp -r include/$FWNAME/* $SYSDIR/$FWNAME.framework/Headers/
+        cp -L assets/$SYS/Info.plist $SYSDIR/$FWNAME.framework/Info.plist
+        echo "Created $SYSDIR/$FWNAME.framework"
+    done
 fi
 
-cp -r include/$FWNAME/* $FWNAME.framework/Headers/
-
-DIR="$(cd "$(dirname "$0")" && pwd)"
-cp $DIR/"OpenSSL-for-iOS/OpenSSL-for-iOS-Info.plist" $FWNAME.framework/Info.plist
-echo "Created $FWNAME.framework"
-
-check_bitcode=`otool -arch arm64 -l $FWNAME.framework/$FWNAME | grep __bitcode`
+check_bitcode=`otool -arch arm64 -l $FWDIR/iPhone/$FWNAME.framework/$FWNAME | grep __bitcode`
 if [ -z "$check_bitcode" ]
 then
   echo "INFO: $FWNAME.framework doesn't contain Bitcode"
