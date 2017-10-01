@@ -32,7 +32,7 @@ if [ "$1" == "dynamic" ]; then
             ARCH="${BASH_REMATCH[4]}"
         fi
 
-        echo "Assembling .dylib for $ARCH"
+        echo "Assembling .dylib for $PLATFORM $SDKVERSION ($ARCH)"
 
         CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
         CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
