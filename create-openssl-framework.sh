@@ -54,7 +54,7 @@ if [ "$1" == "dynamic" ]; then
         ar -x ../lib/libcrypto.a
         ar -x ../lib/libssl.a
         cd ..
-        ld obj/*.o -dylib -lSystem $MIN_SDK -L"$SDK/usr/lib/" -compatibility_version $COMPAT_VERSION -current_version $CURRENT_VERSION -application_extension -o $FWNAME.dylib
+        ld obj/*.o -dylib -lSystem -arch $ARCH $MIN_SDK -L"$SDK/usr/lib/" -compatibility_version $COMPAT_VERSION -current_version $CURRENT_VERSION -application_extension -o $FWNAME.dylib
         install_name_tool -id $INSTALL_NAME $FWNAME.dylib
 
         cd ..
