@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0EA706651F817CCC001E4F88 /* libcrypto-iPhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EA706611F817CCB001E4F88 /* libcrypto-iPhone.a */; };
+		0EA706661F817CCC001E4F88 /* libssl-iPhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EA706621F817CCB001E4F88 /* libssl-iPhone.a */; };
+		0EA706681F817CE5001E4F88 /* libcrypto-AppleTV.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EA706601F817CCB001E4F88 /* libcrypto-AppleTV.a */; };
+		0EA706691F817CE5001E4F88 /* libssl-AppleTV.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EA706631F817CCC001E4F88 /* libssl-AppleTV.a */; };
 		2A1DDC8F1BFB1DF600F7722A /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2A1DDC8E1BFB1DF600F7722A /* ViewController.xib */; };
 		2A3821001BFB5EEB00328618 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A3820FF1BFB5EEB00328618 /* AppDelegate.swift */; };
 		2A3821021BFB607A00328618 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A3821011BFB607A00328618 /* ViewController.swift */; };
@@ -15,13 +19,9 @@
 		2A8A9A7E1BFA59F7002944B4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A8A9A7D1BFA59F7002944B4 /* Assets.xcassets */; };
 		2A8A9A851BFA5AFF002944B4 /* ViewController~tv.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2A8A9A841BFA5AFF002944B4 /* ViewController~tv.xib */; };
 		2A8A9A871BFA5B6A002944B4 /* FSOpenSSL.m in Sources */ = {isa = PBXBuildFile; fileRef = D1E97EE2A904D58DAE4231E2 /* FSOpenSSL.m */; };
-		2A8A9A8A1BFA5B85002944B4 /* libcrypto-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A8A9A881BFA5B85002944B4 /* libcrypto-tvOS.a */; };
-		2A8A9A8B1BFA5B85002944B4 /* libssl-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A8A9A891BFA5B85002944B4 /* libssl-tvOS.a */; };
 		533ED3001528C4840005C6FA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED2FF1528C4840005C6FA /* UIKit.framework */; };
 		533ED3021528C4840005C6FA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED3011528C4840005C6FA /* Foundation.framework */; };
 		533ED3041528C4840005C6FA /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED3031528C4840005C6FA /* CoreGraphics.framework */; };
-		533ED32C1528C53B0005C6FA /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED32A1528C53B0005C6FA /* libcrypto.a */; };
-		533ED32D1528C53B0005C6FA /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED32B1528C53B0005C6FA /* libssl.a */; };
 		534FB2AE180975D700B5F868 /* Icons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 534FB2AD180975D700B5F868 /* Icons.xcassets */; };
 		53572A4D183AAFFE00B21832 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53572A4C183AAFFE00B21832 /* XCTest.framework */; };
 		53572A4E183AAFFE00B21832 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED3011528C4840005C6FA /* Foundation.framework */; };
@@ -42,6 +42,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0EA706601F817CCB001E4F88 /* libcrypto-AppleTV.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libcrypto-AppleTV.a"; path = "lib/libcrypto-AppleTV.a"; sourceTree = "<group>"; };
+		0EA706611F817CCB001E4F88 /* libcrypto-iPhone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libcrypto-iPhone.a"; path = "lib/libcrypto-iPhone.a"; sourceTree = "<group>"; };
+		0EA706621F817CCB001E4F88 /* libssl-iPhone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libssl-iPhone.a"; path = "lib/libssl-iPhone.a"; sourceTree = "<group>"; };
+		0EA706631F817CCC001E4F88 /* libssl-AppleTV.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libssl-AppleTV.a"; path = "lib/libssl-AppleTV.a"; sourceTree = "<group>"; };
 		2A1DDC8E1BFB1DF600F7722A /* ViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ViewController.xib; sourceTree = "<group>"; };
 		2A3820FE1BFB5EEA00328618 /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		2A3820FF1BFB5EEB00328618 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -50,16 +54,12 @@
 		2A8A9A7D1BFA59F7002944B4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2A8A9A7F1BFA59F7002944B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2A8A9A841BFA5AFF002944B4 /* ViewController~tv.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "ViewController~tv.xib"; sourceTree = "<group>"; };
-		2A8A9A881BFA5B85002944B4 /* libcrypto-tvOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libcrypto-tvOS.a"; path = "lib/libcrypto-tvOS.a"; sourceTree = "<group>"; };
-		2A8A9A891BFA5B85002944B4 /* libssl-tvOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libssl-tvOS.a"; path = "lib/libssl-tvOS.a"; sourceTree = "<group>"; };
 		533ED2FB1528C4840005C6FA /* OpenSSL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenSSL.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		533ED2FF1528C4840005C6FA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		533ED3011528C4840005C6FA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		533ED3031528C4840005C6FA /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		533ED3071528C4840005C6FA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		533ED30D1528C4840005C6FA /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
-		533ED32A1528C53B0005C6FA /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = lib/libcrypto.a; sourceTree = "<group>"; };
-		533ED32B1528C53B0005C6FA /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = lib/libssl.a; sourceTree = "<group>"; };
 		534FB2AD180975D700B5F868 /* Icons.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Icons.xcassets; sourceTree = "<group>"; };
 		53572A4B183AAFFE00B21832 /* OpenSSL-for-iOS_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "OpenSSL-for-iOS_Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		53572A4C183AAFFE00B21832 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -79,8 +79,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A8A9A8B1BFA5B85002944B4 /* libssl-tvOS.a in Frameworks */,
-				2A8A9A8A1BFA5B85002944B4 /* libcrypto-tvOS.a in Frameworks */,
+				0EA706681F817CE5001E4F88 /* libcrypto-AppleTV.a in Frameworks */,
+				0EA706691F817CE5001E4F88 /* libssl-AppleTV.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,10 +89,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				533ED3001528C4840005C6FA /* UIKit.framework in Frameworks */,
+				0EA706661F817CCC001E4F88 /* libssl-iPhone.a in Frameworks */,
 				533ED3021528C4840005C6FA /* Foundation.framework in Frameworks */,
 				533ED3041528C4840005C6FA /* CoreGraphics.framework in Frameworks */,
-				533ED32C1528C53B0005C6FA /* libcrypto.a in Frameworks */,
-				533ED32D1528C53B0005C6FA /* libssl.a in Frameworks */,
+				0EA706651F817CCC001E4F88 /* libcrypto-iPhone.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,10 +144,10 @@
 		533ED2FE1528C4840005C6FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				2A8A9A881BFA5B85002944B4 /* libcrypto-tvOS.a */,
-				2A8A9A891BFA5B85002944B4 /* libssl-tvOS.a */,
-				533ED32A1528C53B0005C6FA /* libcrypto.a */,
-				533ED32B1528C53B0005C6FA /* libssl.a */,
+				0EA706601F817CCB001E4F88 /* libcrypto-AppleTV.a */,
+				0EA706611F817CCB001E4F88 /* libcrypto-iPhone.a */,
+				0EA706631F817CCC001E4F88 /* libssl-AppleTV.a */,
+				0EA706621F817CCB001E4F88 /* libssl-iPhone.a */,
 				533ED2FF1528C4840005C6FA /* UIKit.framework */,
 				533ED3011528C4840005C6FA /* Foundation.framework */,
 				533ED3031528C4840005C6FA /* CoreGraphics.framework */,
@@ -349,7 +349,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ! -f lib/libcrypto.a ]; then\n    echo \"error: Please run ./build-libssl.h first\"\n    exit 1\nfi";
+			shellScript = "if [ ! -f lib/libcrypto-iPhone.a ]; then\n    echo \"error: Please run ./build-libssl.h first\"\n    exit 1\nfi";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -428,7 +428,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "de.felixschulze.OpenSSL-for-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SWIFT_OBJC_BRIDGING_HEADER = "OpenSSL-for-iOS/OpenSSL-for-iOS-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "OpenSSL-for-iOS/Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
@@ -460,7 +460,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "de.felixschulze.OpenSSL-for-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SWIFT_OBJC_BRIDGING_HEADER = "OpenSSL-for-iOS/OpenSSL-for-iOS-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "OpenSSL-for-iOS/Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
@@ -560,6 +560,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/lib\"",
+					"$(PROJECT_DIR)/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "de.felixschulze.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = OpenSSL;
@@ -583,6 +584,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/lib\"",
+					"$(PROJECT_DIR)/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "de.felixschulze.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = OpenSSL;

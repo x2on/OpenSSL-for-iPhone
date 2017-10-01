@@ -29,12 +29,12 @@ wait ${PID_TARGETS}
 # Verify/prepare 1.1.0 build dir
 xcrun -sdk iphoneos lipo -info ./lib/*.a | log_output "TARGETS"
 ../create-openssl-framework.sh | log_output "TARGETS"
-xcrun -sdk iphoneos lipo -info openssl.framework/openssl | log_output "TARGETS"
+xcrun -sdk iphoneos lipo -info frameworks/iPhone/openssl.framework/openssl | log_output "TARGETS"
 cp -r ../OpenSSL-for-* .
 
 # Back to main dir
 cd ..
 xcrun -sdk iphoneos lipo -info ./lib/*.a | log_output "ARCHS  "
 ./create-openssl-framework.sh | log_output "ARCHS  "
-xcrun -sdk iphoneos lipo -info openssl.framework/openssl | log_output "ARCHS  "
+xcrun -sdk iphoneos lipo -info frameworks/iPhone/openssl.framework/openssl | log_output "ARCHS  "
 
