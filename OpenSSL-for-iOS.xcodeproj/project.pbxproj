@@ -43,7 +43,7 @@
 
 /* Begin PBXFileReference section */
 		2A1DDC8E1BFB1DF600F7722A /* ViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ViewController.xib; sourceTree = "<group>"; };
-		2A3820FE1BFB5EEA00328618 /* OpenSSL-for-iOS-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "OpenSSL-for-iOS-Bridging-Header.h"; sourceTree = "<group>"; };
+		2A3820FE1BFB5EEA00328618 /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		2A3820FF1BFB5EEB00328618 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2A3821011BFB607A00328618 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		2A8A9A6F1BFA59F7002944B4 /* OpenSSL-for-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OpenSSL-for-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -56,8 +56,8 @@
 		533ED2FF1528C4840005C6FA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		533ED3011528C4840005C6FA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		533ED3031528C4840005C6FA /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		533ED3071528C4840005C6FA /* OpenSSL-for-iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "OpenSSL-for-iOS-Info.plist"; sourceTree = "<group>"; };
-		533ED30D1528C4840005C6FA /* OpenSSL-for-iOS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "OpenSSL-for-iOS-Prefix.pch"; sourceTree = "<group>"; };
+		533ED3071528C4840005C6FA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		533ED30D1528C4840005C6FA /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
 		533ED32A1528C53B0005C6FA /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = lib/libcrypto.a; sourceTree = "<group>"; };
 		533ED32B1528C53B0005C6FA /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = lib/libssl.a; sourceTree = "<group>"; };
 		534FB2AD180975D700B5F868 /* Icons.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Icons.xcassets; sourceTree = "<group>"; };
@@ -174,9 +174,9 @@
 		533ED3061528C4840005C6FA /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				533ED3071528C4840005C6FA /* OpenSSL-for-iOS-Info.plist */,
-				533ED30D1528C4840005C6FA /* OpenSSL-for-iOS-Prefix.pch */,
-				2A3820FE1BFB5EEA00328618 /* OpenSSL-for-iOS-Bridging-Header.h */,
+				533ED3071528C4840005C6FA /* Info.plist */,
+				533ED30D1528C4840005C6FA /* Prefix.pch */,
+				2A3820FE1BFB5EEA00328618 /* Bridging-Header.h */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -554,8 +554,8 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "OpenSSL-for-iOS/OpenSSL-for-iOS-Prefix.pch";
-				INFOPLIST_FILE = "OpenSSL-for-iOS/OpenSSL-for-iOS-Info.plist";
+				GCC_PREFIX_HEADER = "OpenSSL-for-iOS/Prefix.pch";
+				INFOPLIST_FILE = "$(SRCROOT)/OpenSSL-for-iOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -563,7 +563,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "de.felixschulze.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = OpenSSL;
-				SWIFT_OBJC_BRIDGING_HEADER = "OpenSSL-for-iOS/OpenSSL-for-iOS-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "OpenSSL-for-iOS/Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = app;
@@ -577,8 +577,8 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "OpenSSL-for-iOS/OpenSSL-for-iOS-Prefix.pch";
-				INFOPLIST_FILE = "OpenSSL-for-iOS/OpenSSL-for-iOS-Info.plist";
+				GCC_PREFIX_HEADER = "OpenSSL-for-iOS/Prefix.pch";
+				INFOPLIST_FILE = "$(SRCROOT)/OpenSSL-for-iOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -586,7 +586,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "de.felixschulze.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = OpenSSL;
-				SWIFT_OBJC_BRIDGING_HEADER = "OpenSSL-for-iOS/OpenSSL-for-iOS-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "OpenSSL-for-iOS/Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = app;
 			};
