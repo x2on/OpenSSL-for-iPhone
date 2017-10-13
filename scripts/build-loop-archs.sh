@@ -24,6 +24,8 @@ do
   # Determine relevant SDK version
   if [[ "$ARCH" == tv* ]]; then
     SDKVERSION=${TVOS_SDKVERSION}
+  elif [[ "$ARCH" == mac* ]]; then
+    SDKVERSION=${MACOS_SDKVERSION}
   else
     SDKVERSION=${IOS_SDKVERSION}
   fi
@@ -37,6 +39,12 @@ do
   elif [ "${ARCH}" == "tv_arm64" ]; then
     ARCH="arm64"
     PLATFORM="AppleTVOS"
+  elif [ "${ARCH}" == "mac_x86_64" ]; then
+    ARCH="x86_64"
+    PLATFORM="MacOSX"
+  elif [ "${ARCH}" == "mac_i386" ]; then
+    ARCH="i386"
+    PLATFORM="MacOSX"
   else
     PLATFORM="iPhoneOS"
   fi
@@ -72,6 +80,8 @@ do
     LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} -DHAVE_FORK=0 -mtvos-version-min=${TVOS_MIN_SDK_VERSION}"
     echo "  Patching Configure..."
     LC_ALL=C sed -i -- 's/D\_REENTRANT\:iOS/D\_REENTRANT\:tvOS/' "./Configure"
+  elif [[ "${PLATFORM}" == MacOSX* ]]; then
+    LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} -mmacosx-version-min=${MACOS_MIN_SDK_VERSION}"
   else
     LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} -miphoneos-version-min=${IOS_MIN_SDK_VERSION}"
   fi

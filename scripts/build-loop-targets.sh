@@ -24,12 +24,15 @@ do
   # Determine relevant SDK version
   if [[ "${TARGET}" == tvos* ]]; then
     SDKVERSION="${TVOS_SDKVERSION}"
+  elif [[ "${TARGET}" == macos* ]]; then
+    SDKVERSION="${MACOS_SDKVERSION}"
   else
     SDKVERSION="${IOS_SDKVERSION}"
   fi
 
   # These variables are used in the configuration file
   export SDKVERSION
+  export MACOS_MIN_SDK_VERSION
   export IOS_MIN_SDK_VERSION
   export TVOS_MIN_SDK_VERSION
   export CONFIG_DISABLE_BITCODE
@@ -41,6 +44,8 @@ do
     PLATFORM="AppleTVSimulator"
   elif [[ "${TARGET}" == "tvos64-cross-"* ]]; then
     PLATFORM="AppleTVOS"
+  elif [[ "${TARGET}" == "macos"* ]]; then
+    PLATFORM="MacOSX"
   else
     PLATFORM="iPhoneOS"
   fi
