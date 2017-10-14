@@ -31,23 +31,20 @@ do
   fi
 
   # Determine platform, override arch for tvOS builds
-  if [[ "${ARCH}" == "i386" || "${ARCH}" == "x86_64" ]]; then
+  if [[ "${ARCH}" == "ios_x86_64" || "${ARCH}" == "ios_i386" ]]; then
     PLATFORM="iPhoneSimulator"
   elif [ "${ARCH}" == "tv_x86_64" ]; then
-    ARCH="x86_64"
     PLATFORM="AppleTVSimulator"
   elif [ "${ARCH}" == "tv_arm64" ]; then
-    ARCH="arm64"
     PLATFORM="AppleTVOS"
-  elif [ "${ARCH}" == "mac_x86_64" ]; then
-    ARCH="x86_64"
-    PLATFORM="MacOSX"
-  elif [ "${ARCH}" == "mac_i386" ]; then
-    ARCH="i386"
+  elif [[ "${ARCH}" == "mac_x86_64" || "${ARCH}" == "mac_i386" ]]; then
     PLATFORM="MacOSX"
   else
     PLATFORM="iPhoneOS"
   fi
+
+  # Extract ARCH from pseudo ARCH (part after first underscore)
+  ARCH=$(echo "${ARCH}" | sed -E 's|^[^_]*_(.+)$|\1|g')
 
   # Set env vars for Configure
   export CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"

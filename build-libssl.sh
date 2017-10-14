@@ -28,7 +28,7 @@ set -u
 DEFAULTVERSION="1.0.2l"
 
 # Default (=full) set of architectures (OpenSSL <= 1.0.2) or targets (OpenSSL >= 1.1.0) to build
-DEFAULTARCHS="x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64 mac_x86_64 mac_i386"
+DEFAULTARCHS="ios_x86_64 ios_i386 ios_arm64 ios_armv7s ios_armv7 tv_x86_64 tv_arm64 mac_x86_64 mac_i386"
 DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-i386 ios64-cross-arm64 ios-cross-armv7s ios-cross-armv7 tvos-sim-cross-x86_64 tvos64-cross-arm64 macos64-x86_64 macos-i386"
 
 # Minimum iOS/tvOS SDK version to build for
