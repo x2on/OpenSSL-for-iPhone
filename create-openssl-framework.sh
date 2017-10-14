@@ -45,7 +45,7 @@ if [ "$1" == "dynamic" ]; then
         fi
 
         #cd $TARGETDIR
-        #libtool -dynamic -lSystem $MIN_SDK -L"$SDK/usr/lib/" -install_name $INSTALL_NAME -compatibility_version $COMPAT_VERSION -current_version $CURRENT_VERSION lib/*.a -o $FWNAME.dylib
+        #libtool -dynamic -lSystem $MIN_SDK -syslibroot $SDK -install_name $INSTALL_NAME -compatibility_version $COMPAT_VERSION -current_version $CURRENT_VERSION lib/*.a -o $FWNAME.dylib
 
         TARGETOBJ="${TARGETDIR}/obj"
         rm -rf $TARGETOBJ
@@ -54,7 +54,7 @@ if [ "$1" == "dynamic" ]; then
         ar -x ../lib/libcrypto.a
         ar -x ../lib/libssl.a
         cd ..
-        ld obj/*.o -dylib -lSystem -arch $ARCH $MIN_SDK -L"$SDK/usr/lib/" -compatibility_version $COMPAT_VERSION -current_version $CURRENT_VERSION -application_extension -o $FWNAME.dylib
+        ld obj/*.o -dylib -lSystem -arch $ARCH $MIN_SDK -syslibroot $SDK -compatibility_version $COMPAT_VERSION -current_version $CURRENT_VERSION -application_extension -o $FWNAME.dylib
         install_name_tool -id $INSTALL_NAME $FWNAME.dylib
 
         cd ..
