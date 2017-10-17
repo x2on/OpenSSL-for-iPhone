@@ -33,7 +33,7 @@ DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-i386 ios64-cross-arm64 ios-cr
 
 # Minimum iOS/tvOS SDK version to build for
 MACOS_MIN_SDK_VERSION="10.11"
-IOS_MIN_SDK_VERSION="7.0"
+IOS_MIN_SDK_VERSION="8.0"
 TVOS_MIN_SDK_VERSION="9.0"
 
 # Init optional env variables (use available variable or default to empty string)
@@ -52,7 +52,7 @@ echo_help()
   echo "     --ios-sdk=SDKVERSION          Override iOS SDK version"
   echo "     --noparallel                  Disable running make with parallel jobs (make -j)"
   echo "     --tvos-sdk=SDKVERSION         Override tvOS SDK version"
-  echo "     --disable-bitcode             Disable embedding Bitcode"
+  #echo "     --disable-bitcode             Disable embedding Bitcode"
   echo " -v, --verbose                     Enable verbose logging"
   echo "     --verbose-on-error            Dump last 500 lines from log file if an error occurs (for Travis builds)"
   echo "     --version=VERSION             OpenSSL version to build (defaults to ${DEFAULTVERSION})"
@@ -227,9 +227,9 @@ case $i in
   --ec-nistp-64-gcc-128)
     CONFIG_ENABLE_EC_NISTP_64_GCC_128="true"
     ;;
-  --disable-bitcode)
-    CONFIG_DISABLE_BITCODE="true"
-    ;;
+  #--disable-bitcode)
+  #  CONFIG_DISABLE_BITCODE="true"
+  #  ;;
   -h|--help)
     echo_help
     exit
