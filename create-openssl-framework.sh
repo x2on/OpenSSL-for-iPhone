@@ -26,10 +26,10 @@ ALL_SYSTEMS=("iPhone" "AppleTV")
 function check_bitcode() {
     local FWDIR=$1
 
-    if [[ $FWTYPE == static ]]; then
-        BITCODE_PATTERN="__bitcode"
-    else
+    if [[ $FWTYPE == "dynamic" ]]; then
         BITCODE_PATTERN="__LLVM"
+    else
+        BITCODE_PATTERN="__bitcode"
     fi
 
     if otool -l "$FWDIR/$FWNAME" | grep "${BITCODE_PATTERN}" >/dev/null; then
