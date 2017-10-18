@@ -1,7 +1,6 @@
 #!/bin/bash
 
-set -eu
-#set -euxo pipefail
+set -euo pipefail
 
 if [ $# == 0 ]; then
     echo "Usage: `basename $0` static|dynamic"
@@ -33,9 +32,7 @@ function check_bitcode() {
         BITCODE_PATTERN="__LLVM"
     fi
 
-    if otool -l "$FWDIR/$FWNAME" | grep -q "${BITCODE_PATTERN}"; then
-    #BITCODE_MATCHES=$(otool -l "$FWDIR/$FWNAME" | grep -c "${BITCODE_PATTERN}")
-    #if [[ $BITCODE_MATCHES -gt 0 ]]; then
+    if otool -l "$FWDIR/$FWNAME" | grep "${BITCODE_PATTERN}" >/dev/null; then
         echo "INFO: $FWDIR contains Bitcode"
     else
         echo "INFO: $FWDIR doesn't contain Bitcode"
