@@ -23,11 +23,9 @@ if [ -d $FWROOT ]; then
 fi
 
 ALL_SYSTEMS=("iPhone" "AppleTV")
-ALL_BITCODE_ARCHS=("arm64" "arm64")
 
 function check_bitcode() {
     local FWDIR=$1
-    local BITCODE_ARCH=$2
 
     if [[ $FWTYPE == static ]]; then
         BITCODE_PATTERN="__bitcode"
@@ -35,8 +33,8 @@ function check_bitcode() {
         BITCODE_PATTERN="__LLVM"
     fi
 
-    if otool -arch $BITCODE_ARCH -l "$FWDIR/$FWNAME" | grep -q "${BITCODE_PATTERN}"; then
-    #BITCODE_MATCHES=$(otool -arch $BITCODE_ARCH -l "$FWDIR/$FWNAME" | grep -c "${BITCODE_PATTERN}")
+    if otool -l "$FWDIR/$FWNAME" | grep -q "${BITCODE_PATTERN}"; then
+    #BITCODE_MATCHES=$(otool -l "$FWDIR/$FWNAME" | grep -c "${BITCODE_PATTERN}")
     #if [[ $BITCODE_MATCHES -gt 0 ]]; then
         echo "INFO: $FWDIR contains Bitcode"
     else
@@ -101,12 +99,10 @@ if [ $FWTYPE == "dynamic" ]; then
     done
     cd ..
 
-    for SYS_IDX in ${!ALL_SYSTEMS[@]}; do
-        SYS=${ALL_SYSTEMS[$SYS_IDX]}
+    for SYS in ${ALL_SYSTEMS[@]}; do
         SYSDIR="$FWROOT/$SYS"
         FWDIR="$SYSDIR/$FWNAME.framework"
         DYLIBS=(bin/${SYS}*/$FWNAME.dylib)
-        BITCODE_ARCH=${ALL_BITCODE_ARCHS[$SYS_IDX]}
 
         if [[ ${#DYLIBS[@]} -gt 0 && -e ${DYLIBS[0]} ]]; then
             echo "Creating framework for $SYS"
@@ -115,7 +111,7 @@ if [ $FWTYPE == "dynamic" ]; then
             cp -r include/$FWNAME/* $FWDIR/Headers/
             cp -L assets/$SYS/Info.plist $FWDIR/Info.plist
             echo "Created $FWDIR"
-            check_bitcode $FWDIR $BITCODE_ARCH
+            check_bitcode $FWDIR
         else
             echo "Skipped framework for $SYS"
         fi
@@ -123,11 +119,9 @@ if [ $FWTYPE == "dynamic" ]; then
 
     rm bin/*/$FWNAME.dylib
 else
-    for SYS_IDX in ${!ALL_SYSTEMS[@]}; do
-        SYS=${ALL_SYSTEMS[$SYS_IDX]}
+    for SYS in ${ALL_SYSTEMS[@]}; do
         SYSDIR="$FWROOT/$SYS"
         FWDIR="$SYSDIR/$FWNAME.framework"
-        BITCODE_ARCH=${ALL_BITCODE_ARCHS[$SYS_IDX]}
 
         if [[ -e lib/libcrypto-$SYS.a && -e lib/libssl-$SYS.a ]]; then
             echo "Creating framework for $SYS"
@@ -136,7 +130,7 @@ else
             cp -r include/$FWNAME/* $FWDIR/Headers/
             cp -L assets/$SYS/Info.plist $FWDIR/Info.plist
             echo "Created $FWDIR"
-            check_bitcode $FWDIR $BITCODE_ARCH
+            check_bitcode $FWDIR
         else
             echo "Skipped framework for $SYS"
         fi
