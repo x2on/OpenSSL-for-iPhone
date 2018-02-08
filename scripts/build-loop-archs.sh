@@ -24,22 +24,27 @@ do
   # Determine relevant SDK version
   if [[ "$ARCH" == tv* ]]; then
     SDKVERSION=${TVOS_SDKVERSION}
+  elif [[ "$ARCH" == mac* ]]; then
+    SDKVERSION=${MACOS_SDKVERSION}
   else
     SDKVERSION=${IOS_SDKVERSION}
   fi
 
   # Determine platform, override arch for tvOS builds
-  if [[ "${ARCH}" == "i386" || "${ARCH}" == "x86_64" ]]; then
+  if [[ "${ARCH}" == "ios_x86_64" || "${ARCH}" == "ios_i386" ]]; then
     PLATFORM="iPhoneSimulator"
   elif [ "${ARCH}" == "tv_x86_64" ]; then
-    ARCH="x86_64"
     PLATFORM="AppleTVSimulator"
   elif [ "${ARCH}" == "tv_arm64" ]; then
-    ARCH="arm64"
     PLATFORM="AppleTVOS"
+  elif [[ "${ARCH}" == "mac_x86_64" || "${ARCH}" == "mac_i386" ]]; then
+    PLATFORM="MacOSX"
   else
     PLATFORM="iPhoneOS"
   fi
+
+  # Extract ARCH from pseudo ARCH (part after first underscore)
+  ARCH=$(echo "${ARCH}" | sed -E 's|^[^_]*_(.+)$|\1|g')
 
   # Set env vars for Configure
   export CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
@@ -72,6 +77,8 @@ do
     LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} -DHAVE_FORK=0 -mtvos-version-min=${TVOS_MIN_SDK_VERSION}"
     echo "  Patching Configure..."
     LC_ALL=C sed -i -- 's/D\_REENTRANT\:iOS/D\_REENTRANT\:tvOS/' "./Configure"
+  elif [[ "${PLATFORM}" == MacOSX* ]]; then
+    LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} -mmacosx-version-min=${MACOS_MIN_SDK_VERSION}"
   else
     LOCAL_CONFIG_OPTIONS="${LOCAL_CONFIG_OPTIONS} -miphoneos-version-min=${IOS_MIN_SDK_VERSION}"
   fi

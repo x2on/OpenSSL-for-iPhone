@@ -28,10 +28,11 @@ set -u
 DEFAULTVERSION="1.0.2l"
 
 # Default (=full) set of architectures (OpenSSL <= 1.0.2) or targets (OpenSSL >= 1.1.0) to build
-DEFAULTARCHS="x86_64 i386 arm64 armv7s armv7 tv_x86_64 tv_arm64"
-DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-i386 ios64-cross-arm64 ios-cross-armv7s ios-cross-armv7 tvos-sim-cross-x86_64 tvos64-cross-arm64"
+DEFAULTARCHS="ios_x86_64 ios_i386 ios_arm64 ios_armv7s ios_armv7 tv_x86_64 tv_arm64 mac_x86_64 mac_i386"
+DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-i386 ios64-cross-arm64 ios-cross-armv7s ios-cross-armv7 tvos-sim-cross-x86_64 tvos64-cross-arm64 macos64-x86_64 macos-i386"
 
 # Minimum iOS/tvOS SDK version to build for
+MACOS_MIN_SDK_VERSION="10.11"
 IOS_MIN_SDK_VERSION="7.0"
 TVOS_MIN_SDK_VERSION="9.0"
 
@@ -47,6 +48,7 @@ echo_help()
   echo "     --cleanup                     Clean up build directories (bin, include/openssl, lib, src) before starting build"
   echo "     --ec-nistp-64-gcc-128         Enable configure option enable-ec_nistp_64_gcc_128 for 64 bit builds"
   echo " -h, --help                        Print help (this message)"
+  echo "     --macos-sdk=SDKVERSION        Override macOS SDK version"
   echo "     --ios-sdk=SDKVERSION          Override iOS SDK version"
   echo "     --noparallel                  Disable running make with parallel jobs (make -j)"
   echo "     --tvos-sdk=SDKVERSION         Override tvOS SDK version"
@@ -168,10 +170,14 @@ finish_build_loop()
     LIBSSL_TVOS+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_TVOS+=("${TARGETDIR}/lib/libcrypto.a")
     OPENSSLCONF_SUFFIX="tvos_${ARCH}"
-  else
+  elif [[ "${PLATFORM}" == iPhone* ]]; then
     LIBSSL_IOS+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_IOS+=("${TARGETDIR}/lib/libcrypto.a")
     OPENSSLCONF_SUFFIX="ios_${ARCH}"
+  else
+    LIBSSL_MACOS+=("${TARGETDIR}/lib/libssl.a")
+    LIBCRYPTO_MACOS+=("${TARGETDIR}/lib/libcrypto.a")
+    OPENSSLCONF_SUFFIX="macos_${ARCH}"
   fi
 
   # Copy opensslconf.h to bin directory and add to array
@@ -192,6 +198,7 @@ CLEANUP=""
 CONFIG_ENABLE_EC_NISTP_64_GCC_128=""
 CONFIG_DISABLE_BITCODE=""
 CONFIG_NO_DEPRECATED=""
+MACOS_SDKVERSION=""
 IOS_SDKVERSION=""
 LOG_VERBOSE=""
 PARALLEL=""
@@ -226,6 +233,10 @@ case $i in
   -h|--help)
     echo_help
     exit
+    ;;
+  --macos-sdk=*)
+    MACOS_SDKVERSION="${i#*=}"
+    shift
     ;;
   --ios-sdk=*)
     IOS_SDKVERSION="${i#*=}"
@@ -327,6 +338,9 @@ else
 fi
 
 # Determine SDK versions
+if [ ! -n "${MACOS_SDKVERSION}" ]; then
+  MACOS_SDKVERSION=$(xcrun -sdk macosx --show-sdk-version)
+fi
 if [ ! -n "${IOS_SDKVERSION}" ]; then
   IOS_SDKVERSION=$(xcrun -sdk iphoneos --show-sdk-version)
 fi
@@ -380,6 +394,7 @@ if [ "${BUILD_TYPE}" == "archs" ]; then
 else
   echo "  Targets: ${TARGETS}"
 fi
+echo "  macOS SDK: ${MACOS_SDKVERSION}"
 echo "  iOS SDK: ${IOS_SDKVERSION}"
 echo "  tvOS SDK: ${TVOS_SDKVERSION}"
 if [ "${CONFIG_DISABLE_BITCODE}" == "true" ]; then
@@ -458,6 +473,8 @@ mkdir -p "${CURRENTPATH}/src"
 # Init vars for library references
 INCLUDE_DIR=""
 OPENSSLCONF_ALL=()
+LIBSSL_MACOS=()
+LIBCRYPTO_MACOS=()
 LIBSSL_IOS=()
 LIBCRYPTO_IOS=()
 LIBSSL_TVOS=()
@@ -468,6 +485,13 @@ if [ "${BUILD_TYPE}" == "archs" ]; then
   source "${SCRIPTDIR}/scripts/build-loop-archs.sh"
 else
   source "${SCRIPTDIR}/scripts/build-loop-targets.sh"
+fi
+
+# Build macOS library if selected for build
+if [ ${#LIBSSL_MACOS[@]} -gt 0 ]; then
+  echo "Build library for macOS..."
+  lipo -create ${LIBSSL_MACOS[@]} -output "${CURRENTPATH}/lib/libssl-MacOSX.a"
+  lipo -create ${LIBCRYPTO_MACOS[@]} -output "${CURRENTPATH}/lib/libcrypto-MacOSX.a"
 fi
 
 # Build iOS library if selected for build
@@ -505,6 +529,12 @@ if [ ${#OPENSSLCONF_ALL[@]} -gt 1 ]; then
 
     # Determine define condition
     case "${OPENSSLCONF_CURRENT}" in
+      *_macos_x86_64.h)
+        DEFINE_CONDITION="TARGET_OS_OSX && TARGET_CPU_X86_64"
+      ;;
+      *_macos_i386.h)
+        DEFINE_CONDITION="TARGET_OS_OSX && TARGET_CPU_X86"
+      ;;
       *_ios_x86_64.h)
         DEFINE_CONDITION="TARGET_OS_IOS && TARGET_OS_SIMULATOR && TARGET_CPU_X86_64"
       ;;
