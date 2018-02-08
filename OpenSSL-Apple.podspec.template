@@ -1,0 +1,23 @@
+Pod::Spec.new do |s|
+    s.name            = "OpenSSL-Apple"
+    s.version         = "%OPENSSL-VERSION%"
+    s.summary         = "A script for compiling OpenSSL for Apple Devices"
+    s.authors         = "Felix Schulze", "Davide De Rosa"
+
+    s.homepage        = "https://github.com/keeshux/OpenSSL-Apple"
+    s.source          = { :git => s.homepage.to_s, :tag => "1.0" }
+    s.license         = { :type => 'Apache', :file => 'LICENSE' }
+
+    s.prepare_command = <<-CMD
+./build-libssl.sh --version=#{s.version}
+./create-openssl-framework.sh dynamic
+    CMD
+
+    s.ios.deployment_target     = "9.0"
+    s.ios.vendored_frameworks   = "frameworks/iPhone/openssl.framework"
+    s.tvos.deployment_target    = "9.0"
+    s.tvos.vendored_frameworks  = "frameworks/AppleTV/openssl.framework"
+    s.osx.deployment_target     = "10.11"
+    s.osx.vendored_frameworks   = "frameworks/MacOSX/openssl.framework"
+    s.requires_arc              = false
+end
