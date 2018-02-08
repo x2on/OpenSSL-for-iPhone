@@ -473,15 +473,15 @@ fi
 # Build iOS library if selected for build
 if [ ${#LIBSSL_IOS[@]} -gt 0 ]; then
   echo "Build library for iOS..."
-  lipo -create ${LIBSSL_IOS[@]} -output "${CURRENTPATH}/lib/libssl.a"
-  lipo -create ${LIBCRYPTO_IOS[@]} -output "${CURRENTPATH}/lib/libcrypto.a"
+  lipo -create ${LIBSSL_IOS[@]} -output "${CURRENTPATH}/lib/libssl-iPhone.a"
+  lipo -create ${LIBCRYPTO_IOS[@]} -output "${CURRENTPATH}/lib/libcrypto-iPhone.a"
 fi
 
 # Build tvOS library if selected for build
 if [ ${#LIBSSL_TVOS[@]} -gt 0 ]; then
   echo "Build library for tvOS..."
-  lipo -create ${LIBSSL_TVOS[@]} -output "${CURRENTPATH}/lib/libssl-tvOS.a"
-  lipo -create ${LIBCRYPTO_TVOS[@]} -output "${CURRENTPATH}/lib/libcrypto-tvOS.a"
+  lipo -create ${LIBSSL_TVOS[@]} -output "${CURRENTPATH}/lib/libssl-AppleTV.a"
+  lipo -create ${LIBCRYPTO_TVOS[@]} -output "${CURRENTPATH}/lib/libcrypto-AppleTV.a"
 fi
 
 # Copy include directory

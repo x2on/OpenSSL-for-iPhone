@@ -1,36 +1,135 @@
-#!/bin/sh
+#!/bin/bash
 
-FWNAME=openssl
+set -euo pipefail
+
+if [ $# == 0 ]; then
+    echo "Usage: `basename $0` static|dynamic"
+    exit 1
+fi
 
 if [ ! -d lib ]; then
     echo "Please run build-libssl.sh first!"
     exit 1
 fi
 
-if [ -d $FWNAME.framework ]; then
-    echo "Removing previous $FWNAME.framework copy"
-    rm -rf $FWNAME.framework
+FWTYPE=$1
+FWNAME=openssl
+FWROOT=frameworks
+
+if [ -d $FWROOT ]; then
+    echo "Removing previous $FWNAME.framework copies"
+    rm -rf $FWROOT
 fi
 
-if [ "$1" == "dynamic" ]; then
-    LIBTOOL_FLAGS="-dynamic -undefined dynamic_lookup -ios_version_min 8.0"
+ALL_SYSTEMS=("iPhone" "AppleTV")
+
+function check_bitcode() {
+    local FWDIR=$1
+
+    if [[ $FWTYPE == "dynamic" ]]; then
+        BITCODE_PATTERN="__LLVM"
+    else
+        BITCODE_PATTERN="__bitcode"
+    fi
+
+    if otool -l "$FWDIR/$FWNAME" | grep "${BITCODE_PATTERN}" >/dev/null; then
+        echo "INFO: $FWDIR contains Bitcode"
+    else
+        echo "INFO: $FWDIR doesn't contain Bitcode"
+    fi
+}
+
+if [ $FWTYPE == "dynamic" ]; then
+    DEVELOPER=`xcode-select -print-path`
+    FW_EXEC_NAME="${FWNAME}.framework/${FWNAME}"
+    INSTALL_NAME="@rpath/${FW_EXEC_NAME}"
+    COMPAT_VERSION="1.0.0"
+    CURRENT_VERSION="1.0.0"
+
+    RX='([A-z]+)([0-9]+(\.[0-9]+)*)-([A-z0-9]+)\.sdk'
+
+    cd bin
+    for TARGETDIR in `ls -d *.sdk`; do
+        if [[ $TARGETDIR =~ $RX ]]; then
+            PLATFORM="${BASH_REMATCH[1]}"
+            SDKVERSION="${BASH_REMATCH[2]}"
+            ARCH="${BASH_REMATCH[4]}"
+        fi
+
+        echo "Assembling .dylib for $PLATFORM $SDKVERSION ($ARCH)"
+
+        CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
+        CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
+        SDK="${CROSS_TOP}/SDKs/${CROSS_SDK}"
+
+        if [[ $PLATFORM == "AppleTV"* ]]; then
+            MIN_SDK="-tvos_version_min 9.0"
+        else
+            MIN_SDK="-ios_version_min 8.0"
+        fi
+
+        #cd $TARGETDIR
+        #libtool -dynamic -lSystem $MIN_SDK -syslibroot $SDK -install_name $INSTALL_NAME -compatibility_version $COMPAT_VERSION -current_version $CURRENT_VERSION lib/*.a -o $FWNAME.dylib
+
+        TARGETOBJ="${TARGETDIR}/obj"
+        rm -rf $TARGETOBJ
+        mkdir $TARGETOBJ
+        cd $TARGETOBJ
+        ar -x ../lib/libcrypto.a
+        ar -x ../lib/libssl.a
+        cd ..
+
+        ld obj/*.o \
+            -dylib \
+            -bitcode_bundle \
+            -lSystem \
+            -arch $ARCH \
+            $MIN_SDK \
+            -syslibroot $SDK \
+            -compatibility_version $COMPAT_VERSION \
+            -current_version $CURRENT_VERSION \
+            -application_extension \
+            -o $FWNAME.dylib
+        install_name_tool -id $INSTALL_NAME $FWNAME.dylib
+
+        cd ..
+    done
+    cd ..
+
+    for SYS in ${ALL_SYSTEMS[@]}; do
+        SYSDIR="$FWROOT/$SYS"
+        FWDIR="$SYSDIR/$FWNAME.framework"
+        DYLIBS=(bin/${SYS}*/$FWNAME.dylib)
+
+        if [[ ${#DYLIBS[@]} -gt 0 && -e ${DYLIBS[0]} ]]; then
+            echo "Creating framework for $SYS"
+            mkdir -p $FWDIR/Headers
+            lipo -create ${DYLIBS[@]} -output $FWDIR/$FWNAME
+            cp -r include/$FWNAME/* $FWDIR/Headers/
+            cp -L assets/$SYS/Info.plist $FWDIR/Info.plist
+            echo "Created $FWDIR"
+            check_bitcode $FWDIR
+        else
+            echo "Skipped framework for $SYS"
+        fi
+    done
+
+    rm bin/*/$FWNAME.dylib
 else
-    LIBTOOL_FLAGS="-static"
-fi
+    for SYS in ${ALL_SYSTEMS[@]}; do
+        SYSDIR="$FWROOT/$SYS"
+        FWDIR="$SYSDIR/$FWNAME.framework"
 
-echo "Creating $FWNAME.framework"
-mkdir -p $FWNAME.framework/Headers
-libtool -no_warning_for_no_symbols $LIBTOOL_FLAGS -o $FWNAME.framework/$FWNAME lib/libcrypto.a lib/libssl.a
-cp -r include/$FWNAME/* $FWNAME.framework/Headers/
-
-DIR="$(cd "$(dirname "$0")" && pwd)"
-cp $DIR/"OpenSSL-for-iOS/OpenSSL-for-iOS-Info.plist" $FWNAME.framework/Info.plist
-echo "Created $FWNAME.framework"
-
-check_bitcode=`otool -arch arm64 -l $FWNAME.framework/$FWNAME | grep __bitcode`
-if [ -z "$check_bitcode" ]
-then
-  echo "INFO: $FWNAME.framework doesn't contain Bitcode"
-else
-  echo "INFO: $FWNAME.framework contains Bitcode"
+        if [[ -e lib/libcrypto-$SYS.a && -e lib/libssl-$SYS.a ]]; then
+            echo "Creating framework for $SYS"
+            mkdir -p $FWDIR/Headers
+            libtool -static -o $FWDIR/$FWNAME lib/libcrypto-$SYS.a lib/libssl-$SYS.a
+            cp -r include/$FWNAME/* $FWDIR/Headers/
+            cp -L assets/$SYS/Info.plist $FWDIR/Info.plist
+            echo "Created $FWDIR"
+            check_bitcode $FWDIR
+        else
+            echo "Skipped framework for $SYS"
+        fi
+    done
 fi
