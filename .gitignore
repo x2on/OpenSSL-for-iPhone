@@ -1,9 +1,7 @@
 .DS_Store
 .*.swp
 bin
-lib
 src
-build
 include/openssl
 *.gz
 *.framework

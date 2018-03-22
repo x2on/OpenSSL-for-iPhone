@@ -53,4 +53,9 @@ Dynamically linked:
 ```
 
 # Original project
+
 * <https://github.com/x2on/OpenSSL-for-iPhone>
+
+# Acknowledgements
+
+This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit. (<https://www.openssl.org/>)
