@@ -4,7 +4,7 @@ Pod::Spec.new do |s|
     s.summary         = "A script for compiling OpenSSL for Apple Devices"
     s.authors         = "Felix Schulze", "Davide De Rosa"
 
-    s.homepage        = "https://github.com/keeshux/OpenSSL-Apple.git"
+    s.homepage        = "https://github.com/keeshux/openssl-apple.git"
     s.source          = { :git => s.homepage.to_s, :tag => "1.0.1" }
     s.license         = { :type => 'Apache', :file => 'LICENSE' }
 
