@@ -2,6 +2,7 @@
 .*.swp
 bin
 src
+lib
 include/openssl
 *.gz
 *.framework
