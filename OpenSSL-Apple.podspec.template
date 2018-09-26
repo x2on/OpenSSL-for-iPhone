@@ -1,15 +1,18 @@
 Pod::Spec.new do |s|
+    openssl_version   = "%OPENSSL-VERSION%"
+    script_version    = "v2"
+
     s.name            = "OpenSSL-Apple"
-    s.version         = "%OPENSSL-VERSION%"
+    s.version         = "#{openssl_version}-#{script_version}"
     s.summary         = "A script for compiling OpenSSL for Apple Devices"
     s.authors         = "Felix Schulze", "Davide De Rosa"
 
     s.homepage        = "https://github.com/keeshux/openssl-apple.git"
-    s.source          = { :git => s.homepage.to_s, :tag => "v2" }
+    s.source          = { :git => s.homepage.to_s, :tag => script_version }
     s.license         = { :type => 'Apache', :file => 'LICENSE' }
 
     s.prepare_command = <<-CMD
-./build-libssl.sh --version=#{s.version}
+./build-libssl.sh --version=#{openssl_version}
 ./create-openssl-framework.sh dynamic
     CMD
 
