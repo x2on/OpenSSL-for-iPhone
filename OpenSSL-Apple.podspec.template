@@ -13,9 +13,9 @@ Pod::Spec.new do |s|
 ./create-openssl-framework.sh dynamic
     CMD
 
-    s.ios.deployment_target     = "9.0"
+    s.ios.deployment_target     = "11.0"
     s.ios.vendored_frameworks   = "frameworks/iPhone/openssl.framework"
-    s.tvos.deployment_target    = "9.0"
+    s.tvos.deployment_target    = "11.0"
     s.tvos.vendored_frameworks  = "frameworks/AppleTV/openssl.framework"
     s.osx.deployment_target     = "10.11"
     s.osx.vendored_frameworks   = "frameworks/MacOSX/openssl.framework"
