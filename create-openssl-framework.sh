@@ -63,15 +63,15 @@ if [ $FWTYPE == "dynamic" ]; then
         SDK="${CROSS_TOP}/SDKs/${CROSS_SDK}"
 
         if [[ $PLATFORM == AppleTVSimulator* ]]; then
-            MIN_SDK="-tvos_simulator_version_min 9.0"
+            MIN_SDK="-tvos_simulator_version_min 11.0"
         elif [[ $PLATFORM == AppleTV* ]]; then
-            MIN_SDK="-tvos_version_min 9.0"
+            MIN_SDK="-tvos_version_min 11.0"
         elif [[ $PLATFORM == MacOSX* ]]; then
             MIN_SDK="-macosx_version_min 10.11"
         elif [[ $PLATFORM == iPhoneSimulator* ]]; then
-            MIN_SDK="-ios_simulator_version_min 8.0"
+            MIN_SDK="-ios_simulator_version_min 11.0"
         else
-            MIN_SDK="-ios_version_min 8.0"
+            MIN_SDK="-ios_version_min 11.0"
         fi
 
         #cd $TARGETDIR
