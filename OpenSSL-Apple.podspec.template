@@ -1,9 +1,9 @@
 Pod::Spec.new do |s|
     openssl_version   = "%OPENSSL-VERSION%"
-    script_version    = "v2"
+    script_version    = "2"
 
     s.name            = "OpenSSL-Apple"
-    s.version         = "#{openssl_version}-#{script_version}"
+    s.version         = "#{openssl_version}.#{script_version}"
     s.summary         = "A script for compiling OpenSSL for Apple Devices"
     s.authors         = "Felix Schulze", "Davide De Rosa"
 
