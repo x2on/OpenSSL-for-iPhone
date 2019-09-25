@@ -143,3 +143,23 @@ else
         fi
     done
 fi
+
+# macOS symlinks
+for SYS in ${ALL_SYSTEMS[@]}; do
+    if [[ $SYS == "MacOSX" ]]; then
+        SYSDIR="$FWROOT/$SYS"
+        FWDIR="$SYSDIR/$FWNAME.framework"
+        cd $FWDIR
+
+        mkdir "Versions"
+        mkdir "Versions/A"
+        mkdir "Versions/A/Resources"
+        mv "openssl" "Headers" "Versions/A"
+        mv "Info.plist" "Versions/A/Resources"
+
+        (cd "Versions" && ln -s "A" "Current")
+        ln -s "Versions/Current/openssl"
+        ln -s "Versions/Current/Headers"
+        ln -s "Versions/Current/Resources"
+    fi
+done
