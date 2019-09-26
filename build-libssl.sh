@@ -30,13 +30,14 @@ DEFAULTVERSION="1.1.0i"
 # Default (=full) set of architectures (OpenSSL <= 1.0.2) or targets (OpenSSL >= 1.1.0) to build
 #DEFAULTARCHS="ios_x86_64 ios_arm64 ios_armv7s ios_armv7 tv_x86_64 tv_arm64 mac_x86_64"
 #DEFAULTTARGETS="ios-sim-cross-x86_64 ios64-cross-arm64 ios-cross-armv7s ios-cross-armv7 tvos-sim-cross-x86_64 tvos64-cross-arm64 macos64-x86_64"
-DEFAULTARCHS="ios_x86_64 ios_arm64 tv_x86_64 tv_arm64 mac_x86_64"
-DEFAULTTARGETS="ios-sim-cross-x86_64 ios64-cross-arm64 tvos-sim-cross-x86_64 tvos64-cross-arm64 macos64-x86_64"
+DEFAULTARCHS="ios_x86_64 ios_arm64 tv_x86_64 tv_arm64 mac_x86_64 watchos_armv7k watchos_arm64_32 watchos_i386"
+DEFAULTTARGETS="ios-sim-cross-x86_64 ios64-cross-arm64 tvos-sim-cross-x86_64 tvos64-cross-arm64 macos64-x86_64 watchos-cross-armv7k watchos-cross-arm64_32 watchos-sim-cross-i386"
 
 # Minimum iOS/tvOS SDK version to build for
 MACOS_MIN_SDK_VERSION="10.11"
 IOS_MIN_SDK_VERSION="11.0"
 TVOS_MIN_SDK_VERSION="11.0"
+WATCHOS_MIN_SDK_VERSION="4.0"
 
 # Init optional env variables (use available variable or default to empty string)
 CURL_OPTIONS="${CURL_OPTIONS:-}"
@@ -54,7 +55,7 @@ echo_help()
   echo "     --ios-sdk=SDKVERSION          Override iOS SDK version"
   echo "     --noparallel                  Disable running make with parallel jobs (make -j)"
   echo "     --tvos-sdk=SDKVERSION         Override tvOS SDK version"
-  #echo "     --disable-bitcode             Disable embedding Bitcode"
+  echo "     --disable-bitcode             Disable embedding Bitcode"
   echo " -v, --verbose                     Enable verbose logging"
   echo "     --verbose-on-error            Dump last 500 lines from log file if an error occurs (for Travis builds)"
   echo "     --version=VERSION             OpenSSL version to build (defaults to ${DEFAULTVERSION})"
@@ -172,6 +173,10 @@ finish_build_loop()
     LIBSSL_TVOS+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_TVOS+=("${TARGETDIR}/lib/libcrypto.a")
     OPENSSLCONF_SUFFIX="tvos_${ARCH}"
+  elif [[ "${PLATFORM}" == Watch* ]]; then
+    LIBSSL_WATCHOS+=("${TARGETDIR}/lib/libssl.a")
+    LIBCRYPTO_WATCHOS+=("${TARGETDIR}/lib/libcrypto.a")
+    OPENSSLCONF_SUFFIX="watchos_${ARCH}"
   elif [[ "${PLATFORM}" == iPhone* ]]; then
     LIBSSL_IOS+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_IOS+=("${TARGETDIR}/lib/libcrypto.a")
@@ -202,6 +207,7 @@ CONFIG_DISABLE_BITCODE=""
 CONFIG_NO_DEPRECATED=""
 MACOS_SDKVERSION=""
 IOS_SDKVERSION=""
+WATCHOS_SDKVERSION=""
 LOG_VERBOSE=""
 PARALLEL=""
 TARGETS=""
@@ -229,9 +235,9 @@ case $i in
   --ec-nistp-64-gcc-128)
     CONFIG_ENABLE_EC_NISTP_64_GCC_128="true"
     ;;
-  #--disable-bitcode)
-  #  CONFIG_DISABLE_BITCODE="true"
-  #  ;;
+  --disable-bitcode)
+   CONFIG_DISABLE_BITCODE="true"
+   ;;
   -h|--help)
     echo_help
     exit
@@ -253,6 +259,10 @@ case $i in
     ;;
   --tvos-sdk=*)
     TVOS_SDKVERSION="${i#*=}"
+    shift
+    ;;
+  --watchos-sdk=*)
+    WATCHOS_SDKVERSION="${i#*=}"
     shift
     ;;
   -v|--verbose)
@@ -349,6 +359,9 @@ fi
 if [ ! -n "${TVOS_SDKVERSION}" ]; then
   TVOS_SDKVERSION=$(xcrun -sdk appletvos --show-sdk-version)
 fi
+if [ ! -n "${WATCHOS_SDKVERSION}" ]; then
+  WATCHOS_SDKVERSION=$(xcrun -sdk watchos --show-sdk-version)
+fi
 
 # Determine number of cores for (parallel) build
 BUILD_THREADS=1
@@ -399,6 +412,7 @@ fi
 echo "  macOS SDK: ${MACOS_SDKVERSION}"
 echo "  iOS SDK: ${IOS_SDKVERSION}"
 echo "  tvOS SDK: ${TVOS_SDKVERSION}"
+echo "  watchOS SDK: ${WATCHOS_SDKVERSION}"
 if [ "${CONFIG_DISABLE_BITCODE}" == "true" ]; then
   echo "  Bitcode embedding disabled"
 fi
@@ -481,6 +495,8 @@ LIBSSL_IOS=()
 LIBCRYPTO_IOS=()
 LIBSSL_TVOS=()
 LIBCRYPTO_TVOS=()
+LIBSSL_WATCHOS=()
+LIBCRYPTO_WATCHOS=()
 
 # Run relevant build loop (archs = 1.0 style, targets = 1.1 style)
 if [ "${BUILD_TYPE}" == "archs" ]; then
@@ -489,7 +505,7 @@ else
   source "${SCRIPTDIR}/scripts/build-loop-targets.sh"
 fi
 
-# Build macOS library if selected for build
+#Build macOS library if selected for build
 if [ ${#LIBSSL_MACOS[@]} -gt 0 ]; then
   echo "Build library for macOS..."
   lipo -create ${LIBSSL_MACOS[@]} -output "${CURRENTPATH}/lib/libssl-MacOSX.a"
@@ -508,6 +524,13 @@ if [ ${#LIBSSL_TVOS[@]} -gt 0 ]; then
   echo "Build library for tvOS..."
   lipo -create ${LIBSSL_TVOS[@]} -output "${CURRENTPATH}/lib/libssl-AppleTV.a"
   lipo -create ${LIBCRYPTO_TVOS[@]} -output "${CURRENTPATH}/lib/libcrypto-AppleTV.a"
+fi
+
+# Build tvOS library if selected for build
+if [ ${#LIBSSL_WATCHOS[@]} -gt 0 ]; then
+  echo "Build library for watchOS..."
+  lipo -create ${LIBSSL_WATCHOS[@]} -output "${CURRENTPATH}/lib/libssl-WatchOS.a"
+  lipo -create ${LIBCRYPTO_WATCHOS[@]} -output "${CURRENTPATH}/lib/libcrypto-WatchOS.a"
 fi
 
 # Copy include directory
@@ -558,6 +581,15 @@ if [ ${#OPENSSLCONF_ALL[@]} -gt 1 ]; then
       *_tvos_arm64.h)
         DEFINE_CONDITION="TARGET_OS_TV && TARGET_OS_EMBEDDED && TARGET_CPU_ARM64"
       ;;
+      *_watchos_armv7k.h)
+        DEFINE_CONDITION="TARGET_OS_WATCHOS && TARGET_OS_EMBEDDED && TARGET_CPU_ARMV7K"
+      ;;
+      *_watchos_arm64_32.h)
+        DEFINE_CONDITION="TARGET_OS_WATCHOS && TARGET_OS_EMBEDDED && TARGET_CPU_ARM64_32"
+      ;;
+      *_watchos_i386.h)
+        DEFINE_CONDITION="TARGET_OS_SIMULATOR && TARGET_CPU_X86 || TARGET_OS_EMBEDDED"
+      ;;
       *)
         # Don't run into unexpected cases by setting the default condition to false
         DEFINE_CONDITION="0"
@@ -583,4 +615,3 @@ if [ ${#OPENSSLCONF_ALL[@]} -gt 1 ]; then
 fi
 
 echo "Done."
-

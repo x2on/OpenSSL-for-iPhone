@@ -9,7 +9,7 @@
 
 This is a fork of the popular work by [Felix Schulze](https://github.com/x2on), that is a set of scripts for using self-compiled builds of the OpenSSL library on the iPhone and the Apple TV.
 
-However, this repository focuses more on framework-based setups and also adds macOS support.
+However, this repository focuses more on framework-based setups and also adds macOS and watchOS support.
 
 # Compile library
 
