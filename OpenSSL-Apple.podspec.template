@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     openssl_version   = "%OPENSSL-VERSION%"
-    script_version    = "2"
+    script_version    = "4"
 
     s.name            = "OpenSSL-Apple"
     s.version         = "#{openssl_version}.#{script_version}"
