@@ -21,22 +21,22 @@ if [ -d $FWROOT ]; then
     rm -rf $FWROOT
 fi
 
-ALL_SYSTEMS=("iPhone" "AppleTV" "MacOSX")
+ALL_SYSTEMS=("iPhone" "AppleTV" "MacOSX" "WatchOS")
 
 function check_bitcode() {
     local FWDIR=$1
 
     if [[ $FWTYPE == "dynamic" ]]; then
-        BITCODE_PATTERN="__LLVM"
+   		BITCODE_PATTERN="__LLVM"
     else
-        BITCODE_PATTERN="__bitcode"
-    fi
+    	BITCODE_PATTERN="__bitcode"
+	fi
 
-    if otool -l "$FWDIR/$FWNAME" | grep "${BITCODE_PATTERN}" >/dev/null; then
-        echo "INFO: $FWDIR contains Bitcode"
-    else
-        echo "INFO: $FWDIR doesn't contain Bitcode"
-    fi
+	if otool -l "$FWDIR/$FWNAME" | grep "${BITCODE_PATTERN}" >/dev/null; then
+       		echo "INFO: $FWDIR contains Bitcode"
+	else
+        	echo "INFO: $FWDIR doesn't contain Bitcode"
+	fi
 }
 
 if [ $FWTYPE == "dynamic" ]; then
@@ -70,6 +70,10 @@ if [ $FWTYPE == "dynamic" ]; then
             MIN_SDK="-macosx_version_min 10.11"
         elif [[ $PLATFORM == iPhoneSimulator* ]]; then
             MIN_SDK="-ios_simulator_version_min 11.0"
+        elif [[ $PLATFORM == WatchOS* ]]; then
+            MIN_SDK="-watchos_version_min 4.0"
+        elif [[ $PLATFORM == WatchSimulator* ]]; then
+            MIN_SDK="-watchos_simulator_version_min 4.0"
         else
             MIN_SDK="-ios_version_min 11.0"
         fi
