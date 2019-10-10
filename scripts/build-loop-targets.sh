@@ -24,6 +24,8 @@ do
   # Determine relevant SDK version
   if [[ "${TARGET}" == tvos* ]]; then
     SDKVERSION="${TVOS_SDKVERSION}"
+  elif [[ "${TARGET}" == "mac-catalyst"* ]]; then
+    SDKVERSION="${MACOSX_SDKVERSION}"
   else
     SDKVERSION="${IOS_SDKVERSION}"
   fi
@@ -41,6 +43,8 @@ do
     PLATFORM="AppleTVSimulator"
   elif [[ "${TARGET}" == "tvos64-cross-"* ]]; then
     PLATFORM="AppleTVOS"
+  elif [[ "${TARGET}" == "mac-catalyst-"* ]]; then
+    PLATFORM="MacOSX"
   else
     PLATFORM="iPhoneOS"
   fi
