@@ -173,7 +173,11 @@ finish_build_loop()
   else
     LIBSSL_IOS+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_IOS+=("${TARGETDIR}/lib/libcrypto.a")
-    OPENSSLCONF_SUFFIX="ios_${ARCH}"
+    if [[ "${PLATFORM}" != MacOSX* ]]; then
+      OPENSSLCONF_SUFFIX="ios_${ARCH}"
+    else
+      OPENSSLCONF_SUFFIX="catalyst_${ARCH}"
+    fi
   fi
 
   # Copy opensslconf.h to bin directory and add to array
@@ -538,6 +542,9 @@ if [ ${#OPENSSLCONF_ALL[@]} -gt 1 ]; then
       ;;
       *_ios_armv7.h)
         DEFINE_CONDITION="TARGET_OS_IOS && TARGET_OS_EMBEDDED && TARGET_CPU_ARM && !defined(__ARM_ARCH_7S__)"
+      ;;
+      *_catalyst_x86_64.h)
+        DEFINE_CONDITION="TARGET_OS_MACCATALYST && TARGET_CPU_X86_64"
       ;;
       *_tvos_x86_64.h)
         DEFINE_CONDITION="TARGET_OS_TV && TARGET_OS_SIMULATOR && TARGET_CPU_X86_64"
