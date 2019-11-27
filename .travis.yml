@@ -5,4 +5,3 @@ before_install:
 
 script:
   - xcodebuild -project OpenSSL-for-iOS.xcodeproj -scheme OpenSSL-for-iOS -sdk iphonesimulator clean build
-  - cd targets && xcodebuild -project OpenSSL-for-iOS.xcodeproj -scheme OpenSSL-for-iOS -sdk iphonesimulator clean build

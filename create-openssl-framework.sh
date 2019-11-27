@@ -13,7 +13,7 @@ if [ -d $FWNAME.framework ]; then
 fi
 
 if [ "$1" == "dynamic" ]; then
-    LIBTOOL_FLAGS="-dynamic -undefined dynamic_lookup -ios_version_min 8.0"
+    LIBTOOL_FLAGS="-dynamic -undefined dynamic_lookup -ios_version_min 12.0"
 else
     LIBTOOL_FLAGS="-static"
 fi
