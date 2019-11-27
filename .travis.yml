@@ -1,8 +1,7 @@
-osx_image: xcode8.3
+osx_image: xcode11.2
 language: objective-c
 before_install:
  - ./travis-build.sh
 
 script:
   - xcodebuild -project OpenSSL-for-iOS.xcodeproj -scheme OpenSSL-for-iOS -sdk iphonesimulator clean build
-  - cd targets && xcodebuild -project OpenSSL-for-iOS.xcodeproj -scheme OpenSSL-for-iOS -sdk iphonesimulator clean build
