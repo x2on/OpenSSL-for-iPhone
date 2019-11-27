@@ -24,7 +24,7 @@ For all options see the help
 This repository contains an iOS 12.0 Xcode Project which uses the OpenSSL Libraries. The examples uses the MD5 or SHA256-algorithm to calculate an md5 or sha256 hash from an UITextfield.
 
 ## System support
-**iOS 12.0 - iOS 13.2 (x86_64 , armv64, bitcode), tvOS 12.0 - tvOS 13.2 (x86_64, arm64, bitcode) and MacCatalyst 10.15 (MacOSX_x86_64) are currently supported.**
+**iOS 12.0 - iOS 13.2 (x86_64 , arm64, arm64e bitcode), tvOS 12.0 - tvOS 13.2 (x86_64, arm64, bitcode) and MacCatalyst 10.15 (MacOSX_x86_64) are currently supported.**
 
 For iOS < 7.0 you must use Xcode < 7 and an older version of the build script.
 For iOS < 12.0 you must use Xcode < 11 and an older version of the build script.
@@ -36,7 +36,7 @@ If you have problems building for arm64 please uninstall MacPorts (see [#28](htt
 * <http://www.x2on.de/2010/07/13/tutorial-iphone-app-with-compiled-openssl-1-0-0a-library/>
 
 ## Changelog
-* 2019-11-27: OpenSSL 1.1.1d
+* 2019-11-27: OpenSSL 1.1.1d, Add Support for arm64e
 * 2019-11-27: Add support for MacCatalyst, Xcode 11.2.1 (iOS 12.0 - 13.2), Migrate to Swift 5, Remove OpenSSL 1.0.2 support
 * 2017-05-25: OpenSSL 1.0.2l, 1.1.0f
 * 2017-02-16: OpenSSL 1.1.0e
