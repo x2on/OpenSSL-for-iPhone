@@ -28,6 +28,7 @@
 		53572A4F183AAFFE00B21832 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 533ED2FF1528C4840005C6FA /* UIKit.framework */; };
 		53572A55183AAFFE00B21832 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 53572A53183AAFFE00B21832 /* InfoPlist.strings */; };
 		53572A57183AAFFE00B21832 /* FSOpenSSLTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 53572A56183AAFFE00B21832 /* FSOpenSSLTests.m */; };
+		53A29DF9238EB10E0083CBF5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 53A29DF8238EB10E0083CBF5 /* LaunchScreen.storyboard */; };
 		D1E978031547EE765CD39AD2 /* FSOpenSSL.m in Sources */ = {isa = PBXBuildFile; fileRef = D1E97EE2A904D58DAE4231E2 /* FSOpenSSL.m */; };
 /* End PBXBuildFile section */
 
@@ -67,6 +68,7 @@
 		53572A54183AAFFE00B21832 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		53572A56183AAFFE00B21832 /* FSOpenSSLTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FSOpenSSLTests.m; sourceTree = "<group>"; };
 		53572A58183AAFFE00B21832 /* OpenSSL-for-iOS_Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "OpenSSL-for-iOS_Tests-Prefix.pch"; sourceTree = "<group>"; };
+		53A29DF8238EB10E0083CBF5 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D1E979D803ACC127411934DC /* FSOpenSSL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSOpenSSL.h; sourceTree = "<group>"; };
 		D1E97EE2A904D58DAE4231E2 /* FSOpenSSL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSOpenSSL.m; sourceTree = "<group>"; };
 		FD5896FA1B2F1FAA00F3E5B5 /* build-libssl.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-libssl.sh"; sourceTree = "<group>"; };
@@ -167,6 +169,7 @@
 				D1E97EE2A904D58DAE4231E2 /* FSOpenSSL.m */,
 				D1E979D803ACC127411934DC /* FSOpenSSL.h */,
 				534FB2AD180975D700B5F868 /* Icons.xcassets */,
+				53A29DF8238EB10E0083CBF5 /* LaunchScreen.storyboard */,
 			);
 			path = "OpenSSL-for-iOS";
 			sourceTree = "<group>";
@@ -321,6 +324,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53A29DF9238EB10E0083CBF5 /* LaunchScreen.storyboard in Resources */,
 				2A1DDC8F1BFB1DF600F7722A /* ViewController.xib in Resources */,
 				534FB2AE180975D700B5F868 /* Icons.xcassets in Resources */,
 			);
@@ -409,7 +413,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -444,7 +447,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -481,6 +483,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -534,6 +537,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -582,7 +586,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "OpenSSL-for-iOS/OpenSSL-for-iOS-Prefix.pch";
@@ -602,7 +605,6 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TVOS_DEPLOYMENT_TARGET = 12.0;
-				VALID_ARCHS = "arm64 arm64e";
 				WATCHOS_DEPLOYMENT_TARGET = 6.0;
 				WRAPPER_EXTENSION = app;
 			};
@@ -612,7 +614,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "OpenSSL-for-iOS/OpenSSL-for-iOS-Prefix.pch";
@@ -631,7 +632,6 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "OpenSSL-for-iOS/OpenSSL-for-iOS-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TVOS_DEPLOYMENT_TARGET = 12.0;
-				VALID_ARCHS = "arm64 arm64e";
 				WATCHOS_DEPLOYMENT_TARGET = 6.0;
 				WRAPPER_EXTENSION = app;
 			};
@@ -669,7 +669,6 @@
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				TVOS_DEPLOYMENT_TARGET = 12.0;
-				VALID_ARCHS = "arm64 arm64e";
 				WATCHOS_DEPLOYMENT_TARGET = 6.0;
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -703,7 +702,6 @@
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				TVOS_DEPLOYMENT_TARGET = 12.0;
-				VALID_ARCHS = "arm64 arm64e";
 				WATCHOS_DEPLOYMENT_TARGET = 6.0;
 				WRAPPER_EXTENSION = xctest;
 			};
