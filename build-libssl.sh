@@ -28,7 +28,7 @@ set -u
 DEFAULTVERSION="1.1.1d"
 
 # Default (=full) set of targets to build
-DEFAULTTARGETS="ios-sim-cross-x86_64 ios64-cross-arm64 tvos-sim-cross-x86_64 tvos64-cross-arm64"  # mac-catalyst-x86_64 is a valid target that is not in the DEFAULTTARGETS because it's incompatible with "ios-sim-cross-x86_64"
+DEFAULTTARGETS="ios-sim-cross-x86_64 ios64-cross-arm64 ios64-cross-arm64e tvos-sim-cross-x86_64 tvos64-cross-arm64"  # mac-catalyst-x86_64 is a valid target that is not in the DEFAULTTARGETS because it's incompatible with "ios-sim-cross-x86_64"
 
 # Minimum iOS/tvOS SDK version to build for
 IOS_MIN_SDK_VERSION="12.0"
@@ -501,6 +501,9 @@ if [ ${#OPENSSLCONF_ALL[@]} -gt 1 ]; then
       ;;
       *_ios_arm64.h)
         DEFINE_CONDITION="TARGET_OS_IOS && TARGET_OS_EMBEDDED && TARGET_CPU_ARM64"
+      ;;
+      *_ios_arm64e.h)
+        DEFINE_CONDITION="TARGET_OS_IOS && TARGET_OS_EMBEDDED && TARGET_CPU_ARM64E"
       ;;
       *_ios_armv7s.h)
         DEFINE_CONDITION="TARGET_OS_IOS && TARGET_OS_EMBEDDED && TARGET_CPU_ARM && defined(__ARM_ARCH_7S__)"
