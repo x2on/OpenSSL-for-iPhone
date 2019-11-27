@@ -25,7 +25,7 @@ set -u
 # SCRIPT DEFAULTS
 
 # Default version in case no version is specified
-DEFAULTVERSION="1.1.0l"
+DEFAULTVERSION="1.1.1d"
 
 # Default (=full) set of targets to build
 DEFAULTTARGETS="ios-sim-cross-x86_64 ios64-cross-arm64 tvos-sim-cross-x86_64 tvos64-cross-arm64"  # mac-catalyst-x86_64 is a valid target that is not in the DEFAULTTARGETS because it's incompatible with "ios-sim-cross-x86_64"
@@ -128,9 +128,9 @@ run_configure()
   echo "  Configure..."
   set +e
   if [ "${LOG_VERBOSE}" == "verbose" ]; then
-    ./Configure ${LOCAL_CONFIG_OPTIONS} | tee "${LOG}"
+    ./Configure ${LOCAL_CONFIG_OPTIONS} no-tests | tee "${LOG}"
   else
-    (./Configure ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
+    (./Configure ${LOCAL_CONFIG_OPTIONS} no-tests > "${LOG}" 2>&1) & spinner
   fi
 
   # Check for error status
