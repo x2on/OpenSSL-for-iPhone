@@ -128,9 +128,9 @@ run_configure()
   echo "  Configure..."
   set +e
   if [ "${LOG_VERBOSE}" == "verbose" ]; then
-    ./Configure ${LOCAL_CONFIG_OPTIONS} | tee "${LOG}"
+    ./Configure ${LOCAL_CONFIG_OPTIONS} no-tests | tee "${LOG}"
   else
-    (./Configure ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
+    (./Configure ${LOCAL_CONFIG_OPTIONS} no-tests > "${LOG}" 2>&1) & spinner
   fi
 
   # Check for error status
