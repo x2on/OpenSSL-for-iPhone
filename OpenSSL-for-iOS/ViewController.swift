@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     
     @IBAction
     func showInfo() {
-        let message = "OpenSSL-Version: \(OPENSSL_VERSION_TEXT)\nLicense: See include/LICENSE\n\nCopyright 2010-2016 by Felix Schulze\n http://www.felixschulze.de"
+        let message = "OpenSSL-Version: \(OPENSSL_VERSION_TEXT)\nLicense: See include/LICENSE\n\nCopyright 2010-2019 by Felix Schulze\n http://www.felixschulze.de"
         let alertController = UIAlertController(title: "OpenSSL-for-iOS", message: message, preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
         self.present(alertController, animated: true, completion: nil)
@@ -32,16 +32,16 @@ class ViewController: UIViewController {
         infoButton.addTarget(self, action: #selector(ViewController.showInfo), for: .touchDown)
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: infoButton)
         
-        self.textField.addTarget(self, action: #selector(ViewController.textFieldDidChange), for: .editingChanged)
+        self.textField.addTarget(self, action: #selector(ViewController.textFieldDidChange), for: UIControl.Event.editingChanged)   
         self.calculateHash()
     }
     
-    func textFieldDidChange() {
+    @objc func textFieldDidChange() {
         self.calculateHash()
     }
 
     func calculateHash() {
-        if textField.text!.characters.count > 0 {
+        if textField.text!.count > 0 {
             md5Label.text = FSOpenSSL.md5(from: textField.text)
             sh256Label.text = FSOpenSSL.sha256(from: textField.text)
         }
