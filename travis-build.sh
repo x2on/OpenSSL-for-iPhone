@@ -12,7 +12,7 @@ log_output()
 export CURL_OPTIONS="-s"
 
 # Build in current directory
-./build-libssl.sh --noparallel --verbose-on-error | log_output "TARGETS  " &
+./build-libssl.sh --verbose-on-error | log_output "TARGETS  " &
 PID_TARGETS=$!
 
 echo "SCRIPT  Started jobs, waiting for jobs to finish"
