@@ -25,9 +25,9 @@ set -u
 # SCRIPT DEFAULTS
 
 # Default version in case no version is specified
-DEFAULTVERSION="1.1.0i"
+DEFAULTVERSION="1.1.1d"
 
-# Default (=full) set of architectures (OpenSSL <= 1.0.2) or targets (OpenSSL >= 1.1.0) to build
+# Default (=full) set of architectures (OpenSSL <= 1.0.2) or targets (OpenSSL >= 1.1.1) to build
 #DEFAULTARCHS="ios_x86_64 ios_arm64 ios_armv7s ios_armv7 tv_x86_64 tv_arm64 mac_x86_64"
 #DEFAULTTARGETS="ios-sim-cross-x86_64 ios64-cross-arm64 ios-cross-armv7s ios-cross-armv7 tvos-sim-cross-x86_64 tvos64-cross-arm64 macos64-x86_64"
 DEFAULTARCHS="ios_x86_64 ios_arm64 tv_x86_64 tv_arm64 mac_x86_64 watchos_armv7k watchos_arm64_32 watchos_i386"
@@ -64,7 +64,7 @@ echo_help()
   echo "     --archs=\"ARCH ARCH ...\"       Space-separated list of architectures to build"
   echo "                                     Options: ${DEFAULTARCHS}"
   echo
-  echo "Options for OpenSSL 1.1.0 and higher ONLY"
+  echo "Options for OpenSSL 1.1.1 and higher ONLY"
   echo "     --deprecated                  Exclude no-deprecated configure option and build with deprecated methods"
   echo "     --targets=\"TARGET TARGET ...\" Space-separated list of build targets"
   echo "                                     Options: ${DEFAULTTARGETS}"
@@ -138,9 +138,9 @@ run_configure()
   echo "  Configure..."
   set +e
   if [ "${LOG_VERBOSE}" == "verbose" ]; then
-    ./Configure ${LOCAL_CONFIG_OPTIONS} | tee "${LOG}"
+    ./Configure ${LOCAL_CONFIG_OPTIONS} no-tests | tee "${LOG}"
   else
-    (./Configure ${LOCAL_CONFIG_OPTIONS} > "${LOG}" 2>&1) & spinner
+    (./Configure ${LOCAL_CONFIG_OPTIONS} no-tests > "${LOG}" 2>&1) & spinner
   fi
 
   # Check for error status
@@ -295,7 +295,7 @@ elif [[ -n "${VERSION}" && ! "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+[a-z]*$ ]]; 
 elif [ -n "${BRANCH}" ]; then
   # Verify version number format. Expected: dot notation
   if [[ ! "${BRANCH}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    echo "Unknown branch version number format. Examples: 1.0.2, 1.1.0"
+    echo "Unknown branch version number format. Examples: 1.0.2, 1.1.1"
     exit 1
 
   # Valid version number, determine latest version
@@ -320,7 +320,7 @@ fi
 # Build type:
 # In short, type "archs" is used for OpenSSL versions in the 1.0 branch and type "targets" for later versions.
 #
-# Significant changes to the build process were introduced with OpenSSL 1.1.0. As a result, this script was updated
+# Significant changes to the build process were introduced with OpenSSL 1.1.1. As a result, this script was updated
 # to include two separate build loops for versions <= 1.0 and versions >= 1.1. The type "archs" matches the key variable
 # used to determine for which platforms to build for the 1.0 branch. Since 1.1, all platforms are defined in a separate/
 # custom configuration file as build targets. Therefore the key variable and type are called targets for 1.1 (and later).
@@ -457,7 +457,7 @@ else
   echo "Using ${OPENSSL_ARCHIVE_FILE_NAME}"
 fi
 
-# Set reference to custom configuration (OpenSSL 1.1.0)
+# Set reference to custom configuration (OpenSSL 1.1.1)
 # See: https://github.com/openssl/openssl/commit/afce395cba521e395e6eecdaf9589105f61e4411
 export OPENSSL_LOCAL_CONFIG_DIR="${SCRIPTDIR}/config"
 
