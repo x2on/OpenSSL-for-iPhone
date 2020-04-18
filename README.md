@@ -4,7 +4,7 @@
 ![tvOS support](https://img.shields.io/badge/tvOS-11+-blue.svg)
 ![macOS support](https://img.shields.io/badge/macOS-10.11+-blue.svg)
 ![watchOS support](https://img.shields.io/badge/watchOS-4.0+-blue.svg)
-![OpenSSL version](https://img.shields.io/badge/OpenSSL-1.1.1d-green.svg)
+![OpenSSL version](https://img.shields.io/badge/OpenSSL-1.1.1f-green.svg)
 ![OpenSSL version](https://img.shields.io/badge/OpenSSL-1.0.2o-green.svg)
 [![license](https://img.shields.io/badge/license-Apache%202.0-lightgrey.svg)](LICENSE)
 
@@ -20,10 +20,10 @@ Compile OpenSSL 1.0.2k for all archs:
 ./build-libssl.sh --version=1.0.2k
 ```
 
-Compile OpenSSL 1.1.1d for all targets:
+Compile OpenSSL 1.1.1f for all targets:
 
 ```
-./build-libssl.sh --version=1.1.1d
+./build-libssl.sh --version=1.1.1f
 ```
 
 Compile OpenSSL 1.0.2k for specific archs:
@@ -32,10 +32,10 @@ Compile OpenSSL 1.0.2k for specific archs:
 ./build-libssl.sh --version=1.0.2k --archs="ios_armv7 ios_arm64 mac_i386"
 ```
 
-Compile OpenSSL 1.1.1d for specific targets:
+Compile OpenSSL 1.1.1f for specific targets:
 
 ```
-./build-libssl.sh --version=1.1.1d --targets="ios-cross-armv7 macos64-x86_64"
+./build-libssl.sh --version=1.1.1f --targets="ios-cross-armv7 macos64-x86_64"
 ```
 
 For all options see:
