@@ -363,6 +363,16 @@ if [ ! -n "${WATCHOS_SDKVERSION}" ]; then
   WATCHOS_SDKVERSION=$(xcrun -sdk watchos --show-sdk-version)
 fi
 
+# Truncate to minor version
+MINOR_VERSION=(${MACOS_SDKVERSION//./ })
+MACOS_SDKVERSION="${MINOR_VERSION[0]}.${MINOR_VERSION[1]}"
+MINOR_VERSION=(${IOS_SDKVERSION//./ })
+IOS_SDKVERSION="${MINOR_VERSION[0]}.${MINOR_VERSION[1]}"
+MINOR_VERSION=(${TVOS_SDKVERSION//./ })
+TVOS_SDKVERSION="${MINOR_VERSION[0]}.${MINOR_VERSION[1]}"
+MINOR_VERSION=(${WATCHOS_SDKVERSION//./ })
+WATCHOS_SDKVERSION="${MINOR_VERSION[0]}.${MINOR_VERSION[1]}"
+
 # Determine number of cores for (parallel) build
 BUILD_THREADS=1
 if [ "${PARALLEL}" != "false" ]; then
