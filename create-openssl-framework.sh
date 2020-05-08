@@ -149,6 +149,9 @@ for SYS in ${ALL_SYSTEMS[@]}; do
     if [[ $SYS == "MacOSX" ]]; then
         SYSDIR="$FWROOT/$SYS"
         FWDIR="$SYSDIR/$FWNAME.framework"
+        if [[ ! -e "$FWDIR" ]]; then
+            continue
+        fi
         cd $FWDIR
 
         mkdir "Versions"
