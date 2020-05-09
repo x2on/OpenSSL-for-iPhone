@@ -78,6 +78,24 @@ function get_min_sdk() {
     set -o pipefail
 }
 
+# Read OpenSSL version from opensslv.h file.
+#
+# In modern OpenSSL releases the version line looks like this:
+#
+#     # define OPENSSL_VERSION_TEXT    "OpenSSL 1.1.1g  21 Apr 2020"
+#
+# But for older versions with FIPS module it may look like this:
+#
+#     # ifdef OPENSSL_FIPS
+#     #  define OPENSSL_VERSION_TEXT    "OpenSSL 1.0.2u-fips  20 Dec 2019"
+#     # else
+#     #  define OPENSSL_VERSION_TEXT    "OpenSSL 1.0.2u  20 Dec 2019"
+#     # endif
+function get_openssl_version() {
+    local opensslv=$1
+    awk '/define OPENSSL_VERSION_TEXT/ && !/-fips/ {print $5}' "$opensslv"
+}
+
 if [ $FWTYPE == "dynamic" ]; then
     DEVELOPER=`xcode-select -print-path`
     FW_EXEC_NAME="${FWNAME}.framework/${FWNAME}"
@@ -158,7 +176,9 @@ if [ $FWTYPE == "dynamic" ]; then
             cp -r include/$FWNAME/* $FWDIR/Headers/
             cp -L assets/$SYS/Info.plist $FWDIR/Info.plist
             MIN_SDK_VERSION=$(get_min_sdk "$FWDIR/$FWNAME")
+            OPENSSL_VERSION=$(get_openssl_version "$FWDIR/Headers/opensslv.h")
             sed -e "s/\\\$(MIN_SDK_VERSION)/$MIN_SDK_VERSION/g" \
+                -e "s/\\\$(OPENSSL_VERSION)/$OPENSSL_VERSION/g" \
                 -i '' "$FWDIR/Info.plist"
             echo "Created $FWDIR"
             check_bitcode $FWDIR
@@ -180,7 +200,9 @@ else
             cp -r include/$FWNAME/* $FWDIR/Headers/
             cp -L assets/$SYS/Info.plist $FWDIR/Info.plist
             MIN_SDK_VERSION=$(get_min_sdk "$FWDIR/$FWNAME")
+            OPENSSL_VERSION=$(get_openssl_version "$FWDIR/Headers/opensslv.h")
             sed -e "s/\\\$(MIN_SDK_VERSION)/$MIN_SDK_VERSION/g" \
+                -e "s/\\\$(OPENSSL_VERSION)/$OPENSSL_VERSION/g" \
                 -i '' "$FWDIR/Info.plist"
             echo "Created $FWDIR"
             check_bitcode $FWDIR
