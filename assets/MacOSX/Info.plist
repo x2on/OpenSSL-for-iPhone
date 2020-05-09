@@ -19,6 +19,6 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>MinimumOSVersion</key>
-	<string>10.11</string>
+	<string>$(MIN_SDK_VERSION)</string>
 </dict>
 </plist>

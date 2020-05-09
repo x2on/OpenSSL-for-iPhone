@@ -157,6 +157,9 @@ if [ $FWTYPE == "dynamic" ]; then
             lipo -create ${DYLIBS[@]} -output $FWDIR/$FWNAME
             cp -r include/$FWNAME/* $FWDIR/Headers/
             cp -L assets/$SYS/Info.plist $FWDIR/Info.plist
+            MIN_SDK_VERSION=$(get_min_sdk "$FWDIR/$FWNAME")
+            sed -e "s/\\\$(MIN_SDK_VERSION)/$MIN_SDK_VERSION/g" \
+                -i '' "$FWDIR/Info.plist"
             echo "Created $FWDIR"
             check_bitcode $FWDIR
         else
@@ -176,6 +179,9 @@ else
             libtool -static -o $FWDIR/$FWNAME lib/libcrypto-$SYS.a lib/libssl-$SYS.a
             cp -r include/$FWNAME/* $FWDIR/Headers/
             cp -L assets/$SYS/Info.plist $FWDIR/Info.plist
+            MIN_SDK_VERSION=$(get_min_sdk "$FWDIR/$FWNAME")
+            sed -e "s/\\\$(MIN_SDK_VERSION)/$MIN_SDK_VERSION/g" \
+                -i '' "$FWDIR/Info.plist"
             echo "Created $FWDIR"
             check_bitcode $FWDIR
         else
