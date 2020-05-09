@@ -39,6 +39,45 @@ function check_bitcode() {
 	fi
 }
 
+# Inspect Mach-O load commands to get minimum SDK version.
+#
+# Depending on the actual minimum SDK version it may look like this
+# (for modern SDKs):
+#
+#     Load command 1
+#            cmd LC_BUILD_VERSION
+#        cmdsize 24
+#       platform 8
+#            sdk 13.2                   <-- target SDK
+#          minos 12.0                   <-- minimum SDK
+#         ntools 0
+#
+# Or like this for older versions, with a platform-dependent tag:
+#
+#     Load command 1
+#           cmd LC_VERSION_MIN_WATCHOS
+#       cmdsize 16
+#       version 4.0                     <-- minimum SDK
+#           sdk 6.1                     <-- target SDK
+function get_min_sdk() {
+    local file=$1
+    set +o pipefail
+    otool -l "$file" | awk "
+        /^Load command/ {
+            last_command = \"\"
+        }
+        \$1 == \"cmd\" {
+            last_command = \$2
+        }
+        (last_command ~ /LC_BUILD_VERSION/ && \$1 == \"minos\") ||
+        (last_command ~ /^LC_VERSION_MIN_/ && \$1 == \"version\") {
+            print \$2
+            exit
+        }
+    "
+    set -o pipefail
+}
+
 if [ $FWTYPE == "dynamic" ]; then
     DEVELOPER=`xcode-select -print-path`
     FW_EXEC_NAME="${FWNAME}.framework/${FWNAME}"
@@ -62,20 +101,21 @@ if [ $FWTYPE == "dynamic" ]; then
         CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
         SDK="${CROSS_TOP}/SDKs/${CROSS_SDK}"
 
+        MIN_SDK_VERSION=$(get_min_sdk "${TARGETDIR}/lib/libcrypto.a")
         if [[ $PLATFORM == AppleTVSimulator* ]]; then
-            MIN_SDK="-tvos_simulator_version_min 11.0"
+            MIN_SDK="-tvos_simulator_version_min $MIN_SDK_VERSION"
         elif [[ $PLATFORM == AppleTV* ]]; then
-            MIN_SDK="-tvos_version_min 11.0"
+            MIN_SDK="-tvos_version_min $MIN_SDK_VERSION"
         elif [[ $PLATFORM == MacOSX* ]]; then
-            MIN_SDK="-macosx_version_min 10.11"
+            MIN_SDK="-macosx_version_min $MIN_SDK_VERSION"
         elif [[ $PLATFORM == iPhoneSimulator* ]]; then
-            MIN_SDK="-ios_simulator_version_min 11.0"
+            MIN_SDK="-ios_simulator_version_min $MIN_SDK_VERSION"
         elif [[ $PLATFORM == WatchOS* ]]; then
-            MIN_SDK="-watchos_version_min 4.0"
+            MIN_SDK="-watchos_version_min $MIN_SDK_VERSION"
         elif [[ $PLATFORM == WatchSimulator* ]]; then
-            MIN_SDK="-watchos_simulator_version_min 4.0"
+            MIN_SDK="-watchos_simulator_version_min $MIN_SDK_VERSION"
         else
-            MIN_SDK="-ios_version_min 11.0"
+            MIN_SDK="-ios_version_min $MIN_SDK_VERSION"
         fi
 
         #cd $TARGETDIR
