@@ -91,9 +91,26 @@ function get_min_sdk() {
 #     # else
 #     #  define OPENSSL_VERSION_TEXT    "OpenSSL 1.0.2u  20 Dec 2019"
 #     # endif
+#
+# For App Store validation purposes, replace trailing letter with
+# 2-digit offset from 'a' (ASCII 97), plus 1 for 1-based
+#
+#   1.0.2u
+#   'u' = 117 -> 20 + 1 = 21
+#   1.0.221
+#
+#   1.1.1g
+#   'g' = 103 -> 6 + 1 = 07 (zero-padded)
+#   1.1.107
+#
 function get_openssl_version() {
     local opensslv=$1
-    awk '/define OPENSSL_VERSION_TEXT/ && !/-fips/ {print $5}' "$opensslv"
+    local std_version=$(awk '/define OPENSSL_VERSION_TEXT/ && !/-fips/ {print $5}' "$opensslv")
+    local generic_version=${std_version%?}
+    local subpatch=${std_version: -1}
+    local subpatch_number=$(($(printf '%d' \'$subpatch) - 97 + 1))
+    local normalized_version="${generic_version}$(printf '%02d' $subpatch_number)"
+    echo $normalized_version
 }
 
 if [ $FWTYPE == "dynamic" ]; then
