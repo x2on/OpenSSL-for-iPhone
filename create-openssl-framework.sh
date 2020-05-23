@@ -39,6 +39,80 @@ function check_bitcode() {
 	fi
 }
 
+# Inspect Mach-O load commands to get minimum SDK version.
+#
+# Depending on the actual minimum SDK version it may look like this
+# (for modern SDKs):
+#
+#     Load command 1
+#            cmd LC_BUILD_VERSION
+#        cmdsize 24
+#       platform 8
+#            sdk 13.2                   <-- target SDK
+#          minos 12.0                   <-- minimum SDK
+#         ntools 0
+#
+# Or like this for older versions, with a platform-dependent tag:
+#
+#     Load command 1
+#           cmd LC_VERSION_MIN_WATCHOS
+#       cmdsize 16
+#       version 4.0                     <-- minimum SDK
+#           sdk 6.1                     <-- target SDK
+function get_min_sdk() {
+    local file=$1
+    set +o pipefail
+    otool -l "$file" | awk "
+        /^Load command/ {
+            last_command = \"\"
+        }
+        \$1 == \"cmd\" {
+            last_command = \$2
+        }
+        (last_command ~ /LC_BUILD_VERSION/ && \$1 == \"minos\") ||
+        (last_command ~ /^LC_VERSION_MIN_/ && \$1 == \"version\") {
+            print \$2
+            exit
+        }
+    "
+    set -o pipefail
+}
+
+# Read OpenSSL version from opensslv.h file.
+#
+# In modern OpenSSL releases the version line looks like this:
+#
+#     # define OPENSSL_VERSION_TEXT    "OpenSSL 1.1.1g  21 Apr 2020"
+#
+# But for older versions with FIPS module it may look like this:
+#
+#     # ifdef OPENSSL_FIPS
+#     #  define OPENSSL_VERSION_TEXT    "OpenSSL 1.0.2u-fips  20 Dec 2019"
+#     # else
+#     #  define OPENSSL_VERSION_TEXT    "OpenSSL 1.0.2u  20 Dec 2019"
+#     # endif
+#
+# For App Store validation purposes, replace trailing letter with
+# 2-digit offset from 'a' (ASCII 97), plus 1 for 1-based
+#
+#   1.0.2u
+#   'u' = 117 -> 20 + 1 = 21
+#   1.0.221
+#
+#   1.1.1g
+#   'g' = 103 -> 6 + 1 = 07 (zero-padded)
+#   1.1.107
+#
+function get_openssl_version() {
+    local opensslv=$1
+    local std_version=$(awk '/define OPENSSL_VERSION_TEXT/ && !/-fips/ {print $5}' "$opensslv")
+    local generic_version=${std_version%?}
+    local subpatch=${std_version: -1}
+    local subpatch_number=$(($(printf '%d' \'$subpatch) - 97 + 1))
+    local normalized_version="${generic_version}$(printf '%02d' $subpatch_number)"
+    echo $normalized_version
+}
+
 if [ $FWTYPE == "dynamic" ]; then
     DEVELOPER=`xcode-select -print-path`
     FW_EXEC_NAME="${FWNAME}.framework/${FWNAME}"
@@ -62,20 +136,21 @@ if [ $FWTYPE == "dynamic" ]; then
         CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
         SDK="${CROSS_TOP}/SDKs/${CROSS_SDK}"
 
+        MIN_SDK_VERSION=$(get_min_sdk "${TARGETDIR}/lib/libcrypto.a")
         if [[ $PLATFORM == AppleTVSimulator* ]]; then
-            MIN_SDK="-tvos_simulator_version_min 11.0"
+            MIN_SDK="-tvos_simulator_version_min $MIN_SDK_VERSION"
         elif [[ $PLATFORM == AppleTV* ]]; then
-            MIN_SDK="-tvos_version_min 11.0"
+            MIN_SDK="-tvos_version_min $MIN_SDK_VERSION"
         elif [[ $PLATFORM == MacOSX* ]]; then
-            MIN_SDK="-macosx_version_min 10.11"
+            MIN_SDK="-macosx_version_min $MIN_SDK_VERSION"
         elif [[ $PLATFORM == iPhoneSimulator* ]]; then
-            MIN_SDK="-ios_simulator_version_min 11.0"
+            MIN_SDK="-ios_simulator_version_min $MIN_SDK_VERSION"
         elif [[ $PLATFORM == WatchOS* ]]; then
-            MIN_SDK="-watchos_version_min 4.0"
+            MIN_SDK="-watchos_version_min $MIN_SDK_VERSION"
         elif [[ $PLATFORM == WatchSimulator* ]]; then
-            MIN_SDK="-watchos_simulator_version_min 4.0"
+            MIN_SDK="-watchos_simulator_version_min $MIN_SDK_VERSION"
         else
-            MIN_SDK="-ios_version_min 11.0"
+            MIN_SDK="-ios_version_min $MIN_SDK_VERSION"
         fi
 
         #cd $TARGETDIR
@@ -117,6 +192,11 @@ if [ $FWTYPE == "dynamic" ]; then
             lipo -create ${DYLIBS[@]} -output $FWDIR/$FWNAME
             cp -r include/$FWNAME/* $FWDIR/Headers/
             cp -L assets/$SYS/Info.plist $FWDIR/Info.plist
+            MIN_SDK_VERSION=$(get_min_sdk "$FWDIR/$FWNAME")
+            OPENSSL_VERSION=$(get_openssl_version "$FWDIR/Headers/opensslv.h")
+            sed -e "s/\\\$(MIN_SDK_VERSION)/$MIN_SDK_VERSION/g" \
+                -e "s/\\\$(OPENSSL_VERSION)/$OPENSSL_VERSION/g" \
+                -i '' "$FWDIR/Info.plist"
             echo "Created $FWDIR"
             check_bitcode $FWDIR
         else
@@ -136,6 +216,11 @@ else
             libtool -static -o $FWDIR/$FWNAME lib/libcrypto-$SYS.a lib/libssl-$SYS.a
             cp -r include/$FWNAME/* $FWDIR/Headers/
             cp -L assets/$SYS/Info.plist $FWDIR/Info.plist
+            MIN_SDK_VERSION=$(get_min_sdk "$FWDIR/$FWNAME")
+            OPENSSL_VERSION=$(get_openssl_version "$FWDIR/Headers/opensslv.h")
+            sed -e "s/\\\$(MIN_SDK_VERSION)/$MIN_SDK_VERSION/g" \
+                -e "s/\\\$(OPENSSL_VERSION)/$OPENSSL_VERSION/g" \
+                -i '' "$FWDIR/Info.plist"
             echo "Created $FWDIR"
             check_bitcode $FWDIR
         else
