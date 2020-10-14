@@ -41,9 +41,9 @@ do
     PLATFORM="AppleTVOS"
   elif [[ "${ARCH}" == "mac_x86_64" || "${ARCH}" == "mac_i386" ]]; then
     PLATFORM="MacOSX"
-  elif [[ "${ARCH}" == "watchos_arm64_32" || "${ARCH}" == "watchos_armv7k" ]]; then
+  elif [[ "${ARCH}" == "watchos_arm64_32" || "${ARCH}" == "watchos_armv7k" || "${ARCH}" == "watchos_arm64" ]]; then
     PLATFORM="WatchOS"
-  elif [[ "${ARCH}" == "watchos_i386" ]]; then
+  elif [[ "${ARCH}" == "watchos_i386" || "${ARCH}" == "watchos_x86_64" ]]; then
     PLATFORM="WatchSimulator"
   else
     PLATFORM="iPhoneOS"
@@ -55,6 +55,7 @@ do
   # Set env vars for Configure
   export CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
   export CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
+  echo CROSS_SDK
   export BUILD_TOOLS="${DEVELOPER}"
   export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH}"
 

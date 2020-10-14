@@ -30,8 +30,8 @@ DEFAULTVERSION="1.1.1g"
 # Default (=full) set of architectures (OpenSSL <= 1.0.2) or targets (OpenSSL >= 1.1.1) to build
 #DEFAULTARCHS="ios_x86_64 ios_arm64 ios_armv7s ios_armv7 tv_x86_64 tv_arm64 mac_x86_64"
 #DEFAULTTARGETS="ios-sim-cross-x86_64 ios64-cross-arm64 ios-cross-armv7s ios-cross-armv7 tvos-sim-cross-x86_64 tvos64-cross-arm64 macos64-x86_64"
-DEFAULTARCHS="ios_x86_64 ios_arm64 tv_x86_64 tv_arm64 mac_x86_64 watchos_armv7k watchos_arm64_32 watchos_i386"
-DEFAULTTARGETS="ios-sim-cross-x86_64 ios64-cross-arm64 ios64-cross-arm64e tvos-sim-cross-x86_64 tvos64-cross-arm64 macos64-x86_64 watchos-cross-armv7k watchos-cross-arm64_32 watchos-sim-cross-i386"
+DEFAULTARCHS="ios_x86_64 ios_arm64 tv_x86_64 tv_arm64 mac_x86_64 watchos_armv7k watchos_arm64_32 watchos_i386 watchos_x86_64"
+DEFAULTTARGETS="ios-sim-cross-x86_64 ios64-cross-arm64 ios64-cross-arm64e tvos-sim-cross-x86_64 tvos64-cross-arm64 macos64-x86_64 watchos-cross-armv7k watchos-cross-arm64_32 watchos-sim-cross-i386 watchos-sim-cross-x86_64"
 
 # Minimum iOS/tvOS SDK version to build for
 IOS_MIN_SDK_VERSION="12.0"
@@ -617,6 +617,9 @@ if [ ${#OPENSSLCONF_ALL[@]} -gt 1 ]; then
       ;;
       *_watchos_i386.h)
         DEFINE_CONDITION="TARGET_OS_SIMULATOR && TARGET_CPU_X86 || TARGET_OS_EMBEDDED"
+      ;;
+      *_watchos_x86_64.h)
+        DEFINE_CONDITION="TARGET_OS_SIMULATOR && TARGET_CPU_X86_64 || TARGET_OS_EMBEDDED"
       ;;
       *)
         # Don't run into unexpected cases by setting the default condition to false
