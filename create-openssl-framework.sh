@@ -120,7 +120,7 @@ if [ $FWTYPE == "dynamic" ]; then
     COMPAT_VERSION="1.0.0"
     CURRENT_VERSION="1.0.0"
 
-    RX='([A-z]+)([0-9]+(\.[0-9]+)*)-([A-z0-9]+)\.sdk'
+    RX='([A-z]+)([0-9]+(\.[0-9]+)*)-([A-z0-9_]+)\.sdk'
 
     cd bin
     for TARGETDIR in `ls -d *.sdk`; do
@@ -184,7 +184,12 @@ if [ $FWTYPE == "dynamic" ]; then
     for SYS in ${ALL_SYSTEMS[@]}; do
         SYSDIR="$FWROOT/$SYS"
         FWDIR="$SYSDIR/$FWNAME.framework"
-        DYLIBS=(bin/${SYS}*/$FWNAME.dylib)
+
+        if [[ $SYS == "WatchOS" ]]; then
+			DYLIBS=(bin/Watch*/$FWNAME.dylib)
+		else
+			DYLIBS=(bin/${SYS}*/$FWNAME.dylib)
+		fi
 
         if [[ ${#DYLIBS[@]} -gt 0 && -e ${DYLIBS[0]} ]]; then
             echo "Creating framework for $SYS"
