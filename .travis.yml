@@ -1,0 +1,15 @@
+language: objective-c
+osx_image: xcode12.2
+xcode_workspace: Demo.xcworkspace
+xcode_scheme: Demo
+xcode_destination: platform=iOS Simulator,OS=14.2,name=iPhone 11 Pro Max
+cache:
+    - bundler
+    - cocoapods
+branches:
+    only:
+        - master
+install:
+    - bundle install --jobs=3 --deployment --path=${BUNDLE_PATH:-vendor/bundle}
+    - bundle exec pod repo update
+    - travis_wait 30 bundle exec pod install

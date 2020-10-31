@@ -1,0 +1,16 @@
+PODS:
+  - OpenSSL-Apple (1.1.1g.6)
+
+DEPENDENCIES:
+  - OpenSSL-Apple (from `.`)
+
+EXTERNAL SOURCES:
+  OpenSSL-Apple:
+    :path: "."
+
+SPEC CHECKSUMS:
+  OpenSSL-Apple: c9c1b9c5b2b1fc4e1758fc5f0836b58ae7fd8183
+
+PODFILE CHECKSUM: f64ec9f1e52d69d845a54464df43fe38c27d486f
+
+COCOAPODS: 1.9.1
