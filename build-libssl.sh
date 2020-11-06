@@ -27,10 +27,8 @@ set -u
 # Default version in case no version is specified
 DEFAULTVERSION="1.1.1g"
 
-# Default (=full) set of architectures (OpenSSL <= 1.0.2) or targets (OpenSSL >= 1.1.1) to build
-#DEFAULTARCHS="ios_x86_64 ios_arm64 ios_armv7s ios_armv7 tv_x86_64 tv_arm64 mac_x86_64"
+# Default (=full) set of targets (OpenSSL >= 1.1.1) to build
 #DEFAULTTARGETS="ios-sim-cross-x86_64 ios64-cross-arm64 ios-cross-armv7s ios-cross-armv7 tvos-sim-cross-x86_64 tvos64-cross-arm64 macos64-x86_64"
-DEFAULTARCHS="ios_x86_64 ios_arm64 tv_x86_64 tv_arm64 mac_x86_64 watchos_armv7k watchos_arm64_32 watchos_i386 watchos_x86_64"
 DEFAULTTARGETS="ios-sim-cross-x86_64 ios64-cross-arm64 ios64-cross-arm64e tvos-sim-cross-x86_64 tvos64-cross-arm64 macos64-x86_64 watchos-cross-armv7k watchos-cross-arm64_32 watchos-sim-cross-i386 watchos-sim-cross-x86_64"
 
 # Minimum iOS/tvOS SDK version to build for
@@ -64,12 +62,6 @@ echo_help()
   echo " -v, --verbose                     Enable verbose logging"
   echo "     --verbose-on-error            Dump last 500 lines from log file if an error occurs (for Travis builds)"
   echo "     --version=VERSION             OpenSSL version to build (defaults to ${DEFAULTVERSION})"
-  echo
-  echo "Options for OpenSSL 1.0.2 and lower ONLY"
-  echo "     --archs=\"ARCH ARCH ...\"       Space-separated list of architectures to build"
-  echo "                                     Options: ${DEFAULTARCHS}"
-  echo
-  echo "Options for OpenSSL 1.1.1 and higher ONLY"
   echo "     --deprecated                  Exclude no-deprecated configure option and build with deprecated methods"
   echo "     --targets=\"TARGET TARGET ...\" Space-separated list of build targets"
   echo "                                     Options: ${DEFAULTTARGETS}"
@@ -223,10 +215,6 @@ VERSION=""
 for i in "$@"
 do
 case $i in
-  --archs=*)
-    ARCHS="${i#*=}"
-    shift
-    ;;
   --branch=*)
     BRANCH="${i#*=}"
     shift
@@ -338,36 +326,16 @@ elif [ -z "${VERSION}" ]; then
   VERSION="${DEFAULTVERSION}"
 fi
 
-# Build type:
-# In short, type "archs" is used for OpenSSL versions in the 1.0 branch and type "targets" for later versions.
-#
-# Significant changes to the build process were introduced with OpenSSL 1.1.1. As a result, this script was updated
-# to include two separate build loops for versions <= 1.0 and versions >= 1.1. The type "archs" matches the key variable
-# used to determine for which platforms to build for the 1.0 branch. Since 1.1, all platforms are defined in a separate/
-# custom configuration file as build targets. Therefore the key variable and type are called targets for 1.1 (and later).
+BUILD_TYPE="targets"
 
-# OpenSSL branches <= 1.0
-if [[ "${VERSION}" =~ ^(0\.9|1\.0) ]]; then
-  BUILD_TYPE="archs"
+# Set default for TARGETS if not specified
+if [ ! -n "${TARGETS}" ]; then
+  TARGETS="${DEFAULTTARGETS}"
+fi
 
-  # Set default for ARCHS if not specified
-  if [ ! -n "${ARCHS}" ]; then
-    ARCHS="${DEFAULTARCHS}"
-  fi
-
-# OpenSSL branches >= 1.1
-else
-  BUILD_TYPE="targets"
-
-  # Set default for TARGETS if not specified
-  if [ ! -n "${TARGETS}" ]; then
-    TARGETS="${DEFAULTTARGETS}"
-  fi
-
-  # Add no-deprecated config option (if not overwritten)
-  if [ "${CONFIG_NO_DEPRECATED}" != "false" ]; then
-    CONFIG_OPTIONS="${CONFIG_OPTIONS} no-deprecated"
-  fi
+# Add no-deprecated config option (if not overwritten)
+if [ "${CONFIG_NO_DEPRECATED}" != "false" ]; then
+  CONFIG_OPTIONS="${CONFIG_OPTIONS} no-deprecated"
 fi
 
 # Determine SDK versions
@@ -429,11 +397,7 @@ esac
 echo
 echo "Build options"
 echo "  OpenSSL version: ${VERSION}"
-if [ "${BUILD_TYPE}" == "archs" ]; then
-  echo "  Architectures: ${ARCHS}"
-else
-  echo "  Targets: ${TARGETS}"
-fi
+echo "  Targets: ${TARGETS}"
 echo "  macOS SDK: ${MACOS_SDKVERSION} (min ${MACOS_MIN_SDK_VERSION})"
 echo "  iOS SDK: ${IOS_SDKVERSION} (min ${IOS_MIN_SDK_VERSION})"
 echo "  tvOS SDK: ${TVOS_SDKVERSION} (min ${TVOS_MIN_SDK_VERSION})"
@@ -523,12 +487,7 @@ LIBCRYPTO_TVOS=()
 LIBSSL_WATCHOS=()
 LIBCRYPTO_WATCHOS=()
 
-# Run relevant build loop (archs = 1.0 style, targets = 1.1 style)
-if [ "${BUILD_TYPE}" == "archs" ]; then
-  source "${SCRIPTDIR}/scripts/build-loop-archs.sh"
-else
-  source "${SCRIPTDIR}/scripts/build-loop-targets.sh"
-fi
+source "${SCRIPTDIR}/scripts/build-loop-targets.sh"
 
 #Build macOS library if selected for build
 if [ ${#LIBSSL_MACOS[@]} -gt 0 ]; then
