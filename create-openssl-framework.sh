@@ -21,7 +21,7 @@ if [ -d $FWROOT ]; then
     rm -rf $FWROOT
 fi
 
-ALL_SYSTEMS=("iPhone" "AppleTV" "MacOSX" "WatchOS")
+ALL_SYSTEMS=("iPhone" "AppleTV" "MacOSX" "Catalyst" "WatchOS")
 
 function check_bitcode() {
     local FWDIR=$1
@@ -132,10 +132,6 @@ if [ $FWTYPE == "dynamic" ]; then
 
         echo "Assembling .dylib for $PLATFORM $SDKVERSION ($ARCH)"
 
-        CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
-        CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
-        SDK="${CROSS_TOP}/SDKs/${CROSS_SDK}"
-
         MIN_SDK_VERSION=$(get_min_sdk "${TARGETDIR}/lib/libcrypto.a")
         if [[ $PLATFORM == AppleTVSimulator* ]]; then
             MIN_SDK="-tvos_simulator_version_min $MIN_SDK_VERSION"
@@ -143,6 +139,9 @@ if [ $FWTYPE == "dynamic" ]; then
             MIN_SDK="-tvos_version_min $MIN_SDK_VERSION"
         elif [[ $PLATFORM == MacOSX* ]]; then
             MIN_SDK="-macosx_version_min $MIN_SDK_VERSION"
+        elif [[ $PLATFORM == Catalyst* ]]; then
+            MIN_SDK="-platform_version mac-catalyst 13.0 $MIN_SDK_VERSION"
+            PLATFORM="MacOSX"
         elif [[ $PLATFORM == iPhoneSimulator* ]]; then
             MIN_SDK="-ios_simulator_version_min $MIN_SDK_VERSION"
         elif [[ $PLATFORM == WatchOS* ]]; then
@@ -152,6 +151,10 @@ if [ $FWTYPE == "dynamic" ]; then
         else
             MIN_SDK="-ios_version_min $MIN_SDK_VERSION"
         fi
+
+        CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
+        CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
+        SDK="${CROSS_TOP}/SDKs/${CROSS_SDK}"
 
         #cd $TARGETDIR
         #libtool -dynamic -lSystem $MIN_SDK -syslibroot $SDK -install_name $INSTALL_NAME -compatibility_version $COMPAT_VERSION -current_version $CURRENT_VERSION lib/*.a -o $FWNAME.dylib

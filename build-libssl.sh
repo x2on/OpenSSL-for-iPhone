@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #  Automatic build script for libssl and libcrypto
-#  for iPhoneOS and iPhoneSimulator
+#  for Apple devices.
 #
 #  Created by Felix Schulze on 16.12.10.
 #  Copyright 2010-2017 Felix Schulze. All rights reserved.
@@ -28,13 +28,13 @@ set -u
 DEFAULTVERSION="1.1.1h"
 
 # Default (=full) set of targets (OpenSSL >= 1.1.1) to build
-#DEFAULTTARGETS="ios-sim-cross-x86_64 ios64-cross-arm64 ios-cross-armv7s ios-cross-armv7 tvos-sim-cross-x86_64 tvos64-cross-arm64 macos64-x86_64"
-DEFAULTTARGETS="ios-sim-cross-x86_64 ios64-cross-arm64 ios64-cross-arm64e tvos-sim-cross-x86_64 tvos64-cross-arm64 macos64-x86_64 watchos-cross-armv7k watchos-cross-arm64_32 watchos-sim-cross-i386 watchos-sim-cross-x86_64"
+DEFAULTTARGETS="ios-sim-cross-x86_64 ios64-cross-arm64 ios64-cross-arm64e tvos-sim-cross-x86_64 tvos64-cross-arm64 macos64-x86_64 watchos-cross-armv7k watchos-cross-arm64_32 watchos-sim-cross-i386 watchos-sim-cross-x86_64 mac-catalyst-x86_64"
 
 # Minimum iOS/tvOS SDK version to build for
 IOS_MIN_SDK_VERSION="12.0"
 TVOS_MIN_SDK_VERSION="12.0"
 MACOS_MIN_SDK_VERSION="10.15"
+CATALYST_MIN_SDK_VERSION="10.15"
 WATCHOS_MIN_SDK_VERSION="4.0"
 
 # Init optional env variables (use available variable or default to empty string)
@@ -50,6 +50,7 @@ echo_help()
   echo "     --ec-nistp-64-gcc-128         Enable configure option enable-ec_nistp_64_gcc_128 for 64 bit builds"
   echo " -h, --help                        Print help (this message)"
   echo "     --macos-sdk=SDKVERSION        Override macOS SDK version"
+  echo "     --catalyst-sdk=SDKVERSION     Override macOS SDK version for Catalyst"
   echo "     --ios-sdk=SDKVERSION          Override iOS SDK version"
   echo "     --tvos-sdk=SDKVERSION         Override tvOS SDK version"
   echo "     --watchos-sdk=SDKVERSION      Override watchOS SDK version"
@@ -178,6 +179,10 @@ finish_build_loop()
     LIBSSL_IOS+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_IOS+=("${TARGETDIR}/lib/libcrypto.a")
     OPENSSLCONF_SUFFIX="ios_${ARCH}"
+  elif [[ "${PLATFORM}" == Catalyst* ]]; then
+    LIBSSL_CATALYST+=("${TARGETDIR}/lib/libssl.a")
+    LIBCRYPTO_CATALYST+=("${TARGETDIR}/lib/libcrypto.a")
+    OPENSSLCONF_SUFFIX="catalyst_${ARCH}"
   else
     LIBSSL_MACOS+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_MACOS+=("${TARGETDIR}/lib/libcrypto.a")
@@ -203,6 +208,7 @@ CONFIG_ENABLE_EC_NISTP_64_GCC_128=""
 CONFIG_DISABLE_BITCODE=""
 CONFIG_NO_DEPRECATED=""
 MACOS_SDKVERSION=""
+CATALYST_SDKVERSION=""
 IOS_SDKVERSION=""
 WATCHOS_SDKVERSION=""
 LOG_VERBOSE=""
@@ -237,6 +243,10 @@ case $i in
     ;;
   --macos-sdk=*)
     MACOS_SDKVERSION="${i#*=}"
+    shift
+    ;;
+  --catalyst-sdk=*)
+    CATALYST_SDKVERSION="${i#*=}"
     shift
     ;;
   --ios-sdk=*)
@@ -342,6 +352,9 @@ fi
 if [ ! -n "${MACOS_SDKVERSION}" ]; then
   MACOS_SDKVERSION=$(xcrun -sdk macosx --show-sdk-version)
 fi
+if [ ! -n "${CATALYST_SDKVERSION}" ]; then
+  CATALYST_SDKVERSION=$(xcrun -sdk macosx --show-sdk-version)
+fi
 if [ ! -n "${IOS_SDKVERSION}" ]; then
   IOS_SDKVERSION=$(xcrun -sdk iphoneos --show-sdk-version)
 fi
@@ -355,6 +368,8 @@ fi
 # Truncate to minor version
 MINOR_VERSION=(${MACOS_SDKVERSION//./ })
 MACOS_SDKVERSION="${MINOR_VERSION[0]}.${MINOR_VERSION[1]}"
+MINOR_VERSION=(${CATALYST_SDKVERSION//./ })
+CATALYST_SDKVERSION="${MINOR_VERSION[0]}.${MINOR_VERSION[1]}"
 
 # Determine number of cores for (parallel) build
 BUILD_THREADS=1
@@ -399,6 +414,7 @@ echo "Build options"
 echo "  OpenSSL version: ${VERSION}"
 echo "  Targets: ${TARGETS}"
 echo "  macOS SDK: ${MACOS_SDKVERSION} (min ${MACOS_MIN_SDK_VERSION})"
+echo "  macOS SDK (Catalyst): ${CATALYST_SDKVERSION} (min ${CATALYST_MIN_SDK_VERSION})"
 echo "  iOS SDK: ${IOS_SDKVERSION} (min ${IOS_MIN_SDK_VERSION})"
 echo "  tvOS SDK: ${TVOS_SDKVERSION} (min ${TVOS_MIN_SDK_VERSION})"
 echo "  watchOS SDK: ${WATCHOS_SDKVERSION} (min ${WATCHOS_MIN_SDK_VERSION})"
@@ -480,6 +496,8 @@ INCLUDE_DIR=""
 OPENSSLCONF_ALL=()
 LIBSSL_MACOS=()
 LIBCRYPTO_MACOS=()
+LIBSSL_CATALYST=()
+LIBCRYPTO_CATALYST=()
 LIBSSL_IOS=()
 LIBCRYPTO_IOS=()
 LIBSSL_TVOS=()
@@ -494,6 +512,13 @@ if [ ${#LIBSSL_MACOS[@]} -gt 0 ]; then
   echo "Build library for macOS..."
   lipo -create ${LIBSSL_MACOS[@]} -output "${CURRENTPATH}/lib/libssl-MacOSX.a"
   lipo -create ${LIBCRYPTO_MACOS[@]} -output "${CURRENTPATH}/lib/libcrypto-MacOSX.a"
+fi
+
+#Build Catalyst library if selected for build
+if [ ${#LIBSSL_CATALYST[@]} -gt 0 ]; then
+  echo "Build library for Catalyst..."
+  lipo -create ${LIBSSL_CATALYST[@]} -output "${CURRENTPATH}/lib/libssl-Catalyst.a"
+  lipo -create ${LIBCRYPTO_CATALYST[@]} -output "${CURRENTPATH}/lib/libcrypto-Catalyst.a"
 fi
 
 # Build iOS library if selected for build
@@ -543,6 +568,9 @@ if [ ${#OPENSSLCONF_ALL[@]} -gt 1 ]; then
       ;;
       *_macos_i386.h)
         DEFINE_CONDITION="TARGET_OS_OSX && TARGET_CPU_X86"
+      ;;
+      *_catalyst_x86_64.h)
+        DEFINE_CONDITION="(TARGET_OS_MACCATALYST || (TARGET_OS_IOS && TARGET_OS_SIMULATOR)) && TARGET_CPU_X86_64"
       ;;
       *_ios_x86_64.h)
         DEFINE_CONDITION="TARGET_OS_IOS && TARGET_OS_SIMULATOR && TARGET_CPU_X86_64"
