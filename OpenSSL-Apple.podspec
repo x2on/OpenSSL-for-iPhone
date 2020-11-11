@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     openssl_version   = "1.1.1h"
-    openssl_targets   = "ios-sim-cross-x86_64 ios64-cross-arm64 macos64-x86_64"
+    openssl_targets   = "ios-sim-cross-x86_64 ios64-cross-arm64 ios64-cross-arm64e macos64-x86_64"
     script_version    = "6"
 
     s.name            = "OpenSSL-Apple"
