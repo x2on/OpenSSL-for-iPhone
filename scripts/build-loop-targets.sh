@@ -46,6 +46,9 @@ do
   # Determine platform
   if [[ "${TARGET}" == "macos"* ]]; then
     PLATFORM="MacOSX"
+    if [[ "${TARGET}" == "macos64-arm64" ]]; then
+      MACOS_MIN_SDK_VERSION="11.0"
+    fi
   elif [[ "${TARGET}" == "mac-catalyst-"* ]]; then
     PLATFORM="MacOSX"
   elif [[ "${TARGET}" == "watchos-sim-cross"* ]]; then
@@ -58,6 +61,9 @@ do
     PLATFORM="AppleTVOS"
   elif [[ "${TARGET}" == "ios-sim-cross-"* ]]; then
     PLATFORM="iPhoneSimulator"
+    if [[ "${TARGET}" == "ios-sim-cross-arm64" ]]; then
+      IOS_MIN_SDK_VERSION="13.0"
+    fi
   else
     PLATFORM="iPhoneOS"
   fi
