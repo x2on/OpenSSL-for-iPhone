@@ -23,7 +23,7 @@ Compile OpenSSL 1.1.1h for all targets:
 Compile OpenSSL 1.1.1h for specific targets:
 
 ```
-./build-libssl.sh --version=1.1.1h --targets="ios-cross-armv7 macos64-x86_64"
+./build-libssl.sh --version=1.1.1h --targets="ios64-cross-arm64 macos64-x86_64 macos64-arm64"
 ```
 
 For all options see:
