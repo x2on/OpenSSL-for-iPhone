@@ -3,6 +3,7 @@
 ![iOS support](https://img.shields.io/badge/iOS-11+-blue.svg)
 ![tvOS support](https://img.shields.io/badge/tvOS-11+-blue.svg)
 ![macOS support](https://img.shields.io/badge/macOS-10.11+-blue.svg)
+![macOS Catalyst support](https://img.shields.io/badge/macOS%20Catalyst-10.15+-blue.svg)
 ![watchOS support](https://img.shields.io/badge/watchOS-4.0+-blue.svg)
 ![OpenSSL version](https://img.shields.io/badge/OpenSSL-1.1.1g-green.svg)
 [![license](https://img.shields.io/badge/license-Apache%202.0-lightgrey.svg)](LICENSE)
