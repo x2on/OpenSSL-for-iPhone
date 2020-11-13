@@ -549,8 +549,8 @@ fi
 # Build tvOS library if selected for build
 if [ ${#LIBSSL_WATCHOS[@]} -gt 0 ]; then
   echo "Build library for watchOS..."
-  lipo -create ${LIBSSL_WATCHOS[@]} -output "${CURRENTPATH}/lib/libssl-WatchOS.a"
-  lipo -create ${LIBCRYPTO_WATCHOS[@]} -output "${CURRENTPATH}/lib/libcrypto-WatchOS.a"
+  lipo -create ${LIBSSL_WATCHOS[@]} -output "${CURRENTPATH}/lib/libssl-Watch.a"
+  lipo -create ${LIBCRYPTO_WATCHOS[@]} -output "${CURRENTPATH}/lib/libcrypto-Watch.a"
 fi
 
 # Build tvOS library if selected for build
