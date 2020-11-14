@@ -3,6 +3,7 @@
 bin
 src
 lib
+frameworks
 include/openssl
 *.gz
 *.framework

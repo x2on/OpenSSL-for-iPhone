@@ -21,7 +21,8 @@ if [ -d $FWROOT ]; then
     rm -rf $FWROOT
 fi
 
-ALL_SYSTEMS=("iPhone" "AppleTV" "MacOSX" "Catalyst" "Watch")
+#ALL_SYSTEMS=("iPhone" "AppleTV" "MacOSX" "Catalyst" "Watch")
+ALL_SYSTEMS=("iPhoneOS" "iPhoneSimulator" "AppleTVOS" "AppleTVSimulator" "MacOSX" "Catalyst" "WatchOS" "WatchSimulator")
 
 function check_bitcode() {
     local FWDIR=$1
@@ -212,11 +213,17 @@ else
     for SYS in ${ALL_SYSTEMS[@]}; do
         SYSDIR="$FWROOT/$SYS"
         FWDIR="$SYSDIR/$FWNAME.framework"
+        LIBS_CRYPTO=(bin/${SYS}*/lib/libcrypto.a)
+        LIBS_SSL=(bin/${SYS}*/lib/libssl.a)
 
-        if [[ -e lib/libcrypto-$SYS.a && -e lib/libssl-$SYS.a ]]; then
+        if [[ ${#LIBS_CRYPTO[@]} -gt 0 && -e ${LIBS_CRYPTO[0]} && ${#LIBS_SSL[@]} -gt 0 && -e ${LIBS_SSL[0]} ]]; then
             echo "Creating framework for $SYS"
+            mkdir -p $FWDIR/lib
+            lipo -create ${LIBS_CRYPTO[@]} -output $FWDIR/lib/libcrypto.a
+            lipo -create ${LIBS_SSL[@]} -output $FWDIR/lib/libssl.a
+            libtool -static -o $FWDIR/$FWNAME $FWDIR/lib/*.a
+            rm -rf $FWDIR/lib
             mkdir -p $FWDIR/Headers
-            libtool -static -o $FWDIR/$FWNAME lib/libcrypto-$SYS.a lib/libssl-$SYS.a
             cp -r include/$FWNAME/* $FWDIR/Headers/
             cp -L assets/$SYS/Info.plist $FWDIR/Info.plist
             MIN_SDK_VERSION=$(get_min_sdk "$FWDIR/$FWNAME")
@@ -252,5 +259,23 @@ for SYS in ${ALL_SYSTEMS[@]}; do
         ln -s "Versions/Current/openssl"
         ln -s "Versions/Current/Headers"
         ln -s "Versions/Current/Resources"
+
+        cd ../../..
     fi
 done
+
+build_xcframework() {
+    local FRAMEWORKS=($FWROOT/*/$FWNAME.framework)
+    local ARGS=
+    for ARG in ${FRAMEWORKS[@]}; do
+        ARGS+="-framework ${ARG} "
+    done
+
+    echo
+    xcodebuild -create-xcframework $ARGS -output "$FWROOT/$FWNAME.xcframework"
+
+    # These intermediate frameworks are silly, and not needed any more.
+    #find ${FWROOT} -mindepth 1 -maxdepth 1 -type d -not -name "$FWNAME.xcframework" -exec rm -rf '{}' \;
+}
+
+build_xcframework
