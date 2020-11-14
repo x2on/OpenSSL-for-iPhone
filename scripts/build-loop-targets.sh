@@ -22,42 +22,48 @@
 for TARGET in ${TARGETS}
 do
   # Determine relevant SDK version
-  if [[ "${TARGET}" == tvos* ]]; then
-    SDKVERSION="${TVOS_SDKVERSION}"
-  elif [[ "${TARGET}" == macos* ]]; then
+  if [[ "${TARGET}" == macos* ]]; then
     SDKVERSION="${MACOS_SDKVERSION}"
   elif [[ "${TARGET}" == mac-catalyst-* ]]; then
     SDKVERSION="${CATALYST_SDKVERSION}"
   elif [[ "${TARGET}" == watchos* ]]; then
     SDKVERSION="${WATCHOS_SDKVERSION}"
+  elif [[ "${TARGET}" == tvos* ]]; then
+    SDKVERSION="${TVOS_SDKVERSION}"
   else
     SDKVERSION="${IOS_SDKVERSION}"
   fi
 
   # These variables are used in the configuration file
   export SDKVERSION
+  export IOS_MIN_SDK_VERSION
   export MACOS_MIN_SDK_VERSION
   export CATALYST_MIN_SDK_VERSION
-  export IOS_MIN_SDK_VERSION
-  export TVOS_MIN_SDK_VERSION
   export WATCHOS_MIN_SDK_VERSION
+  export TVOS_MIN_SDK_VERSION
   export CONFIG_DISABLE_BITCODE
 
   # Determine platform
-  if [[ "${TARGET}" == "ios-sim-cross-"* ]]; then
-    PLATFORM="iPhoneSimulator"
-  elif [[ "${TARGET}" == "tvos-sim-cross-"* ]]; then
-    PLATFORM="AppleTVSimulator"
-  elif [[ "${TARGET}" == "tvos64-cross-"* ]]; then
-    PLATFORM="AppleTVOS"
-  elif [[ "${TARGET}" == "macos"* ]]; then
+  if [[ "${TARGET}" == "macos"* ]]; then
     PLATFORM="MacOSX"
+    if [[ "${TARGET}" == "macos64-arm64" ]]; then
+      MACOS_MIN_SDK_VERSION="11.0"
+    fi
   elif [[ "${TARGET}" == "mac-catalyst-"* ]]; then
     PLATFORM="MacOSX"
   elif [[ "${TARGET}" == "watchos-sim-cross"* ]]; then
     PLATFORM="WatchSimulator"
   elif [[ "${TARGET}" == "watchos"* ]]; then
     PLATFORM="WatchOS"
+  elif [[ "${TARGET}" == "tvos-sim-cross-"* ]]; then
+    PLATFORM="AppleTVSimulator"
+  elif [[ "${TARGET}" == "tvos64-cross-"* ]]; then
+    PLATFORM="AppleTVOS"
+  elif [[ "${TARGET}" == "ios-sim-cross-"* ]]; then
+    PLATFORM="iPhoneSimulator"
+    if [[ "${TARGET}" == "ios-sim-cross-arm64" ]]; then
+      IOS_MIN_SDK_VERSION="13.0"
+    fi
   else
     PLATFORM="iPhoneOS"
   fi

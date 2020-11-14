@@ -21,22 +21,22 @@ if [ -d $FWROOT ]; then
     rm -rf $FWROOT
 fi
 
-ALL_SYSTEMS=("iPhone" "AppleTV" "MacOSX" "Catalyst" "WatchOS")
+ALL_SYSTEMS=("iPhone" "AppleTV" "MacOSX" "Catalyst" "Watch")
 
 function check_bitcode() {
     local FWDIR=$1
 
     if [[ $FWTYPE == "dynamic" ]]; then
-   		BITCODE_PATTERN="__LLVM"
+        BITCODE_PATTERN="__LLVM"
     else
-    	BITCODE_PATTERN="__bitcode"
-	fi
+        BITCODE_PATTERN="__bitcode"
+    fi
 
-	if otool -l "$FWDIR/$FWNAME" | grep "${BITCODE_PATTERN}" >/dev/null; then
-       		echo "INFO: $FWDIR contains Bitcode"
-	else
-        	echo "INFO: $FWDIR doesn't contain Bitcode"
-	fi
+    if otool -l "$FWDIR/$FWNAME" | grep "${BITCODE_PATTERN}" >/dev/null; then
+        echo "INFO: $FWDIR contains Bitcode"
+    else
+        echo "INFO: $FWDIR doesn't contain Bitcode"
+    fi
 }
 
 # Inspect Mach-O load commands to get minimum SDK version.
@@ -187,12 +187,7 @@ if [ $FWTYPE == "dynamic" ]; then
     for SYS in ${ALL_SYSTEMS[@]}; do
         SYSDIR="$FWROOT/$SYS"
         FWDIR="$SYSDIR/$FWNAME.framework"
-
-        if [[ $SYS == "WatchOS" ]]; then
-			DYLIBS=(bin/Watch*/$FWNAME.dylib)
-		else
-			DYLIBS=(bin/${SYS}*/$FWNAME.dylib)
-		fi
+        DYLIBS=(bin/${SYS}*/$FWNAME.dylib)
 
         if [[ ${#DYLIBS[@]} -gt 0 && -e ${DYLIBS[0]} ]]; then
             echo "Creating framework for $SYS"

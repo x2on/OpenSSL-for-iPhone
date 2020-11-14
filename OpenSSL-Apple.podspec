@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
     openssl_version   = "1.1.1h"
-    openssl_targets   = "ios-sim-cross-x86_64 ios64-cross-arm64 ios64-cross-arm64e macos64-x86_64"
-    script_version    = "6"
+    openssl_targets   = "ios-sim-cross-x86_64 ios64-cross-arm64 ios64-cross-arm64e macos64-x86_64 macos64-arm64 mac-catalyst-arm64"
+    script_version    = "7"
 
     s.name            = "OpenSSL-Apple"
     s.version         = "#{openssl_version}.#{script_version}"
@@ -17,9 +17,11 @@ Pod::Spec.new do |s|
 ./create-openssl-framework.sh dynamic
     CMD
 
-    s.ios.deployment_target         = "11.0"
+    s.ios.deployment_target         = "12.0"
     s.ios.vendored_frameworks       = "frameworks/iPhone/openssl.framework"
-    s.osx.deployment_target         = "10.11"
+    s.ios.pod_target_xcconfig       = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+    s.ios.user_target_xcconfig      = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+    s.osx.deployment_target         = "10.15"
     s.osx.vendored_frameworks       = "frameworks/MacOSX/openssl.framework"
     s.requires_arc                  = false
 end
