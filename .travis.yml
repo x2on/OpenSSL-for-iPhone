@@ -12,4 +12,4 @@ branches:
 install:
     - bundle install --jobs=3 --deployment --path=${BUNDLE_PATH:-vendor/bundle}
     - bundle exec pod repo update
-    - travis_wait 30 bundle exec pod install
+    - travis_wait 40 bundle exec pod install

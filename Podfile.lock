@@ -1,5 +1,5 @@
 PODS:
-  - OpenSSL-Apple (1.1.1h.7)
+  - OpenSSL-Apple (1.1.1h.8)
 
 DEPENDENCIES:
   - OpenSSL-Apple (from `.`)
@@ -9,7 +9,7 @@ EXTERNAL SOURCES:
     :path: "."
 
 SPEC CHECKSUMS:
-  OpenSSL-Apple: ea3144c521f4d5f620bc911686ddc42f48ae17d8
+  OpenSSL-Apple: 70990157548ecf94885310231aff52db698e1077
 
 PODFILE CHECKSUM: 46de088b71467a12879d73c36eda858ad56ed167
 
