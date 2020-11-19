@@ -61,9 +61,6 @@ do
     PLATFORM="AppleTVOS"
   elif [[ "${TARGET}" == "ios-sim-cross-"* ]]; then
     PLATFORM="iPhoneSimulator"
-    if [[ "${TARGET}" == "ios-sim-cross-arm64" ]]; then
-      IOS_MIN_SDK_VERSION="13.0"
-    fi
   else
     PLATFORM="iPhoneOS"
   fi
