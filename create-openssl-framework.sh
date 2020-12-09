@@ -239,9 +239,9 @@ else
     done
 fi
 
-# macOS symlinks
+# macOS and Catalyst symlinks
 for SYS in ${ALL_SYSTEMS[@]}; do
-    if [[ $SYS == "MacOSX" ]]; then
+    if [[ $SYS == "MacOSX" || $SYS == "Catalyst" ]]; then
         SYSDIR="$FWROOT/$SYS"
         FWDIR="$SYSDIR/$FWNAME.framework"
         if [[ ! -e "$FWDIR" ]]; then
