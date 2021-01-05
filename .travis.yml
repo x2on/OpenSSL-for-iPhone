@@ -4,12 +4,12 @@ xcode_workspace: Demo.xcworkspace
 xcode_scheme: Demo
 xcode_destination: platform=iOS Simulator,OS=14.2,name=iPhone 11 Pro Max
 cache:
-    - bundler
-    - cocoapods
+  bundler: true
+  cocoapods: true
 branches:
-    only:
-        - master
+  only:
+    - master
 install:
-    - bundle install --jobs=3 --deployment --path=${BUNDLE_PATH:-vendor/bundle}
-    - bundle exec pod repo update
-    - travis_wait 40 bundle exec pod install
+  - bundle install --jobs=3 --deployment --path=${BUNDLE_PATH:-vendor/bundle}
+  - bundle exec pod repo update
+  - travis_wait 40 bundle exec pod install --verbose
