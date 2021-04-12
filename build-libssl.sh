@@ -482,7 +482,7 @@ if [ ${#OPENSSLCONF_ALL[@]} -gt 1 ]; then
   # Prepare intermediate header file
   # This overwrites opensslconf.h that was copied from $INCLUDE_DIR
   OPENSSLCONF_INTERMEDIATE="${CURRENTPATH}/include/openssl/opensslconf.h"
-  cp "${CURRENTPATH}/include/opensslconf-template.h" "${OPENSSLCONF_INTERMEDIATE}"
+  cp "${SCRIPTDIR}/include/opensslconf-template.h" "${OPENSSLCONF_INTERMEDIATE}"
 
   # Loop all header files
   LOOPCOUNT=0
