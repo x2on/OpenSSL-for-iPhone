@@ -25,10 +25,14 @@ set -u
 # SCRIPT DEFAULTS
 
 # Default version in case no version is specified
-DEFAULTVERSION="1.1.1d"
+DEFAULTVERSION="1.1.1g"
 
 # Default (=full) set of targets to build
-DEFAULTTARGETS="ios-sim-cross-x86_64 ios64-cross-arm64 ios64-cross-arm64e tvos-sim-cross-x86_64 tvos64-cross-arm64"  # mac-catalyst-x86_64 is a valid target that is not in the DEFAULTTARGETS because it's incompatible with "ios-sim-cross-x86_64"
+DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-arm64 ios-cross-armv7 ios-cross-arm64 mac-catalyst-x86_64 tvos-sim-cross-x86_64 tvos-sim-cross-arm64 tvos-cross-arm64"
+# Excluded targets:
+#   ios-sim-cross-386   Legacy
+#   ios-cross-armv7s    Dropped by Apple in Xcode 6 (https://www.cocoanetics.com/2014/10/xcode-6-drops-armv7s/)
+#   ios-cross-arm64e    Not in use as of Xcode 12
 
 # Minimum iOS/tvOS SDK version to build for
 IOS_MIN_SDK_VERSION="12.0"
@@ -159,18 +163,26 @@ finish_build_loop()
   rm -r "${SOURCEDIR}"
 
   # Add references to library files to relevant arrays
-  if [[ "${PLATFORM}" == AppleTV* ]]; then
+  if [[ "${PLATFORM}" == iPhoneOS ]]; then
+    LIBSSL_IOS+=("${TARGETDIR}/lib/libssl.a")
+    LIBCRYPTO_IOS+=("${TARGETDIR}/lib/libcrypto.a")
+    OPENSSLCONF_SUFFIX="ios_${ARCH}"
+  elif [[ "${PLATFORM}" == iPhoneSimulator ]]; then
+    LIBSSL_IOSSIM+=("${TARGETDIR}/lib/libssl.a")
+    LIBCRYPTO_IOSSIM+=("${TARGETDIR}/lib/libcrypto.a")
+    OPENSSLCONF_SUFFIX="ios_${ARCH}"
+  elif [[ "${PLATFORM}" == AppleTVOS ]]; then
     LIBSSL_TVOS+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_TVOS+=("${TARGETDIR}/lib/libcrypto.a")
     OPENSSLCONF_SUFFIX="tvos_${ARCH}"
-  else
-    LIBSSL_IOS+=("${TARGETDIR}/lib/libssl.a")
-    LIBCRYPTO_IOS+=("${TARGETDIR}/lib/libcrypto.a")
-    if [[ "${PLATFORM}" != MacOSX* ]]; then
-      OPENSSLCONF_SUFFIX="ios_${ARCH}"
-    else
-      OPENSSLCONF_SUFFIX="catalyst_${ARCH}"
-    fi
+  elif [[ "${PLATFORM}" == AppleTVSimulator ]]; then
+    LIBSSL_TVOSSIM+=("${TARGETDIR}/lib/libssl.a")
+    LIBCRYPTO_TVOSSIM+=("${TARGETDIR}/lib/libcrypto.a")
+    OPENSSLCONF_SUFFIX="tvos_${ARCH}"
+  else # Catalyst
+    LIBSSL_CATALYST+=("${TARGETDIR}/lib/libssl.a")
+    LIBCRYPTO_CATALYST+=("${TARGETDIR}/lib/libcrypto.a")
+    OPENSSLCONF_SUFFIX="catalyst_${ARCH}"
   fi
 
   # Copy opensslconf.h to bin directory and add to array
@@ -442,24 +454,38 @@ mkdir -p "${CURRENTPATH}/src"
 INCLUDE_DIR=""
 OPENSSLCONF_ALL=()
 LIBSSL_IOS=()
+LIBSSL_IOSSIM=()
 LIBCRYPTO_IOS=()
+LIBCRYPTO_IOSSIM=()
 LIBSSL_TVOS=()
+LIBSSL_TVOSSIM=()
 LIBCRYPTO_TVOS=()
+LIBCRYPTO_TVOSSIM=()
+LIBSSL_CATALYST=()
+LIBCRYPTO_CATALYST=()
 
 # Run relevant build loop
 source "${SCRIPTDIR}/scripts/build-loop-targets.sh"
 
-# Build iOS library if selected for build
+# Build iOS/Simulator library if selected for build
 if [ ${#LIBSSL_IOS[@]} -gt 0 ]; then
   echo "Build library for iOS..."
-  lipo -create ${LIBSSL_IOS[@]} -output "${CURRENTPATH}/lib/libssl.a"
-  lipo -create ${LIBCRYPTO_IOS[@]} -output "${CURRENTPATH}/lib/libcrypto.a"
+  lipo -create ${LIBSSL_IOS[@]} -output "${CURRENTPATH}/lib/libssl-iOS.a"
+  lipo -create ${LIBCRYPTO_IOS[@]} -output "${CURRENTPATH}/lib/libcrypto-iOS.a"
   echo "\n=====>iOS SSL and Crypto lib files:"
-  echo "${CURRENTPATH}/lib/libssl.a"
-  echo "${CURRENTPATH}/lib/libcrypto.a"
+  echo "${CURRENTPATH}/lib/libssl-iOS.a"
+  echo "${CURRENTPATH}/lib/libcrypto-iOS.a"
+fi
+if [ ${#LIBSSL_IOSSIM[@]} -gt 0 ]; then
+  echo "Build library for iOS Simulator..."
+  lipo -create ${LIBSSL_IOSSIM[@]} -output "${CURRENTPATH}/lib/libssl-iOS-Sim.a"
+  lipo -create ${LIBSSL_IOSSIM[@]} -output "${CURRENTPATH}/lib/libcrypto-iOS-Sim.a"
+  echo "\n=====>iOS Simulator SSL and Crypto lib files:"
+  echo "${CURRENTPATH}/lib/libssl-iOS-Sim.a"
+  echo "${CURRENTPATH}/lib/libcrypto-iOS-Sim.a"
 fi
 
-# Build tvOS library if selected for build
+# Build tvOS/Simulator library if selected for build
 if [ ${#LIBSSL_TVOS[@]} -gt 0 ]; then
   echo "Build library for tvOS..."
   lipo -create ${LIBSSL_TVOS[@]} -output "${CURRENTPATH}/lib/libssl-tvOS.a"
@@ -467,6 +493,24 @@ if [ ${#LIBSSL_TVOS[@]} -gt 0 ]; then
   echo "\n=====>tvOS SSL and Crypto lib files:"
   echo "${CURRENTPATH}/lib/libssl-tvOS.a"
   echo "${CURRENTPATH}/lib/libcrypto-tvOS.a"
+fi
+if [ ${#LIBSSL_TVOSSIM[@]} -gt 0 ]; then
+  echo "Build library for tvOS..."
+  lipo -create ${LIBSSL_TVOSSIM[@]} -output "${CURRENTPATH}/lib/libssl-tvOS-Sim.a"
+  lipo -create ${LIBCRYPTO_TVOSSIM[@]} -output "${CURRENTPATH}/lib/libcrypto-tvOS-Sim.a"
+  echo "\n=====>tvOS Simulator SSL and Crypto lib files:"
+  echo "${CURRENTPATH}/lib/libssl-tvOS-Sim.a"
+  echo "${CURRENTPATH}/lib/libcrypto-tvOS-Sim.a"
+fi
+
+# Build Catalyst library if selected for build
+if [ ${#LIBSSL_CATALYST[@]} -gt 0 ]; then
+  echo "Build library for Catalyst..."
+  lipo -create ${LIBSSL_CATALYST[@]} -output "${CURRENTPATH}/lib/libssl-Catalyst.a"
+  lipo -create ${LIBCRYPTO_CATALYST[@]} -output "${CURRENTPATH}/lib/libcrypto-Catalyst.a"
+  echo "\n=====>Catalyst SSL and Crypto lib files:"
+  echo "${CURRENTPATH}/lib/libssl-Catalyst.a"
+  echo "${CURRENTPATH}/lib/libcrypto-Catalyst.a"
 fi
 
 # Copy include directory
@@ -500,7 +544,7 @@ if [ ${#OPENSSLCONF_ALL[@]} -gt 1 ]; then
         DEFINE_CONDITION="TARGET_OS_IOS && TARGET_OS_SIMULATOR && TARGET_CPU_X86"
       ;;
       *_ios_arm64.h)
-        DEFINE_CONDITION="TARGET_OS_IOS && TARGET_OS_EMBEDDED && TARGET_CPU_ARM64"
+        DEFINE_CONDITION="TARGET_OS_IOS && (TARGET_OS_EMBEDDED || TARGET_OS_SIMULATOR) && TARGET_CPU_ARM64"
       ;;
       *_ios_arm64e.h)
         DEFINE_CONDITION="TARGET_OS_IOS && TARGET_OS_EMBEDDED && TARGET_CPU_ARM64E"

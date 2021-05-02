@@ -41,7 +41,7 @@ do
     PLATFORM="iPhoneSimulator"
   elif [[ "${TARGET}" == "tvos-sim-cross-"* ]]; then
     PLATFORM="AppleTVSimulator"
-  elif [[ "${TARGET}" == "tvos64-cross-"* ]]; then
+  elif [[ "${TARGET}" == "tvos-cross-"* ]]; then
     PLATFORM="AppleTVOS"
   elif [[ "${TARGET}" == "mac-catalyst-"* ]]; then
     PLATFORM="MacOSX"
