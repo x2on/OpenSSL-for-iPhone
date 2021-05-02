@@ -28,7 +28,7 @@ set -u
 DEFAULTVERSION="1.1.1g"
 
 # Default (=full) set of targets to build
-DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-arm64 ios-cross-armv7 ios-cross-arm64 mac-catalyst-x86_64 tvos-sim-cross-x86_64 tvos-sim-cross-arm64 tvos-cross-arm64"
+DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-arm64 ios-cross-armv7 ios-cross-arm64 mac-catalyst-x86_64 mac-catalyst-arm64 tvos-sim-cross-x86_64 tvos-sim-cross-arm64 tvos-cross-arm64"
 # Excluded targets:
 #   ios-sim-cross-386   Legacy
 #   ios-cross-armv7s    Dropped by Apple in Xcode 6 (https://www.cocoanetics.com/2014/10/xcode-6-drops-armv7s/)
@@ -557,6 +557,9 @@ if [ ${#OPENSSLCONF_ALL[@]} -gt 1 ]; then
       ;;
       *_catalyst_x86_64.h)
         DEFINE_CONDITION="(TARGET_OS_MACCATALYST || (TARGET_OS_IOS && TARGET_OS_SIMULATOR)) && TARGET_CPU_X86_64"
+      ;;
+      *_catalyst_arm64.h)
+        DEFINE_CONDITION="(TARGET_OS_MACCATALYST || (TARGET_OS_IOS && TARGET_OS_SIMULATOR)) && TARGET_CPU_ARM64"
       ;;
       *_tvos_x86_64.h)
         DEFINE_CONDITION="TARGET_OS_TV && TARGET_OS_SIMULATOR && TARGET_CPU_X86_64"
