@@ -28,7 +28,7 @@ set -u
 DEFAULTVERSION="1.1.1g"
 
 # Default (=full) set of targets to build
-DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-arm64 ios-cross-armv7 ios-cross-arm64 mac-catalyst-x86_64 mac-catalyst-arm64 tvos-sim-cross-x86_64 tvos-sim-cross-arm64 tvos-cross-arm64"
+DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-arm64 ios-cross-armv7 ios-cross-arm64 mac-catalyst-x86_64 mac-catalyst-arm64 tvos-sim-cross-x86_64 tvos-sim-cross-arm64 tvos-cross-arm64 watchos-sim-cross-x86_64 watchos-sim-cross-arm64 watchos-cross-armv7k watchos-cross-arm64_32"
 # Excluded targets:
 #   ios-sim-cross-386   Legacy
 #   ios-cross-armv7s    Dropped by Apple in Xcode 6 (https://www.cocoanetics.com/2014/10/xcode-6-drops-armv7s/)
@@ -179,6 +179,14 @@ finish_build_loop()
     LIBSSL_TVOSSIM+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_TVOSSIM+=("${TARGETDIR}/lib/libcrypto.a")
     OPENSSLCONF_SUFFIX="tvos_${ARCH}"
+  elif [[ "${PLATFORM}" == WatchOS ]]; then
+    LIBSSL_WATCHOS+=("${TARGETDIR}/lib/libssl.a")
+    LIBCRYPTO_WATCHOS+=("${TARGETDIR}/lib/libcrypto.a")
+    OPENSSLCONF_SUFFIX="watchos_${ARCH}"
+  elif [[ "${PLATFORM}" == WatchSimulator ]]; then
+    LIBSSL_WATCHOSSIM+=("${TARGETDIR}/lib/libssl.a")
+    LIBCRYPTO_WATCHOSSIM+=("${TARGETDIR}/lib/libcrypto.a")
+    OPENSSLCONF_SUFFIX="watchos_${ARCH}"
   else # Catalyst
     LIBSSL_CATALYST+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_CATALYST+=("${TARGETDIR}/lib/libcrypto.a")
@@ -210,6 +218,7 @@ PARALLEL=""
 TARGETS=""
 TVOS_SDKVERSION=""
 VERSION=""
+WATCHOS_SDKVERSION=""
 
 # Process command line arguments
 for i in "$@"
@@ -332,6 +341,9 @@ fi
 if [ ! -n "${TVOS_SDKVERSION}" ]; then
   TVOS_SDKVERSION=$(xcrun -sdk appletvos --show-sdk-version)
 fi
+if [ ! -n "${WATCHOS_SDKVERSION}" ]; then
+  WATCHOS_SDKVERSION=$(xcrun -sdk watchos --show-sdk-version)
+fi
 
 # Determine number of cores for (parallel) build
 BUILD_THREADS=1
@@ -377,6 +389,7 @@ echo "  OpenSSL version: ${VERSION}"
 echo "  Targets: ${TARGETS}"
 echo "  iOS SDK: ${IOS_SDKVERSION}"
 echo "  tvOS SDK: ${TVOS_SDKVERSION}"
+echo "  watchOS SDK: ${WATCHOS_SDKVERSION}"
 if [ "${CONFIG_DISABLE_BITCODE}" == "true" ]; then
   echo "  Bitcode embedding disabled"
 fi
@@ -461,6 +474,10 @@ LIBSSL_TVOS=()
 LIBSSL_TVOSSIM=()
 LIBCRYPTO_TVOS=()
 LIBCRYPTO_TVOSSIM=()
+LIBSSL_WATCHOS=()
+LIBSSL_WATCHOSSIM=()
+LIBCRYPTO_WATCHOS=()
+LIBCRYPTO_WATCHOSSIM=()
 LIBSSL_CATALYST=()
 LIBCRYPTO_CATALYST=()
 
@@ -501,6 +518,24 @@ if [ ${#LIBSSL_TVOSSIM[@]} -gt 0 ]; then
   echo "\n=====>tvOS Simulator SSL and Crypto lib files:"
   echo "${CURRENTPATH}/lib/libssl-tvOS-Sim.a"
   echo "${CURRENTPATH}/lib/libcrypto-tvOS-Sim.a"
+fi
+
+# Build watchOS/Simulator library if selected for build
+if [ ${#LIBSSL_WATCHOS[@]} -gt 0 ]; then
+  echo "Build library for watchOS..."
+  lipo -create ${LIBSSL_WATCHOS[@]} -output "${CURRENTPATH}/lib/libssl-watchOS.a"
+  lipo -create ${LIBCRYPTO_WATCHOS[@]} -output "${CURRENTPATH}/lib/libcrypto-watchOS.a"
+  echo "\n=====>watchOS SSL and Crypto lib files:"
+  echo "${CURRENTPATH}/lib/libssl-watchOS.a"
+  echo "${CURRENTPATH}/lib/libcrypto-watchOS.a"
+fi
+if [ ${#LIBSSL_WATCHOSSIM[@]} -gt 0 ]; then
+  echo "Build library for watchOS Simulator..."
+  lipo -create ${LIBSSL_WATCHOSSIM[@]} -output "${CURRENTPATH}/lib/libssl-watchOS-Sim.a"
+  lipo -create ${LIBCRYPTO_WATCHOSSIM[@]} -output "${CURRENTPATH}/lib/libcrypto-watchOS-Sim.a"
+  echo "\n=====>watchOS Simulator SSL and Crypto lib files:"
+  echo "${CURRENTPATH}/lib/libssl-watchOS-Sim.a"
+  echo "${CURRENTPATH}/lib/libcrypto-watchOS-Sim.a"
 fi
 
 # Build Catalyst library if selected for build
@@ -566,6 +601,21 @@ if [ ${#OPENSSLCONF_ALL[@]} -gt 1 ]; then
       ;;
       *_tvos_arm64.h)
         DEFINE_CONDITION="TARGET_OS_TV && TARGET_OS_EMBEDDED && TARGET_CPU_ARM64"
+      ;;
+      *_watchos_i386.h)
+        DEFINE_CONDITION="TARGET_OS_WATCH && TARGET_OS_SIMULATOR && TARGET_CPU_X86"
+      ;;
+      *_watchos_x86_64.h)
+        DEFINE_CONDITION="TARGET_OS_WATCH && TARGET_OS_SIMULATOR && TARGET_CPU_X86_64"
+      ;;
+      *_watchos_armv7k.h)
+        DEFINE_CONDITION="TARGET_OS_WATCH && TARGET_CPU_ARM"
+      ;;
+      *_watchos_arm64.h)
+        DEFINE_CONDITION="TARGET_OS_WATCH && TARGET_CPU_ARM64"
+      ;;
+      *_watchos_arm64_32.h)
+        DEFINE_CONDITION="TARGET_OS_WATCH && TARGET_CPU_ARM64"
       ;;
       *)
         # Don't run into unexpected cases by setting the default condition to false
