@@ -267,6 +267,10 @@ case $i in
     TVOS_SDKVERSION="${i#*=}"
     shift
     ;;
+  --watchos-sdk=*)
+    WATCHOS_SDKVERSION="${i#*=}"
+    shift
+    ;;
   -v|--verbose)
     LOG_VERBOSE="verbose"
     ;;
