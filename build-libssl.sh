@@ -500,7 +500,7 @@ fi
 if [ ${#LIBSSL_IOSSIM[@]} -gt 0 ]; then
   echo "Build library for iOS Simulator..."
   lipo -create ${LIBSSL_IOSSIM[@]} -output "${CURRENTPATH}/lib/libssl-iOS-Sim.a"
-  lipo -create ${LIBSSL_IOSSIM[@]} -output "${CURRENTPATH}/lib/libcrypto-iOS-Sim.a"
+  lipo -create ${LIBCRYPTO_IOSSIM[@]} -output "${CURRENTPATH}/lib/libcrypto-iOS-Sim.a"
   echo "\n=====>iOS Simulator SSL and Crypto lib files:"
   echo "${CURRENTPATH}/lib/libssl-iOS-Sim.a"
   echo "${CURRENTPATH}/lib/libcrypto-iOS-Sim.a"
