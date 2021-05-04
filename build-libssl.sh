@@ -25,7 +25,7 @@ set -u
 # SCRIPT DEFAULTS
 
 # Default version in case no version is specified
-DEFAULTVERSION="1.1.1g"
+DEFAULTVERSION="1.1.1k"
 
 # Default (=full) set of targets to build
 DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-arm64 ios-cross-armv7 ios-cross-arm64 mac-catalyst-x86_64 mac-catalyst-arm64 tvos-sim-cross-x86_64 tvos-sim-cross-arm64 tvos-cross-arm64 watchos-sim-cross-x86_64 watchos-sim-cross-arm64 watchos-cross-armv7k watchos-cross-arm64_32"
@@ -37,6 +37,7 @@ DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-arm64 ios-cross-armv7 ios-cro
 # Minimum iOS/tvOS SDK version to build for
 IOS_MIN_SDK_VERSION="12.0"
 TVOS_MIN_SDK_VERSION="12.0"
+WATCHOS_MIN_SDK_VERSION="6.0"
 MACOSX_MIN_SDK_VERSION="10.15"
 
 # Init optional env variables (use available variable or default to empty string)
