@@ -1,21 +1,33 @@
 #!/bin/sh
 
 set -u
-LIBNAME=openssl
 XFWNAME=OpenSSL.xcframework
 
 if [ ! -d lib ]; then
-    echo "Please run build-libssl.sh first!"
-    exit 1
+  echo "Please run build-libssl.sh first!"
+  exit 1
 fi
 
 if [ -d $XFWNAME ]; then
-    echo "* Removing existing $XFWNAME copy"
-    rm -rf $XFWNAME
+  echo "* Removing existing $XFWNAME copy"
+  rm -rf $XFWNAME
 fi
 
 LIBS=""
 LIBTOOL_FLAGS="-no_warning_for_no_symbols -static"
+
+# Copy include files into temporary dir
+make_include_dir()
+{
+  mkdir xfwinclude
+  if [ $? -ne 0 ]; then
+   exit 1
+  fi
+  cp -r include/openssl xfwinclude/
+  if [ $? -ne 0 ]; then
+   exit 1
+  fi
+}
 
 # Combine libssl and libcrypto into single per-platform library
 make_platform_lib()
@@ -28,18 +40,21 @@ make_platform_lib()
     if [ $? -ne 0 ]; then
       exit 1
     fi
-    LIBS="$LIBS -library $SLICE_OUT -headers include/$LIBNAME"
+    LIBS="$LIBS -library $SLICE_OUT -headers xfwinclude"
   else
     echo "* Skipping $SLICE. No libraries found."
   fi
 }
 
-remove_platform_libs()
+# Remove temporary files
+remove_temp_files()
 {
-  rm lib/OpenSSL-*.a
+  rm lib/OpenSSL-*.a 2>/dev/null
+  rm -r xfwinclude 2>/dev/null
 }
 
-remove_platform_libs
+remove_temp_files
+make_include_dir
 PLATFORMS="iOS tvOS watchOS Catalyst"
 for PLATFORM in $PLATFORMS
 do
@@ -51,5 +66,5 @@ done
 
 echo "* Creating $XFWNAME"
 xcodebuild -create-xcframework $LIBS -output $XFWNAME
-remove_platform_libs
+remove_temp_files
 echo "Done!"
