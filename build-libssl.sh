@@ -30,7 +30,7 @@ DEFAULTVERSION="1.1.1k"
 # Default (=full) set of targets to build
 DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-arm64 ios-cross-armv7 ios-cross-arm64 mac-catalyst-x86_64 mac-catalyst-arm64 tvos-sim-cross-x86_64 tvos-sim-cross-arm64 tvos-cross-arm64 watchos-sim-cross-x86_64 watchos-sim-cross-arm64 watchos-cross-armv7k watchos-cross-arm64_32"
 # Excluded targets:
-#   ios-sim-cross-386   Legacy
+#   ios-sim-cross-i386  Legacy
 #   ios-cross-armv7s    Dropped by Apple in Xcode 6 (https://www.cocoanetics.com/2014/10/xcode-6-drops-armv7s/)
 #   ios-cross-arm64e    Not in use as of Xcode 12
 
