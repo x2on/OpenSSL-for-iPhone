@@ -229,7 +229,7 @@ gpg_validate()
     return 1
   fi
 
-  $GPG_B --keyserver pool.sks-keyservers.net --keyserver-options auto-key-retrieve,include-subkeys --verify-options show-photos --verify "${SIG}" "${TARGET}"
+  $GPG_B --keyserver keys.openpgp.org --keyserver-options auto-key-retrieve,include-subkeys --verify-options show-photos --verify "${SIG}" "${TARGET}"
 }
 
 # Init optional command line vars
