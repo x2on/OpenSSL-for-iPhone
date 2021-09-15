@@ -6,6 +6,7 @@ lib
 frameworks
 include/openssl
 *.gz
+*.gz.asc
 *.framework
 *.o
 *.pbxuser

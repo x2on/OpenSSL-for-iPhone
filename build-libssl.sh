@@ -218,6 +218,20 @@ finish_build_loop()
   fi
 }
 
+gpg_validate()
+{
+  local TARGET=$1
+  local SIG=${2:-${TARGET}.asc}
+
+  GPG_B=$(which gpg)
+  if [ ! -x "${GPG_B}" ]; then
+    echo "WARN: No gpg executable found in PATH. Please consider installing gpg so archive signature validation can proceed."
+    return 1
+  fi
+
+  $GPG_B --keyserver keys.openpgp.org --keyserver-options auto-key-retrieve,include-subkeys --verify-options show-photos --verify "${SIG}" "${TARGET}"
+}
+
 # Init optional command line vars
 ARCHS=""
 BRANCH=""
@@ -449,9 +463,12 @@ echo
 # Download OpenSSL when not present
 OPENSSL_ARCHIVE_BASE_NAME="openssl-${VERSION}"
 OPENSSL_ARCHIVE_FILE_NAME="${OPENSSL_ARCHIVE_BASE_NAME}.tar.gz"
+OPENSSL_ARCHIVE_SIGNATURE_FILE_NAME="${OPENSSL_ARCHIVE_FILE_NAME}.asc"
 if [ ! -e ${OPENSSL_ARCHIVE_FILE_NAME} ]; then
   echo "Downloading ${OPENSSL_ARCHIVE_FILE_NAME}..."
-  OPENSSL_ARCHIVE_URL="https://www.openssl.org/source/${OPENSSL_ARCHIVE_FILE_NAME}"
+  OPENSSL_ARCHIVE_BASE_URL="https://www.openssl.org/source"
+  OPENSSL_ARCHIVE_URL="${OPENSSL_ARCHIVE_BASE_URL}/${OPENSSL_ARCHIVE_FILE_NAME}"
+  OPENSSL_ARCHIVE_SIGNATURE_URL="${OPENSSL_ARCHIVE_BASE_URL}/${OPENSSL_ARCHIVE_SIGNATURE_FILE_NAME}"
 
   # Check whether file exists here (this is the location of the latest version for each branch)
   # -s be silent, -f return non-zero exit status on failure, -I get header (do not download)
@@ -475,9 +492,20 @@ if [ ! -e ${OPENSSL_ARCHIVE_FILE_NAME} ]; then
   # Archive was found, so proceed with download.
   # -O Use server-specified filename for download
   curl ${CURL_OPTIONS} -O "${OPENSSL_ARCHIVE_URL}"
+  curl ${CURL_OPTIONS} -O "${OPENSSL_ARCHIVE_SIGNATURE_URL}"
 
 else
   echo "Using ${OPENSSL_ARCHIVE_FILE_NAME}"
+fi
+
+# Validate archive signature
+if [ -e ${OPENSSL_ARCHIVE_SIGNATURE_FILE_NAME} ]; then
+  gpg_validate "${OPENSSL_ARCHIVE_FILE_NAME}" "${OPENSSL_ARCHIVE_SIGNATURE_FILE_NAME}"
+  if [ $? -ne 0 ]; then
+    echo "WARN: GPG signature validation was unsuccessful."
+  fi
+else
+  echo "WARN: No GPG signature validation performed. (missing ${OPENSSL_ARCHIVE_SIGNATURE_FILE_NAME})"
 fi
 
 # Set reference to custom configuration (OpenSSL 1.1.1)
