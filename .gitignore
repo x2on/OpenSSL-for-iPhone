@@ -5,6 +5,8 @@ src
 lib
 frameworks
 include/openssl
+.build
+swiftpm
 *.gz
 *.gz.asc
 *.framework
