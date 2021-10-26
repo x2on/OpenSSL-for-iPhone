@@ -6,7 +6,7 @@ FRAMEWORK_ZIP="openssl.xcframework.zip"
 FRAMEWORK_DIR="swiftpm/$VERSION"
 ./build-libssl.sh --version="$VERSION" --targets="$TARGETS"
 ./create-openssl-framework.sh dynamic
-( cd frameworks && zip -r $FRAMEWORK_ZIP $FRAMEWORK )
+( cd frameworks && zip -yr $FRAMEWORK_ZIP $FRAMEWORK )
 mkdir -p $FRAMEWORK_DIR
 mv frameworks/$FRAMEWORK_ZIP $FRAMEWORK_DIR
 swift package compute-checksum $FRAMEWORK_DIR/$FRAMEWORK_ZIP
