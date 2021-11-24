@@ -141,7 +141,7 @@ if [ $FWTYPE == "dynamic" ]; then
         elif [[ $PLATFORM == MacOSX* ]]; then
             MIN_SDK="-macosx_version_min $MIN_SDK_VERSION"
         elif [[ $PLATFORM == Catalyst* ]]; then
-            MIN_SDK="-platform_version mac-catalyst 13.0 $MIN_SDK_VERSION"
+            MIN_SDK="-platform_version mac-catalyst $MIN_SDK_VERSION $MIN_SDK_VERSION"
             PLATFORM="MacOSX"
         elif [[ $PLATFORM == iPhoneSimulator* ]]; then
             MIN_SDK="-ios_simulator_version_min $MIN_SDK_VERSION"
