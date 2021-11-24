@@ -176,7 +176,7 @@ if [ $FWTYPE == "dynamic" ]; then
         cd ..
 
         BUNDLE_BITCODE=""
-        check_bitcode "obj/a_bitstr.o" false
+        check_bitcode "lib/libssl.a" false
         if [[ $BITCODE_ENABLED == 1 ]]; then
             BUNDLE_BITCODE="-bitcode_bundle"
         fi
