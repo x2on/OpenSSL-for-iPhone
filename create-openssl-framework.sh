@@ -25,7 +25,8 @@ fi
 ALL_SYSTEMS=("iPhoneOS" "iPhoneSimulator" "AppleTVOS" "AppleTVSimulator" "MacOSX" "Catalyst" "WatchOS" "WatchSimulator")
 
 function check_bitcode() {
-    local FWDIR=$1
+    local BITCODE_PATH=$1
+    local IS_VERBOSE=$2
 
     if [[ $FWTYPE == "dynamic" ]]; then
         BITCODE_PATTERN="__LLVM"
@@ -33,10 +34,16 @@ function check_bitcode() {
         BITCODE_PATTERN="__bitcode"
     fi
 
-    if otool -l "$FWDIR/$FWNAME" | grep "${BITCODE_PATTERN}" >/dev/null; then
-        echo "INFO: $FWDIR contains Bitcode"
+    if otool -l "$BITCODE_PATH" | grep "${BITCODE_PATTERN}" >/dev/null; then
+        if $IS_VERBOSE; then
+            echo "INFO: $BITCODE_PATH contains Bitcode"
+        fi
+        BITCODE_ENABLED=1
     else
-        echo "INFO: $FWDIR doesn't contain Bitcode"
+        if $IS_VERBOSE; then
+            echo "INFO: $BITCODE_PATH doesn't contain Bitcode"
+        fi
+        BITCODE_ENABLED=0
     fi
 }
 
@@ -168,9 +175,15 @@ if [ $FWTYPE == "dynamic" ]; then
         ar -x ../lib/libssl.a
         cd ..
 
+        BUNDLE_BITCODE=""
+        check_bitcode "obj/a_bitstr.o" false
+        if [[ $BITCODE_ENABLED == 1 ]]; then
+            BUNDLE_BITCODE="-bitcode_bundle"
+        fi
+
         ld obj/*.o \
             -dylib \
-            -bitcode_bundle \
+            $BUNDLE_BITCODE \
             -lSystem \
             -arch $ARCH \
             $MIN_SDK \
@@ -202,7 +215,7 @@ if [ $FWTYPE == "dynamic" ]; then
                 -e "s/\\\$(OPENSSL_VERSION)/$OPENSSL_VERSION/g" \
                 -i '' "$FWDIR/Info.plist"
             echo "Created $FWDIR"
-            check_bitcode $FWDIR
+            check_bitcode "$FWDIR/$FWNAME" true
         else
             echo "Skipped framework for $SYS"
         fi
@@ -232,7 +245,7 @@ else
                 -e "s/\\\$(OPENSSL_VERSION)/$OPENSSL_VERSION/g" \
                 -i '' "$FWDIR/Info.plist"
             echo "Created $FWDIR"
-            check_bitcode $FWDIR
+            check_bitcode "$FWDIR/$FWNAME" true
         else
             echo "Skipped framework for $SYS"
         fi
