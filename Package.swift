@@ -20,7 +20,7 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .binaryTarget(
             name: "openssl",
-            url: "https://github.com/keeshux/openssl-apple/releases/download/1.1.112-no-bitcode/openssl.xcframework.zip",
+            url: "https://github.com/keeshux/openssl-apple/releases/download/1.1.112/openssl.xcframework.zip",
             checksum: "6f6bfa4d9ce6330d7f964d74535d4b8e7b6b1e01578765b673c285922ae6f49f")
     ]
 )
