@@ -1,0 +1,98 @@
+name: Binary Release
+
+on:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - '.version'
+
+jobs:
+  build_openssl:
+    runs-on: macos-11
+    env:
+      OPENSSL_TARGETS: "ios-sim-cross-x86_64 ios-sim-cross-arm64 ios64-cross-arm64 ios64-cross-arm64e macos64-x86_64 macos64-arm64 mac-catalyst-x86_64 mac-catalyst-arm64"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build OpenSSL
+        id: lib
+        timeout-minutes: 60
+        run: |
+          TAG_NAME=`cat .version`
+
+          SCRIPT_NUM="${TAG_NAME#1.1.}"                   # 11200
+          PATCH_COMPOUND=$((SCRIPT_NUM / 100))            # 112
+          PATCH=$((PATCH_COMPOUND / 100))                 # 1
+          SUBPATCH_NUM=$((PATCH_COMPOUND - PATCH * 100))  # 12
+          SUBPATCH_ASCII=$((SUBPATCH_NUM + 96))           # 108
+          SUBPATCH_HEX=`printf '%x' $SUBPATCH_ASCII`      # 6c
+          SUBPATCH=`printf "\\x$SUBPATCH_HEX"`            # 'l'
+
+          OPENSSL_VERSION="1.1.$PATCH$SUBPATCH"
+          SCRIPT_VERSION=$((SCRIPT_NUM - PATCH_COMPOUND * 100))
+          echo "Compiling OpenSSL $OPENSSL_VERSION"
+          ./build-libssl.sh --version="$OPENSSL_VERSION" --targets="$OPENSSL_TARGETS" --disable-bitcode
+
+          echo "::set-output name=tag::$TAG_NAME"
+          echo "::set-output name=openssl_version::$OPENSSL_VERSION"
+          echo "::set-output name=script_version::$SCRIPT_VERSION"
+      - name: Produce dynamic framework
+        id: framework
+        env:
+          FRAMEWORK_DIR: "frameworks"
+          FRAMEWORK: "openssl.xcframework"
+        run: |
+          ./create-openssl-framework.sh dynamic
+          ( cd $FRAMEWORK_DIR && zip -yr $FRAMEWORK.zip $FRAMEWORK )
+
+          echo "::set-output name=artifact::$FRAMEWORK_DIR/$FRAMEWORK.zip"
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v4
+        with:
+          gpg_private_key: ${{ secrets.GPG_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+          git_tag_gpgsign: true
+          git_push_gpgsign: false
+      - name: Update Package.swift
+        id: package
+        env:
+          PACKAGE_FILE: "Package.swift"
+        run: |
+          TAG="${{ steps.lib.outputs.tag }}"
+          CHECKSUM=`swift package compute-checksum ${{ steps.framework.outputs.artifact }}`
+          echo $CHECKSUM >${{ steps.framework.outputs.artifact }}.checksum
+
+          sed -E "s@/[0-9\.]+/(openssl.xcframework.zip)@/$TAG/\\1@" $PACKAGE_FILE |
+              sed -E "s/checksum: \"[0-9a-f]+\"/checksum: \"$CHECKSUM\"/" >$PACKAGE_FILE.tmp
+          mv $PACKAGE_FILE.tmp $PACKAGE_FILE
+
+          OPENSSL_VERSION=${{ steps.lib.outputs.openssl_version }}
+          SCRIPT_VERSION=${{ steps.lib.outputs.script_version }}
+          RELEASE_NAME="OpenSSL $OPENSSL_VERSION"
+          if [ $SCRIPT_VERSION -gt 0 ]; then
+            RELEASE_NAME="$RELEASE_NAME ($SCRIPT_VERSION)"
+          fi
+
+          git add $PACKAGE_FILE
+          git commit -m "$RELEASE_NAME"
+          git tag ${{ steps.lib.outputs.tag }} -m "$RELEASE_NAME"
+          git push && git push --tags
+
+          BODY_PATH="release-notes.txt"
+          echo "Compiled for iOS and macOS (plus Catalyst)." >>$BODY_PATH
+          echo >>$BODY_PATH
+          echo "SwiftPM checksum: $CHECKSUM" >$BODY_PATH
+
+          echo "::set-output name=release_name::$RELEASE_NAME"
+          echo "::set-output name=checksum::$CHECKSUM"
+      - name: Publish release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ steps.package.outputs.release_name }}
+          tag_name: ${{ steps.lib.outputs.tag }}
+          body_path: release-notes.txt
+          files: |
+            ${{ steps.framework.outputs.artifact }}
+            ${{ steps.framework.outputs.artifact }}.checksum
