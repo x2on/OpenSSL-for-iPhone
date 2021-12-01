@@ -10,13 +10,13 @@ on:
 jobs:
   publish_binary_release:
     runs-on: macos-11
-    env:
-      OPENSSL_TARGETS: "ios-sim-cross-x86_64 ios-sim-cross-arm64 ios64-cross-arm64 ios64-cross-arm64e macos64-x86_64 macos64-arm64 mac-catalyst-x86_64 mac-catalyst-arm64"
     steps:
       - uses: actions/checkout@v2
       - name: Build OpenSSL
         id: lib
         timeout-minutes: 60
+        env:
+          OPENSSL_TARGETS: "ios-sim-cross-x86_64 ios-sim-cross-arm64 ios64-cross-arm64 ios64-cross-arm64e macos64-x86_64 macos64-arm64 mac-catalyst-x86_64 mac-catalyst-arm64"
         run: |
           source scripts/get-openssl-version.sh
 
