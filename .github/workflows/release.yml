@@ -8,7 +8,7 @@ on:
       - '.version'
 
 jobs:
-  build_openssl:
+  publish_binary_release:
     runs-on: macos-11
     env:
       OPENSSL_TARGETS: "ios-sim-cross-x86_64 ios-sim-cross-arm64 ios64-cross-arm64 ios64-cross-arm64e macos64-x86_64 macos64-arm64 mac-catalyst-x86_64 mac-catalyst-arm64"
@@ -18,18 +18,13 @@ jobs:
         id: lib
         timeout-minutes: 60
         run: |
-          TAG_NAME=`cat .version`
+          source scripts/get-openssl-version.sh
 
-          SCRIPT_NUM="${TAG_NAME#1.1.}"                   # 11200
-          PATCH_COMPOUND=$((SCRIPT_NUM / 100))            # 112
-          PATCH=$((PATCH_COMPOUND / 100))                 # 1
-          SUBPATCH_NUM=$((PATCH_COMPOUND - PATCH * 100))  # 12
-          SUBPATCH_ASCII=$((SUBPATCH_NUM + 96))           # 108
-          SUBPATCH_HEX=`printf '%x' $SUBPATCH_ASCII`      # 6c
-          SUBPATCH=`printf "\\x$SUBPATCH_HEX"`            # 'l'
+          COMPOUND_VERSION=`cat .version`
+          OPENSSL_VERSION=${COMPOUND_VERSION%-*}
+          SCRIPT_VERSION=${COMPOUND_VERSION#*-}
+          TAG_NAME=$(get_openssl_version $OPENSSL_VERSION $SCRIPT_VERSION)
 
-          OPENSSL_VERSION="1.1.$PATCH$SUBPATCH"
-          SCRIPT_VERSION=$((SCRIPT_NUM - PATCH_COMPOUND * 100))
           echo "Compiling OpenSSL $OPENSSL_VERSION"
           ./build-libssl.sh --version="$OPENSSL_VERSION" --targets="$OPENSSL_TARGETS" --disable-bitcode
 
@@ -58,41 +53,44 @@ jobs:
       - name: Update Package.swift
         id: package
         env:
-          PACKAGE_FILE: "Package.swift"
+          TAG_NAME: ${{ steps.lib.outputs.tag }}
+          OPENSSL_VERSION: ${{ steps.lib.outputs.openssl_version }}
+          SCRIPT_VERSION: ${{ steps.lib.outputs.script_version }}
+          PACKAGE_METADATA: "Package.swift"
+          PACKAGE_ARTIFACT: ${{ steps.framework.outputs.artifact }}
+          PACKAGE_CHECKSUM: ${{ steps.framework.outputs.artifact }}.checksum
         run: |
-          TAG="${{ steps.lib.outputs.tag }}"
-          CHECKSUM=`swift package compute-checksum ${{ steps.framework.outputs.artifact }}`
-          echo $CHECKSUM >${{ steps.framework.outputs.artifact }}.checksum
+          CHECKSUM=`swift package compute-checksum "$PACKAGE_ARTIFACT"`
+          echo $CHECKSUM >$PACKAGE_CHECKSUM
 
-          sed -E "s@/[0-9\.]+/(openssl.xcframework.zip)@/$TAG/\\1@" $PACKAGE_FILE |
-              sed -E "s/checksum: \"[0-9a-f]+\"/checksum: \"$CHECKSUM\"/" >$PACKAGE_FILE.tmp
-          mv $PACKAGE_FILE.tmp $PACKAGE_FILE
+          sed -E "s@/[0-9\.]+/(openssl.xcframework.zip)@/$TAG_NAME/\\1@" $PACKAGE_METADATA |
+              sed -E "s/checksum: \"[0-9a-f]+\"/checksum: \"$CHECKSUM\"/" >$PACKAGE_METADATA.tmp
+          mv $PACKAGE_METADATA.tmp $PACKAGE_METADATA
 
-          OPENSSL_VERSION=${{ steps.lib.outputs.openssl_version }}
-          SCRIPT_VERSION=${{ steps.lib.outputs.script_version }}
           RELEASE_NAME="OpenSSL $OPENSSL_VERSION"
           if [ $SCRIPT_VERSION -gt 0 ]; then
             RELEASE_NAME="$RELEASE_NAME ($SCRIPT_VERSION)"
           fi
 
-          git add $PACKAGE_FILE
+          git add $PACKAGE_METADATA
           git commit -m "$RELEASE_NAME"
-          git tag ${{ steps.lib.outputs.tag }} -m "$RELEASE_NAME"
+          git tag "$TAG_NAME" -m "$RELEASE_NAME"
           git push && git push --tags
 
-          BODY_PATH="release-notes.txt"
-          echo "Compiled for iOS and macOS (plus Catalyst)." >>$BODY_PATH
-          echo >>$BODY_PATH
-          echo "SwiftPM checksum: $CHECKSUM" >$BODY_PATH
+          RELEASE_NOTES="release-notes.txt"
+          echo "Compiled for iOS and macOS (plus Catalyst)." >$RELEASE_NOTES
+          echo >>$RELEASE_NOTES
+          echo "SwiftPM checksum: $CHECKSUM" >>$RELEASE_NOTES
 
           echo "::set-output name=release_name::$RELEASE_NAME"
-          echo "::set-output name=checksum::$CHECKSUM"
+          echo "::set-output name=release_notes::$RELEASE_NOTES"
+          echo "::set-output name=checksum::$PACKAGE_CHECKSUM"
       - name: Publish release
         uses: softprops/action-gh-release@v1
         with:
           name: ${{ steps.package.outputs.release_name }}
+          body_path: ${{ steps.package.outputs.release_notes }}
           tag_name: ${{ steps.lib.outputs.tag }}
-          body_path: release-notes.txt
           files: |
             ${{ steps.framework.outputs.artifact }}
-            ${{ steps.framework.outputs.artifact }}.checksum
+            ${{ steps.package.outputs.checksum }}

@@ -1,4 +1,5 @@
 #!/bin/bash
+source scripts/get-openssl-version.sh
 
 set -euo pipefail
 
@@ -111,14 +112,10 @@ function get_min_sdk() {
 #   'g' = 103 -> 6 + 1 = 07 (zero-padded)
 #   1.1.107
 #
-function get_openssl_version() {
+function get_openssl_version_from_file() {
     local opensslv=$1
     local std_version=$(awk '/define OPENSSL_VERSION_TEXT/ && !/-fips/ {print $5}' "$opensslv")
-    local generic_version=${std_version%?}
-    local subpatch=${std_version: -1}
-    local subpatch_number=$(($(printf '%d' \'$subpatch) - 97 + 1))
-    local normalized_version="${generic_version}$(printf '%02d' $subpatch_number)"
-    echo $normalized_version
+    echo $(get_openssl_version $std_version)
 }
 
 if [ $FWTYPE == "dynamic" ]; then
@@ -210,7 +207,7 @@ if [ $FWTYPE == "dynamic" ]; then
             cp -r include/$FWNAME/* $FWDIR/Headers/
             cp -L assets/$SYS/Info.plist $FWDIR/Info.plist
             MIN_SDK_VERSION=$(get_min_sdk "$FWDIR/$FWNAME")
-            OPENSSL_VERSION=$(get_openssl_version "$FWDIR/Headers/opensslv.h")
+            OPENSSL_VERSION=$(get_openssl_version_from_file "$FWDIR/Headers/opensslv.h")
             sed -e "s/\\\$(MIN_SDK_VERSION)/$MIN_SDK_VERSION/g" \
                 -e "s/\\\$(OPENSSL_VERSION)/$OPENSSL_VERSION/g" \
                 -i '' "$FWDIR/Info.plist"
@@ -240,7 +237,7 @@ else
             cp -r include/$FWNAME/* $FWDIR/Headers/
             cp -L assets/$SYS/Info.plist $FWDIR/Info.plist
             MIN_SDK_VERSION=$(get_min_sdk "$FWDIR/$FWNAME")
-            OPENSSL_VERSION=$(get_openssl_version "$FWDIR/Headers/opensslv.h")
+            OPENSSL_VERSION=$(get_openssl_version_from_file "$FWDIR/Headers/opensslv.h")
             sed -e "s/\\\$(MIN_SDK_VERSION)/$MIN_SDK_VERSION/g" \
                 -e "s/\\\$(OPENSSL_VERSION)/$OPENSSL_VERSION/g" \
                 -i '' "$FWDIR/Info.plist"
