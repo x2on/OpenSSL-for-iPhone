@@ -25,7 +25,7 @@ set -u
 # SCRIPT DEFAULTS
 
 # Default version in case no version is specified
-DEFAULTVERSION="1.1.1l"
+DEFAULTVERSION="1.1.1m"
 
 # Default (=full) set of targets (OpenSSL >= 1.1.1) to build
 DEFAULTTARGETS=`cat <<TARGETS
@@ -38,8 +38,8 @@ TARGETS`
 
 # Minimum iOS/tvOS SDK version to build for
 IOS_MIN_SDK_VERSION="12.0"
-MACOS_MIN_SDK_VERSION="10.15"
-CATALYST_MIN_SDK_VERSION="10.15"
+MACOS_MIN_SDK_VERSION="10.14"
+CATALYST_MIN_SDK_VERSION="10.14"
 WATCHOS_MIN_SDK_VERSION="4.0"
 TVOS_MIN_SDK_VERSION="12.0"
 
