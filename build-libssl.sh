@@ -25,7 +25,7 @@ set -u
 # SCRIPT DEFAULTS
 
 # Default version in case no version is specified
-DEFAULTVERSION="1.1.1m"
+DEFAULTVERSION="1.1.1o"
 
 # Default (=full) set of targets (OpenSSL >= 1.1.1) to build
 DEFAULTTARGETS=`cat <<TARGETS
