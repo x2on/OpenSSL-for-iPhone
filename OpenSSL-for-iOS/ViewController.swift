@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     
     @IBAction
     func showInfo() {
-        let message = "OpenSSL-Version: \(OPENSSL_VERSION_TEXT)\nLicense: See include/LICENSE\n\nCopyright 2010-2019 by Felix Schulze\n http://www.felixschulze.de"
+        let message = "OpenSSL-Version: \(OPENSSL_VERSION_TEXT)\nLicense: See include/LICENSE\n\nCopyright 2010-2022 by Felix Schulze\n http://www.felixschulze.de"
         let alertController = UIAlertController(title: "OpenSSL-for-iOS", message: message, preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
         self.present(alertController, animated: true, completion: nil)
