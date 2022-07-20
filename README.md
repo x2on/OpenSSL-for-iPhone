@@ -1,4 +1,4 @@
-# OpenSSL-for-iOS [![Build Status](https://travis-ci.org/x2on/OpenSSL-for-iPhone.svg)](https://travis-ci.org/x2on/OpenSSL-for-iPhone) [![license](https://img.shields.io/github/license/x2on/OpenSSL-for-iPhone.svg)](https://github.com/x2on/OpenSSL-for-iPhone/blob/master/LICENSE) [![OpenSSL version](https://img.shields.io/badge/OpenSSL-1.1.1d-lightgrey.svg)]() [![iOS support](https://img.shields.io/badge/iOS-12.0%20--%2013.2-lightgrey.svg)]() [![tvOS support](https://img.shields.io/badge/tvOS-12.0--%2013.2-lightgrey.svg)]() [![MacCatalyst support](https://img.shields.io/badge/MacCatalyst-10.15-lightgrey.svg)]()
+# OpenSSL-for-iOS [![Build Status](https://travis-ci.org/x2on/OpenSSL-for-iPhone.svg)](https://travis-ci.org/x2on/OpenSSL-for-iPhone) [![license](https://img.shields.io/github/license/x2on/OpenSSL-for-iPhone.svg)](https://github.com/x2on/OpenSSL-for-iPhone/blob/master/LICENSE) [![OpenSSL version](https://img.shields.io/badge/OpenSSL-1.1.1q-lightgrey.svg)]() [![iOS support](https://img.shields.io/badge/iOS-12.0%20--%2015.5-lightgrey.svg)]() [![tvOS support](https://img.shields.io/badge/tvOS-12.0--%2015.5-lightgrey.svg)]() [![MacCatalyst support](https://img.shields.io/badge/MacCatalyst-10.15-lightgrey.svg)]()
 
 
 
@@ -6,7 +6,7 @@ This is a script for using self-compiled builds of the OpenSSL-library on the iP
 
 **Enjoy OpenSSL on the iPhone!**
 
-You must build the OpenSSL-Libraries (1.1.1d) before running the sample with:
+You must build the OpenSSL-Libraries (1.1.1q) before running the sample with:
 ```bash
 ./build-libssl.sh
 ```
@@ -24,7 +24,7 @@ For all options see the help
 This repository contains an iOS 12.0 Xcode Project which uses the OpenSSL Libraries. The examples uses the MD5 or SHA256-algorithm to calculate an md5 or sha256 hash from an UITextfield.
 
 ## System support
-**iOS 12.0 - iOS 13.2 (x86_64 , arm64, arm64e bitcode), tvOS 12.0 - tvOS 13.2 (x86_64, arm64, bitcode) and MacCatalyst 10.15 (MacOSX_x86_64) are currently supported.**
+**iOS 12.0 - iOS 15.5 (x86_64 , arm64, arm64e bitcode), tvOS 12.0 - tvOS 15.5 (x86_64, arm64, bitcode) and MacCatalyst 15.3 (MacOSX_x86_64) are currently supported.**
 
 For iOS < 7.0 you must use Xcode < 7 and an older version of the build script.
 For iOS < 12.0 you must use Xcode < 11 and an older version of the build script.
@@ -36,6 +36,7 @@ If you have problems building for arm64 please uninstall MacPorts (see [#28](htt
 * <http://www.x2on.de/2010/07/13/tutorial-iphone-app-with-compiled-openssl-1-0-0a-library/>
 
 ## Changelog
+* 2022-07-20: OpenSSL 1.1.1q, Fix Travix Build, Xcode 13,4, iOS 15 Support
 * 2019-11-27: OpenSSL 1.1.1d, Add Support for arm64e
 * 2019-11-27: Add support for MacCatalyst, Xcode 11.2.1 (iOS 12.0 - 13.2), Migrate to Swift 5, Remove OpenSSL 1.0.2 support
 * 2017-05-25: OpenSSL 1.0.2l, 1.1.0f
