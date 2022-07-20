@@ -72,7 +72,6 @@
 		D1E979D803ACC127411934DC /* FSOpenSSL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSOpenSSL.h; sourceTree = "<group>"; };
 		D1E97EE2A904D58DAE4231E2 /* FSOpenSSL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSOpenSSL.m; sourceTree = "<group>"; };
 		FD5896FA1B2F1FAA00F3E5B5 /* build-libssl.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-libssl.sh"; sourceTree = "<group>"; };
-		FD5896FB1B2F1FB800F3E5B5 /* create-openssl-framework.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "create-openssl-framework.sh"; sourceTree = "<group>"; };
 		FD5896FC1B2F1FF900F3E5B5 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -207,7 +206,6 @@
 			isa = PBXGroup;
 			children = (
 				FD5896FA1B2F1FAA00F3E5B5 /* build-libssl.sh */,
-				FD5896FB1B2F1FB800F3E5B5 /* create-openssl-framework.sh */,
 			);
 			name = Scripts;
 			sourceTree = "<group>";

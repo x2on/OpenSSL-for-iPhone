@@ -28,7 +28,8 @@ set -u
 DEFAULTVERSION="1.1.1q"
 
 # Default (=full) set of targets to build
-DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-arm64 ios-cross-armv7 ios-cross-arm64 mac-catalyst-x86_64 mac-catalyst-arm64 tvos-sim-cross-x86_64 tvos-sim-cross-arm64 tvos-cross-arm64 watchos-sim-cross-x86_64 watchos-sim-cross-arm64 watchos-cross-armv7k watchos-cross-arm64_32"
+DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-arm64 ios-cross-arm64 mac-catalyst-x86_64 mac-catalyst-arm64 tvos-sim-cross-x86_64 tvos-sim-cross-arm64 tvos-cross-arm64 watchos-sim-cross-x86_64 watchos-sim-cross-arm64 watchos-cross-armv7k watchos-cross-arm64_32"
+
 # Excluded targets:
 #   ios-sim-cross-i386  Legacy
 #   ios-cross-armv7s    Dropped by Apple in Xcode 6 (https://www.cocoanetics.com/2014/10/xcode-6-drops-armv7s/)
@@ -38,8 +39,8 @@ DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-arm64 ios-cross-armv7 ios-cro
 
 IOS_MIN_SDK_VERSION="15.0"
 TVOS_MIN_SDK_VERSION="15.0"
-WATCHOS_MIN_SDK_VERSION="9.0"
-MACOSX_MIN_SDK_VERSION="12.1"
+WATCHOS_MIN_SDK_VERSION="8.5"
+MACOSX_MIN_SDK_VERSION="12.3"
 
 # Init optional env variables (use available variable or default to empty string)
 CURL_OPTIONS="${CURL_OPTIONS:-}"
@@ -396,6 +397,8 @@ echo "  Targets: ${TARGETS}"
 echo "  iOS SDK: ${IOS_SDKVERSION}"
 echo "  tvOS SDK: ${TVOS_SDKVERSION}"
 echo "  watchOS SDK: ${WATCHOS_SDKVERSION}"
+echo "  MacOSX SDK: ${MACOSX_SDKVERSION}"
+
 if [ "${CONFIG_DISABLE_BITCODE}" == "true" ]; then
   echo "  Bitcode embedding disabled"
 fi
