@@ -4,4 +4,4 @@ before_install:
  - ./travis-build.sh
 
 script:
-  - xcodebuild -project OpenSSL-for-iOS.xcodeproj -scheme OpenSSL-for-iOS -sdk iphonesimulator clean build ARCHS="x86_64"
+  - xcodebuild -project OpenSSL-for-iOS.xcodeproj -scheme OpenSSL-for-iOS -sdk iphonesimulator clean build
