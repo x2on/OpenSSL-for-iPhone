@@ -25,15 +25,15 @@ set -u
 # SCRIPT DEFAULTS
 
 # Default version in case no version is specified
-DEFAULTVERSION="1.1.1d"
+DEFAULTVERSION="1.1.1q"
 
 # Default (=full) set of targets to build
 DEFAULTTARGETS="ios-sim-cross-x86_64 ios64-cross-arm64 ios64-cross-arm64e tvos-sim-cross-x86_64 tvos64-cross-arm64"  # mac-catalyst-x86_64 is a valid target that is not in the DEFAULTTARGETS because it's incompatible with "ios-sim-cross-x86_64"
 
 # Minimum iOS/tvOS SDK version to build for
-IOS_MIN_SDK_VERSION="12.0"
-TVOS_MIN_SDK_VERSION="12.0"
-MACOSX_MIN_SDK_VERSION="10.15"
+IOS_MIN_SDK_VERSION="15.0"
+TVOS_MIN_SDK_VERSION="15.0"
+MACOSX_MIN_SDK_VERSION="12.1"
 
 # Init optional env variables (use available variable or default to empty string)
 CURL_OPTIONS="${CURL_OPTIONS:-}"
