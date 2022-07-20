@@ -341,7 +341,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ! -f lib/libcrypto.a ]; then\n    echo \"error: Please run ./build-libssl.h first\"\n    exit 1\nfi\n";
+			shellScript = "if [ ! -f OpenSSL.xcframework/ios-arm64_x86_64-simulator/OpenSSL-iOS-Sim.a ]; then\n    echo \"error: Please run ./build-libssl.h first\"\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
