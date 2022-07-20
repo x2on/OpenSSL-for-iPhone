@@ -9,3 +9,4 @@ include/openssl
 *.framework
 *.xccheckout
 .DS_Store
+*.xcframework
