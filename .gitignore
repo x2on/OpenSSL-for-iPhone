@@ -8,3 +8,4 @@ OpenSSL-for-iOS.xcodeproj/project.xcworkspace/xcuserdata
 include/openssl
 *.framework
 *.xccheckout
+.DS_Store
