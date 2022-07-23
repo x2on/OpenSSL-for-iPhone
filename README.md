@@ -7,13 +7,14 @@ This is a script for using self-compiled builds of the OpenSSL-library on the iP
 **Enjoy OpenSSL on the iPhone!**
 
 You must build the OpenSSL-Libraries (1.1.1q) before running the sample with:
+
 ```bash
 ./build-libssl.sh
 ```
 
 For other versions build the OpenSSL-Libraries with:
 ```bash
-./build-libssl.sh --version=1.1.1d
+./build-libssl.sh --version=1.1.1k
 ```
 
 For all options see the help
@@ -36,7 +37,7 @@ If you have problems building for arm64 please uninstall MacPorts (see [#28](htt
 * <http://www.x2on.de/2010/07/13/tutorial-iphone-app-with-compiled-openssl-1-0-0a-library/>
 
 ## Changelog
-* 2022-07-20: OpenSSL 1.1.1q, Fix Travix Build, Xcode 13,4, iOS 15 Support
+* 2022-07-20: OpenSSL 1.1.1q, Fix Travix Build, Xcode 13,4, iOS 15 Support, Add support for Simulator and Catalyst on M1 (arm64), and Apple Watch, Support for XCFramework
 * 2019-11-27: OpenSSL 1.1.1d, Add Support for arm64e
 * 2019-11-27: Add support for MacCatalyst, Xcode 11.2.1 (iOS 12.0 - 13.2), Migrate to Swift 5, Remove OpenSSL 1.0.2 support
 * 2017-05-25: OpenSSL 1.0.2l, 1.1.0f

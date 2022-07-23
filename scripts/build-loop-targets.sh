@@ -24,6 +24,8 @@ do
   # Determine relevant SDK version
   if [[ "${TARGET}" == tvos* ]]; then
     SDKVERSION="${TVOS_SDKVERSION}"
+  elif [[ "${TARGET}" == watchos* ]]; then
+    SDKVERSION="${WATCHOS_SDKVERSION}"
   elif [[ "${TARGET}" == "mac-catalyst"* ]]; then
     SDKVERSION="${MACOSX_SDKVERSION}"
   else
@@ -34,6 +36,7 @@ do
   export SDKVERSION
   export IOS_MIN_SDK_VERSION
   export TVOS_MIN_SDK_VERSION
+  export WATCHOS_MIN_SDK_VERSION
   export CONFIG_DISABLE_BITCODE
 
   # Determine platform
@@ -41,8 +44,12 @@ do
     PLATFORM="iPhoneSimulator"
   elif [[ "${TARGET}" == "tvos-sim-cross-"* ]]; then
     PLATFORM="AppleTVSimulator"
-  elif [[ "${TARGET}" == "tvos64-cross-"* ]]; then
+  elif [[ "${TARGET}" == "tvos-cross-"* ]]; then
     PLATFORM="AppleTVOS"
+  elif [[ "${TARGET}" == "watchos-sim-cross-"* ]]; then
+    PLATFORM="WatchSimulator"
+  elif [[ "${TARGET}" == "watchos-cross-"* ]]; then
+    PLATFORM="WatchOS"
   elif [[ "${TARGET}" == "mac-catalyst-"* ]]; then
     PLATFORM="MacOSX"
   else

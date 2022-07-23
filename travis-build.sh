@@ -19,6 +19,6 @@ echo "SCRIPT  Started jobs, waiting for jobs to finish"
 wait ${PID_TARGETS}
 
 xcrun -sdk iphoneos lipo -info ./lib/*.a | log_output "TARGETS  "
-./create-openssl-framework.sh | log_output "TARGETS  "
-xcrun -sdk iphoneos lipo -info openssl.framework/openssl | log_output "TARGETS  "
+./create-xcframework.sh | log_output "TARGETS  "
+xcrun -sdk iphoneos lipo -info OpenSSL.xcframework/*/*.a | log_output "TARGETS  "
 
