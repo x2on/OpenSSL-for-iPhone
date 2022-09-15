@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -331,6 +331,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		535C0E0B1B51253B0043FE32 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -341,7 +342,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ! -f OpenSSL.xcframework/ios-arm64_x86_64-simulator/OpenSSL-iOS-Sim.a ]; then\n    echo \"error: Please run ./build-libssl.h first\"\n    exit 1\nfi\n";
+			shellScript = "echo \"Check if xcframework is already build...\"\nif [ ! -f OpenSSL.xcframework/ios-arm64_x86_64-simulator/OpenSSL-iOS-Sim.a ]; then\n    echo \"error: Please run ./build-libssl.h first\"\n    exit 1\nfi\necho \"xcframework is already build.\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
