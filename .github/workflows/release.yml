@@ -9,6 +9,7 @@ on:
 
 jobs:
   publish_binary_release:
+    name: Publish binary release
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v2
