@@ -65,7 +65,6 @@ echo_help()
   echo "     --min-watchos-sdk=SDKVERSION  Set minimum watchOS SDK version (default: $WATCHOS_MIN_SDK_VERSION)"
   echo "     --min-tvos-sdk=SDKVERSION     Set minimum tvOS SDK version (default: $TVOS_MIN_SDK_VERSION)"
   echo "     --noparallel                  Disable running make with parallel jobs (make -j)"
-  echo "     --disable-bitcode             Disable embedding Bitcode"
   echo " -v, --verbose                     Enable verbose logging"
   echo "     --verbose-on-error            Dump last 500 lines from log file if an error occurs (for Travis builds)"
   echo "     --version=VERSION             OpenSSL version to build (defaults to ${DEFAULTVERSION})"
@@ -237,7 +236,7 @@ ARCHS=""
 BRANCH=""
 CLEANUP=""
 CONFIG_ENABLE_EC_NISTP_64_GCC_128=""
-CONFIG_DISABLE_BITCODE=""
+CONFIG_DISABLE_BITCODE="true"
 CONFIG_NO_DEPRECATED=""
 IOS_SDKVERSION=""
 MACOS_SDKVERSION=""
@@ -266,9 +265,6 @@ case $i in
   --ec-nistp-64-gcc-128)
     CONFIG_ENABLE_EC_NISTP_64_GCC_128="true"
     ;;
-  --disable-bitcode)
-   CONFIG_DISABLE_BITCODE="true"
-   ;;
   -h|--help)
     echo_help
     exit
