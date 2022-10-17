@@ -29,9 +29,9 @@ jobs:
           echo "Compiling OpenSSL $OPENSSL_VERSION"
           ./build-libssl.sh --version="$OPENSSL_VERSION" --targets="$OPENSSL_TARGETS" --disable-bitcode
 
-          echo "::set-output name=tag::$TAG_NAME"
-          echo "::set-output name=openssl_version::$OPENSSL_VERSION"
-          echo "::set-output name=script_version::$SCRIPT_VERSION"
+          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "openssl_version=$OPENSSL_VERSION" >> $GITHUB_OUTPUT
+          echo "script_version=$SCRIPT_VERSION" >> $GITHUB_OUTPUT
       - name: Produce dynamic framework
         id: framework
         env:
@@ -41,7 +41,7 @@ jobs:
           ./create-openssl-framework.sh dynamic
           ( cd $FRAMEWORK_DIR && zip -yr $FRAMEWORK.zip $FRAMEWORK )
 
-          echo "::set-output name=artifact::$FRAMEWORK_DIR/$FRAMEWORK.zip"
+          echo "artifact=$FRAMEWORK_DIR/$FRAMEWORK.zip" >> $GITHUB_OUTPUT
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v4
         with:
@@ -83,9 +83,9 @@ jobs:
           echo >>$RELEASE_NOTES
           echo "SwiftPM checksum: $CHECKSUM" >>$RELEASE_NOTES
 
-          echo "::set-output name=release_name::$RELEASE_NAME"
-          echo "::set-output name=release_notes::$RELEASE_NOTES"
-          echo "::set-output name=checksum::$PACKAGE_CHECKSUM"
+          echo "release_name=$RELEASE_NAME" >> $GITHUB_OUTPUT
+          echo "release_notes=$RELEASE_NOTES" >> $GITHUB_OUTPUT
+          echo "checksum=$PACKAGE_CHECKSUM" >> $GITHUB_OUTPUT
       - name: Publish release
         uses: softprops/action-gh-release@v1
         with:
