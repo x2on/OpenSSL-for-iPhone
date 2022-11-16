@@ -15,10 +15,11 @@ class ViewController: UIViewController {
     @IBOutlet var textField: UITextField!
     @IBOutlet var md5Label: UILabel!
     @IBOutlet var sh256Label: UILabel!
+    @IBOutlet var sh512Label: UILabel!
     
     @IBAction
     func showInfo() {
-        let message = "OpenSSL-Version: \(OPENSSL_VERSION_TEXT)\nLicense: See include/LICENSE\n\nCopyright 2010-2022 by Felix Schulze\n http://www.felixschulze.de"
+        let message = "OpenSSL-Version: \(OPENSSL_VERSION_TEXT)\nLicense: See include/LICENSE\n\nCopyright 2010-2023 by Felix Schulze\n http://www.felixschulze.de"
         let alertController = UIAlertController(title: "OpenSSL-for-iOS", message: message, preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
         self.present(alertController, animated: true, completion: nil)
@@ -44,10 +45,12 @@ class ViewController: UIViewController {
         if textField.text!.count > 0 {
             md5Label.text = FSOpenSSL.md5(from: textField.text)
             sh256Label.text = FSOpenSSL.sha256(from: textField.text)
+            sh512Label.text = FSOpenSSL.sha512(from: textField.text)
         }
         else {
             md5Label.text = nil
             sh256Label.text = nil
+            sh512Label.text = nil
         }
     }
     
