@@ -35,6 +35,11 @@
     XCTAssertEqualObjects([FSOpenSSL sha256FromString:@"test string"], @"d5579c46dfcc7f18207013e65b44e4cb4e2c2298f4ac457ba8f82743f31e930b");
 }
 
+- (void)testSHA512
+{
+    XCTAssertEqualObjects([FSOpenSSL sha512FromString:@"test string"], @"10e6d647af44624442f388c2c14a787ff8b17e6165b83d767ec047768d8cbcb71a1a3226e7cc7816bc79c0427d94a9da688c41a3992c7bf5e4d7cc3e0be5dbac");
+}
+
 - (void)testBase64
 {
     XCTAssertEqualObjects([FSOpenSSL base64FromString:@"test string" encodeWithNewlines:NO], @"dGVzdCBzdHJpbmc=");

@@ -57,6 +57,24 @@
     return [outStrg copy];
 }
 
++ (NSString *)sha512FromString:(NSString *)string {
+    unsigned char *inStrg = (unsigned char *) [[string dataUsingEncoding:NSASCIIStringEncoding] bytes];
+    unsigned long lngth = [string length];
+    unsigned char result[SHA512_DIGEST_LENGTH];
+    NSMutableString *outStrg = [NSMutableString string];
+
+    SHA512_CTX sha512;
+    SHA512_Init(&sha512);
+    SHA512_Update(&sha512, inStrg, lngth);
+    SHA512_Final(result, &sha512);
+
+    unsigned int i;
+    for (i = 0; i < SHA512_DIGEST_LENGTH; i++) {
+        [outStrg appendFormat:@"%02x", result[i]];
+    }
+    return [outStrg copy];
+}
+
 + (NSString *)base64FromString:(NSString *)string encodeWithNewlines:(BOOL)encodeWithNewlines {
     BIO *mem = BIO_new(BIO_s_mem());
     BIO *b64 = BIO_new(BIO_f_base64());
