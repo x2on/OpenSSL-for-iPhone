@@ -1,4 +1,4 @@
-osx_image: xcode14.1
+osx_image: xcode14.2
 language: objective-c
 before_install:
  - ./travis-build.sh
