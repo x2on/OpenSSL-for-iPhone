@@ -1,4 +1,4 @@
-# OpenSSL-for-iOS [![Build Status](https://app.travis-ci.com/x2on/OpenSSL-for-iPhone.svg?branch=master)](https://app.travis-ci.com/x2on/OpenSSL-for-iPhone) [![license](https://img.shields.io/github/license/x2on/OpenSSL-for-iPhone.svg)](https://github.com/x2on/OpenSSL-for-iPhone/blob/master/LICENSE) [![OpenSSL version](https://img.shields.io/badge/OpenSSL-1.1.1s-lightgrey.svg)]() [![iOS support](https://img.shields.io/badge/iOS-12.0%20--%2016.2-lightgrey.svg)]() [![tvOS support](https://img.shields.io/badge/tvOS-12.0%20--%2016.2-lightgrey.svg)]() [![MacCatalyst support](https://img.shields.io/badge/MacCatalyst-15.6-lightgrey.svg)]()
+# OpenSSL-for-iOS [![Build Status](https://app.travis-ci.com/x2on/OpenSSL-for-iPhone.svg?branch=master)](https://app.travis-ci.com/x2on/OpenSSL-for-iPhone) [![license](https://img.shields.io/github/license/x2on/OpenSSL-for-iPhone.svg)](https://github.com/x2on/OpenSSL-for-iPhone/blob/master/LICENSE) [![OpenSSL version](https://img.shields.io/badge/OpenSSL-1.1.1t-lightgrey.svg)]() [![iOS support](https://img.shields.io/badge/iOS-12.0%20--%2016.2-lightgrey.svg)]() [![tvOS support](https://img.shields.io/badge/tvOS-12.0%20--%2016.2-lightgrey.svg)]() [![MacCatalyst support](https://img.shields.io/badge/MacCatalyst-15.6-lightgrey.svg)]()
 
 
 
@@ -6,7 +6,7 @@ This is a script for using self-compiled builds of the OpenSSL-library on the iP
 
 **Enjoy OpenSSL on the iPhone!**
 
-You must build the OpenSSL-Libraries (1.1.1s) before running the sample with:
+You must build the OpenSSL-Libraries (1.1.1t) before running the sample with:
 
 ```bash
 ./build-libssl.sh
@@ -37,6 +37,7 @@ If you have problems building for arm64 please uninstall MacPorts (see [#28](htt
 * <https://x2on.github.io/2010/07/13/tutorial-iphone-app-with-compiled-openssl-1-0-0a-library/>
 
 ## Changelog
+* 2023-02-09: OpenSSL 1.1.1t
 * 2023-01-10: Xcode 14.2 support, iOS 16.2 support, SHA512 Example
 * 2022-11-16: Xcode 14.1 support, iOS 16.1 support, OpenSSL 1.1.1s
 * 2022-09-15: Xcode 14 support, iOS 16 support
