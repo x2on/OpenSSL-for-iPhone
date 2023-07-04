@@ -6,7 +6,7 @@ This is a script for using self-compiled builds of the OpenSSL-library on the iP
 
 **Enjoy OpenSSL on the iPhone!**
 
-You must build the OpenSSL-Libraries (1.1.1t) before running the sample with:
+You must build the OpenSSL-Libraries (1.1.1u) before running the sample with:
 
 ```bash
 ./build-libssl.sh
@@ -37,6 +37,7 @@ If you have problems building for arm64 please uninstall MacPorts (see [#28](htt
 * <https://x2on.github.io/2010/07/13/tutorial-iphone-app-with-compiled-openssl-1-0-0a-library/>
 
 ## Changelog
+* 2023-07-04: OpenSSL 1.1.1u
 * 2023-02-09: OpenSSL 1.1.1t
 * 2023-01-10: Xcode 14.2 support, iOS 16.2 support, SHA512 Example
 * 2022-11-16: Xcode 14.1 support, iOS 16.1 support, OpenSSL 1.1.1s
