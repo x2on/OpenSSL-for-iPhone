@@ -29,6 +29,24 @@ make_include_dir()
   fi
 }
 
+make_module_map()
+{
+  MODULE_HEADERS=`ls include/openssl 2>/dev/null`
+  MODULEMAP="xfwinclude/openssl/module.modulemap"
+  BLACKLISTED="asn1_mac.h"
+
+  echo "module OpenSSL {" > $MODULEMAP
+
+  for MODULE_HEADER in $MODULE_HEADERS
+  do
+    if ! [[ "$BLACKLISTED" =~ .*"$MODULE_HEADER".* ]]; then
+      echo $MODULE_HEADER | sed -E 's/^.*$/  header \"&\"/' >> $MODULEMAP
+    fi
+  done
+
+  echo "\n  export *\n}" >> $MODULEMAP
+}
+
 # Combine libssl and libcrypto into single per-platform library
 make_platform_lib()
 {
@@ -55,6 +73,7 @@ remove_temp_files()
 
 remove_temp_files
 make_include_dir
+make_module_map
 PLATFORMS="iOS tvOS watchOS Catalyst"
 for PLATFORM in $PLATFORMS
 do
