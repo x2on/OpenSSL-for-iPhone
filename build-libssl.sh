@@ -55,9 +55,14 @@ echo_help()
   echo "     --ec-nistp-64-gcc-128         Enable configure option enable-ec_nistp_64_gcc_128 for 64 bit builds"
   echo " -h, --help                        Print help (this message)"
   echo "     --ios-sdk=SDKVERSION          Override iOS SDK version"
+  echo "     --ios-min-sdk=MINSDKVERSION   Override iOS SDK min version"
   echo "     --macosx-sdk=SDKVERSION       Override MacOSX SDK version"
-  echo "     --noparallel                  Disable running make with parallel jobs (make -j)"
+  echo "     --macosx-min-sdk=SDKVERSION   Override MacOSX SDK min version"
+  echo "     --watchos-sdk=SDKVERSION      Override watchOS SDK version"
+  echo "     --watchos-min-sdk=SDKVERSION  Override watchOS SDK min version"
   echo "     --tvos-sdk=SDKVERSION         Override tvOS SDK version"
+  echo "     --tvos-min-sdk=SDKVERSION     Override tvOS SDK min version"
+  echo "     --noparallel                  Disable running make with parallel jobs (make -j)"
   echo "     --disable-bitcode             Disable embedding Bitcode"
   echo " -v, --verbose                     Enable verbose logging"
   echo "     --verbose-on-error            Dump last 500 lines from log file if an error occurs (for Travis builds)"
@@ -255,8 +260,32 @@ case $i in
     IOS_SDKVERSION="${i#*=}"
     shift
     ;;
+  --ios-min-sdk=*)
+    IOS_MIN_SDK_VERSION="${i#*=}"
+    shift
+    ;;
   --macosx-sdk=*)
     MACOSX_SDKVERSION="${i#*=}"
+    shift
+    ;;
+  --macosx-min-sdk=*)
+    MACOSX_MIN_SDK_VERSION="${i#*=}"
+    shift
+    ;;
+  --tvos-sdk=*)
+    TVOS_SDKVERSION="${i#*=}"
+    shift
+    ;;
+  --tvos-min-sdk=*)
+    TVOS_MIN_SDK_VERSION="${i#*=}"
+    shift
+    ;;
+  --watchos-sdk=*)
+    WATCHOS_SDKVERSION="${i#*=}"
+    shift
+    ;;
+  --watchos-min-sdk=*)
+    WATCHOS_MIN_SDK_VERSION="${i#*=}"
     shift
     ;;
   --noparallel)
@@ -266,14 +295,7 @@ case $i in
     TARGETS="${i#*=}"
     shift
     ;;
-  --tvos-sdk=*)
-    TVOS_SDKVERSION="${i#*=}"
-    shift
-    ;;
-  --watchos-sdk=*)
-    WATCHOS_SDKVERSION="${i#*=}"
-    shift
-    ;;
+
   -v|--verbose)
     LOG_VERBOSE="verbose"
     ;;
@@ -395,9 +417,13 @@ echo "Build options"
 echo "  OpenSSL version: ${VERSION}"
 echo "  Targets: ${TARGETS}"
 echo "  iOS SDK: ${IOS_SDKVERSION}"
+echo "  iOS min SDK: ${IOS_MIN_SDK_VERSION}"
 echo "  tvOS SDK: ${TVOS_SDKVERSION}"
+echo "  tvOS min SDK: ${TVOS_MIN_SDK_VERSION}"
 echo "  watchOS SDK: ${WATCHOS_SDKVERSION}"
+echo "  watchOS min SDK: ${WATCHOS_MIN_SDK_VERSION}"
 echo "  MacOSX SDK: ${MACOSX_SDKVERSION}"
+echo "  MacOSX min SDK: ${MACOSX_MIN_SDK_VERSION}"
 
 if [ "${CONFIG_DISABLE_BITCODE}" == "true" ]; then
   echo "  Bitcode embedding disabled"
