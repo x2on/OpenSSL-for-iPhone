@@ -37,10 +37,10 @@ DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-arm64 ios-cross-arm64 mac-cat
 
 # Minimum iOS/tvOS SDK version to build for
 
-IOS_MIN_SDK_VERSION="15.0"
-TVOS_MIN_SDK_VERSION="15.0"
-WATCHOS_MIN_SDK_VERSION="8.5"
-MACOSX_MIN_SDK_VERSION="12.3"
+IOS_MIN_SDK_VERSION="16.0"
+TVOS_MIN_SDK_VERSION="16.0"
+WATCHOS_MIN_SDK_VERSION="9.0"
+MACOSX_MIN_SDK_VERSION="13.0"
 
 # Init optional env variables (use available variable or default to empty string)
 CURL_OPTIONS="${CURL_OPTIONS:-}"
