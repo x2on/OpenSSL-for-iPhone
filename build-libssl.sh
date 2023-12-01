@@ -194,7 +194,7 @@ finish_build_loop()
   elif [[ "${PLATFORM}" == WatchSimulator ]]; then
     LIBSSL_WATCHOSSIM+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_WATCHOSSIM+=("${TARGETDIR}/lib/libcrypto.a")
-    OPENSSLCONF_SUFFIX="watchos_${ARCH}"
+    OPENSSLCONF_SUFFIX="watchos_sim_${ARCH}"
   else # Catalyst
     LIBSSL_CATALYST+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_CATALYST+=("${TARGETDIR}/lib/libcrypto.a")
@@ -640,14 +640,14 @@ if [ ${#OPENSSLCONF_ALL[@]} -gt 1 ]; then
       *_watchos_i386.h)
         DEFINE_CONDITION="TARGET_OS_WATCH && TARGET_OS_SIMULATOR && TARGET_CPU_X86"
       ;;
-      *_watchos_x86_64.h)
+      *_watchos_sim_x86_64.h)
         DEFINE_CONDITION="TARGET_OS_WATCH && TARGET_OS_SIMULATOR && TARGET_CPU_X86_64"
+      ;;
+      *_watchos_sim_arm64.h)
+        DEFINE_CONDITION="TARGET_OS_WATCH && TARGET_OS_SIMULATOR && TARGET_CPU_ARM64"
       ;;
       *_watchos_armv7k.h)
         DEFINE_CONDITION="TARGET_OS_WATCH && TARGET_CPU_ARM"
-      ;;
-      *_watchos_arm64.h)
-        DEFINE_CONDITION="TARGET_OS_WATCH && TARGET_CPU_ARM64"
       ;;
       *_watchos_arm64_32.h)
         DEFINE_CONDITION="TARGET_OS_WATCH && TARGET_CPU_ARM64"
