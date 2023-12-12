@@ -25,29 +25,6 @@ fi
 #ALL_SYSTEMS=("iPhone" "AppleTV" "MacOSX" "Catalyst" "Watch")
 ALL_SYSTEMS=("iPhoneOS" "iPhoneSimulator" "AppleTVOS" "AppleTVSimulator" "MacOSX" "Catalyst" "WatchOS" "WatchSimulator")
 
-function check_bitcode() {
-    local BITCODE_PATH=$1
-    local IS_VERBOSE=$2
-
-    if [[ $FWTYPE == "dynamic" ]]; then
-        BITCODE_PATTERN="__LLVM"
-    else
-        BITCODE_PATTERN="__bitcode"
-    fi
-
-    if otool -l "$BITCODE_PATH" | grep "${BITCODE_PATTERN}" >/dev/null; then
-        if $IS_VERBOSE; then
-            echo "INFO: $BITCODE_PATH contains Bitcode"
-        fi
-        BITCODE_ENABLED=1
-    else
-        if $IS_VERBOSE; then
-            echo "INFO: $BITCODE_PATH doesn't contain Bitcode"
-        fi
-        BITCODE_ENABLED=0
-    fi
-}
-
 # Inspect Mach-O load commands to get minimum SDK version.
 #
 # Depending on the actual minimum SDK version it may look like this
@@ -139,22 +116,22 @@ if [ $FWTYPE == "dynamic" ]; then
 
         MIN_SDK_VERSION=$(get_min_sdk "${TARGETDIR}/lib/libcrypto.a")
         if [[ $PLATFORM == AppleTVSimulator* ]]; then
-            MIN_SDK="-tvos_simulator_version_min $MIN_SDK_VERSION"
+            MIN_SDK="-platform_version tvos-simulator $MIN_SDK_VERSION"
         elif [[ $PLATFORM == AppleTV* ]]; then
-            MIN_SDK="-tvos_version_min $MIN_SDK_VERSION"
+            MIN_SDK="-platform_version tvos $MIN_SDK_VERSION"
         elif [[ $PLATFORM == MacOSX* ]]; then
-            MIN_SDK="-macosx_version_min $MIN_SDK_VERSION"
+            MIN_SDK="-platform_version macos $MIN_SDK_VERSION"
         elif [[ $PLATFORM == Catalyst* ]]; then
             MIN_SDK="-platform_version mac-catalyst $MIN_SDK_VERSION $MIN_SDK_VERSION"
             PLATFORM="MacOSX"
         elif [[ $PLATFORM == iPhoneSimulator* ]]; then
-            MIN_SDK="-ios_simulator_version_min $MIN_SDK_VERSION"
+            MIN_SDK="-platform_version ios-simulator $MIN_SDK_VERSION"
         elif [[ $PLATFORM == WatchOS* ]]; then
-            MIN_SDK="-watchos_version_min $MIN_SDK_VERSION"
+            MIN_SDK="-platform_version watchos $MIN_SDK_VERSION"
         elif [[ $PLATFORM == WatchSimulator* ]]; then
-            MIN_SDK="-watchos_simulator_version_min $MIN_SDK_VERSION"
+            MIN_SDK="-platform_version watchos-simulator $MIN_SDK_VERSION"
         else
-            MIN_SDK="-ios_version_min $MIN_SDK_VERSION"
+            MIN_SDK="-platform_version ios $MIN_SDK_VERSION"
         fi
 
         CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
@@ -172,15 +149,8 @@ if [ $FWTYPE == "dynamic" ]; then
         ar -x ../lib/libssl.a
         cd ..
 
-        BUNDLE_BITCODE=""
-        check_bitcode "lib/libssl.a" false
-        if [[ $BITCODE_ENABLED == 1 ]]; then
-            BUNDLE_BITCODE="-bitcode_bundle"
-        fi
-
         ld obj/*.o \
             -dylib \
-            $BUNDLE_BITCODE \
             -lSystem \
             -arch $ARCH \
             $MIN_SDK \
@@ -212,7 +182,6 @@ if [ $FWTYPE == "dynamic" ]; then
                 -e "s/\\\$(OPENSSL_VERSION)/$OPENSSL_VERSION/g" \
                 -i '' "$FWDIR/Info.plist"
             echo "Created $FWDIR"
-            check_bitcode "$FWDIR/$FWNAME" true
         else
             echo "Skipped framework for $SYS"
         fi
@@ -242,7 +211,6 @@ else
                 -e "s/\\\$(OPENSSL_VERSION)/$OPENSSL_VERSION/g" \
                 -i '' "$FWDIR/Info.plist"
             echo "Created $FWDIR"
-            check_bitcode "$FWDIR/$FWNAME" true
         else
             echo "Skipped framework for $SYS"
         fi
