@@ -3,17 +3,11 @@ source scripts/get-openssl-version.sh
 
 set -euo pipefail
 
-if [ $# == 0 ]; then
-    echo "Usage: `basename $0` static|dynamic"
-    exit 1
-fi
-
 if [ ! -d lib ]; then
     echo "Please run build-libssl.sh first!"
     exit 1
 fi
 
-FWTYPE=$1
 FWNAME=openssl
 FWROOT=frameworks
 
@@ -64,6 +58,27 @@ function get_min_sdk() {
     set -o pipefail
 }
 
+function get_target_sdk() {
+    local file=$1
+    set +o pipefail
+    otool -l "$file" | awk "
+        /^Load command/ {
+            last_command = \"\"
+        }
+        \$1 == \"cmd\" {
+            last_command = \$2
+        }
+        ((last_command ~ /LC_BUILD_VERSION/ && \$1 == \"sdk\") ||
+            (last_command ~ /^LC_VERSION_MIN_/ && \$1 == \"sdk\")) &&
+            (\$2 ~ /^[1-9]/) {
+
+            print \$2
+            exit
+        }
+    "
+    set -o pipefail
+}
+
 # Read OpenSSL version from opensslv.h file.
 #
 # In modern OpenSSL releases the version line looks like this:
@@ -95,127 +110,99 @@ function get_openssl_version_from_file() {
     echo $(get_openssl_version $std_version)
 }
 
-if [ $FWTYPE == "dynamic" ]; then
-    DEVELOPER=`xcode-select -print-path`
-    FW_EXEC_NAME="${FWNAME}.framework/${FWNAME}"
-    INSTALL_NAME="@rpath/${FW_EXEC_NAME}"
-    COMPAT_VERSION="1.0.0"
-    CURRENT_VERSION="1.0.0"
+DEVELOPER=`xcode-select -print-path`
+FW_EXEC_NAME="${FWNAME}.framework/${FWNAME}"
+INSTALL_NAME="@rpath/${FW_EXEC_NAME}"
+COMPAT_VERSION="1.0.0"
+CURRENT_VERSION="1.0.0"
 
-    RX='([A-z]+)([0-9]+(\.[0-9]+)*)-([A-z0-9_]+)\.sdk'
+RX='([A-z]+)([0-9]+(\.[0-9]+)*)-([A-z0-9_]+)\.sdk'
 
-    cd bin
-    for TARGETDIR in `ls -d *.sdk`; do
-        if [[ $TARGETDIR =~ $RX ]]; then
-            PLATFORM="${BASH_REMATCH[1]}"
-            SDKVERSION="${BASH_REMATCH[2]}"
-            ARCH="${BASH_REMATCH[4]}"
-        fi
+cd bin
+for TARGETDIR in `ls -d *.sdk`; do
+    if [[ $TARGETDIR =~ $RX ]]; then
+        PLATFORM="${BASH_REMATCH[1]}"
+        SDKVERSION="${BASH_REMATCH[2]}"
+        ARCH="${BASH_REMATCH[4]}"
+    fi
 
-        echo "Assembling .dylib for $PLATFORM $SDKVERSION ($ARCH)"
+    echo "Assembling .dylib for $PLATFORM $SDKVERSION ($ARCH)"
 
-        MIN_SDK_VERSION=$(get_min_sdk "${TARGETDIR}/lib/libcrypto.a")
-        if [[ $PLATFORM == AppleTVSimulator* ]]; then
-            MIN_SDK="-platform_version tvos-simulator $MIN_SDK_VERSION"
-        elif [[ $PLATFORM == AppleTV* ]]; then
-            MIN_SDK="-platform_version tvos $MIN_SDK_VERSION"
-        elif [[ $PLATFORM == MacOSX* ]]; then
-            MIN_SDK="-platform_version macos $MIN_SDK_VERSION"
-        elif [[ $PLATFORM == Catalyst* ]]; then
-            MIN_SDK="-platform_version mac-catalyst $MIN_SDK_VERSION $MIN_SDK_VERSION"
-            PLATFORM="MacOSX"
-        elif [[ $PLATFORM == iPhoneSimulator* ]]; then
-            MIN_SDK="-platform_version ios-simulator $MIN_SDK_VERSION"
-        elif [[ $PLATFORM == WatchOS* ]]; then
-            MIN_SDK="-platform_version watchos $MIN_SDK_VERSION"
-        elif [[ $PLATFORM == WatchSimulator* ]]; then
-            MIN_SDK="-platform_version watchos-simulator $MIN_SDK_VERSION"
-        else
-            MIN_SDK="-platform_version ios $MIN_SDK_VERSION"
-        fi
+    MIN_SDK_VERSION=$(get_min_sdk "${TARGETDIR}/lib/libcrypto.a")
+    TARGET_SDK_VERSION=$(get_target_sdk "${TARGETDIR}/lib/libcrypto.a")
+    if [[ $PLATFORM == AppleTVSimulator* ]]; then
+        MIN_SDK="-platform_version tvos-simulator $MIN_SDK_VERSION $TARGET_SDK_VERSION"
+    elif [[ $PLATFORM == AppleTV* ]]; then
+        MIN_SDK="-platform_version tvos $MIN_SDK_VERSION $TARGET_SDK_VERSION"
+    elif [[ $PLATFORM == MacOSX* ]]; then
+        MIN_SDK="-platform_version macos $MIN_SDK_VERSION $TARGET_SDK_VERSION"
+    elif [[ $PLATFORM == Catalyst* ]]; then
+        MIN_SDK="-platform_version mac-catalyst $MIN_SDK_VERSION $TARGET_SDK_VERSION"
+        PLATFORM="MacOSX"
+    elif [[ $PLATFORM == iPhoneSimulator* ]]; then
+        MIN_SDK="-platform_version ios-simulator $MIN_SDK_VERSION $TARGET_SDK_VERSION"
+    elif [[ $PLATFORM == WatchOS* ]]; then
+        MIN_SDK="-platform_version watchos $MIN_SDK_VERSION $TARGET_SDK_VERSION"
+    elif [[ $PLATFORM == WatchSimulator* ]]; then
+        MIN_SDK="-platform_version watchos-simulator $MIN_SDK_VERSION $TARGET_SDK_VERSION"
+    else
+        MIN_SDK="-platform_version ios $MIN_SDK_VERSION $TARGET_SDK_VERSION"
+    fi
 
-        CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
-        CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
-        SDK="${CROSS_TOP}/SDKs/${CROSS_SDK}"
+    CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
+    CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
+    SDK="${CROSS_TOP}/SDKs/${CROSS_SDK}"
 
-        #cd $TARGETDIR
-        #libtool -dynamic -lSystem $MIN_SDK -syslibroot $SDK -install_name $INSTALL_NAME -compatibility_version $COMPAT_VERSION -current_version $CURRENT_VERSION lib/*.a -o $FWNAME.dylib
+    #cd $TARGETDIR
+    #libtool -dynamic -lSystem $MIN_SDK -syslibroot $SDK -install_name $INSTALL_NAME -compatibility_version $COMPAT_VERSION -current_version $CURRENT_VERSION lib/*.a -o $FWNAME.dylib
 
-        TARGETOBJ="${TARGETDIR}/obj"
-        rm -rf $TARGETOBJ
-        mkdir $TARGETOBJ
-        cd $TARGETOBJ
-        ar -x ../lib/libcrypto.a
-        ar -x ../lib/libssl.a
-        cd ..
-
-        ld obj/*.o \
-            -dylib \
-            -lSystem \
-            -arch $ARCH \
-            $MIN_SDK \
-            -syslibroot $SDK \
-            -compatibility_version $COMPAT_VERSION \
-            -current_version $CURRENT_VERSION \
-            -application_extension \
-            -o $FWNAME.dylib
-        install_name_tool -id $INSTALL_NAME $FWNAME.dylib
-
-        cd ..
-    done
+    TARGETOBJ="${TARGETDIR}/obj"
+    rm -rf $TARGETOBJ
+    mkdir $TARGETOBJ
+    cd $TARGETOBJ
+    ar -x ../lib/libcrypto.a
+    ar -x ../lib/libssl.a
     cd ..
 
-    for SYS in ${ALL_SYSTEMS[@]}; do
-        SYSDIR="$FWROOT/$SYS"
-        FWDIR="$SYSDIR/$FWNAME.framework"
-        DYLIBS=(bin/${SYS}*/$FWNAME.dylib)
+    ld obj/*.o \
+        -dylib \
+        -lSystem \
+        -arch $ARCH \
+        $MIN_SDK \
+        -syslibroot $SDK \
+        -compatibility_version $COMPAT_VERSION \
+        -current_version $CURRENT_VERSION \
+        -application_extension \
+        -o $FWNAME.dylib
+    install_name_tool -id $INSTALL_NAME $FWNAME.dylib
 
-        if [[ ${#DYLIBS[@]} -gt 0 && -e ${DYLIBS[0]} ]]; then
-            echo "Creating framework for $SYS"
-            mkdir -p $FWDIR/Headers
-            lipo -create ${DYLIBS[@]} -output $FWDIR/$FWNAME
-            cp -r include/$FWNAME/* $FWDIR/Headers/
-            cp -L assets/$SYS/Info.plist $FWDIR/Info.plist
-            MIN_SDK_VERSION=$(get_min_sdk "$FWDIR/$FWNAME")
-            OPENSSL_VERSION=$(get_openssl_version_from_file "$FWDIR/Headers/opensslv.h")
-            sed -e "s/\\\$(MIN_SDK_VERSION)/$MIN_SDK_VERSION/g" \
-                -e "s/\\\$(OPENSSL_VERSION)/$OPENSSL_VERSION/g" \
-                -i '' "$FWDIR/Info.plist"
-            echo "Created $FWDIR"
-        else
-            echo "Skipped framework for $SYS"
-        fi
-    done
+    cd ..
+done
+cd ..
 
-    rm bin/*/$FWNAME.dylib
-else
-    for SYS in ${ALL_SYSTEMS[@]}; do
-        SYSDIR="$FWROOT/$SYS"
-        FWDIR="$SYSDIR/$FWNAME.framework"
-        LIBS_CRYPTO=(bin/${SYS}*/lib/libcrypto.a)
-        LIBS_SSL=(bin/${SYS}*/lib/libssl.a)
+for SYS in ${ALL_SYSTEMS[@]}; do
+    SYSDIR="$FWROOT/$SYS"
+    FWDIR="$SYSDIR/$FWNAME.framework"
+    DYLIBS=(bin/${SYS}*/$FWNAME.dylib)
 
-        if [[ ${#LIBS_CRYPTO[@]} -gt 0 && -e ${LIBS_CRYPTO[0]} && ${#LIBS_SSL[@]} -gt 0 && -e ${LIBS_SSL[0]} ]]; then
-            echo "Creating framework for $SYS"
-            mkdir -p $FWDIR/lib
-            lipo -create ${LIBS_CRYPTO[@]} -output $FWDIR/lib/libcrypto.a
-            lipo -create ${LIBS_SSL[@]} -output $FWDIR/lib/libssl.a
-            libtool -static -o $FWDIR/$FWNAME $FWDIR/lib/*.a
-            rm -rf $FWDIR/lib
-            mkdir -p $FWDIR/Headers
-            cp -r include/$FWNAME/* $FWDIR/Headers/
-            cp -L assets/$SYS/Info.plist $FWDIR/Info.plist
-            MIN_SDK_VERSION=$(get_min_sdk "$FWDIR/$FWNAME")
-            OPENSSL_VERSION=$(get_openssl_version_from_file "$FWDIR/Headers/opensslv.h")
-            sed -e "s/\\\$(MIN_SDK_VERSION)/$MIN_SDK_VERSION/g" \
-                -e "s/\\\$(OPENSSL_VERSION)/$OPENSSL_VERSION/g" \
-                -i '' "$FWDIR/Info.plist"
-            echo "Created $FWDIR"
-        else
-            echo "Skipped framework for $SYS"
-        fi
-    done
-fi
+    if [[ ${#DYLIBS[@]} -gt 0 && -e ${DYLIBS[0]} ]]; then
+        echo "Creating framework for $SYS"
+        mkdir -p $FWDIR/Headers
+        lipo -create ${DYLIBS[@]} -output $FWDIR/$FWNAME
+        cp -r include/$FWNAME/* $FWDIR/Headers/
+        cp -L assets/$SYS/Info.plist $FWDIR/Info.plist
+        MIN_SDK_VERSION=$(get_min_sdk "$FWDIR/$FWNAME")
+        OPENSSL_VERSION=$(get_openssl_version_from_file "$FWDIR/Headers/opensslv.h")
+        sed -e "s/\\\$(MIN_SDK_VERSION)/$MIN_SDK_VERSION/g" \
+            -e "s/\\\$(OPENSSL_VERSION)/$OPENSSL_VERSION/g" \
+            -i '' "$FWDIR/Info.plist"
+        echo "Created $FWDIR"
+    else
+        echo "Skipped framework for $SYS"
+    fi
+done
+
+rm bin/*/$FWNAME.dylib
 
 # macOS and Catalyst symlinks
 for SYS in ${ALL_SYSTEMS[@]}; do
