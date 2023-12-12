@@ -58,27 +58,6 @@ function get_min_sdk() {
     set -o pipefail
 }
 
-function get_target_sdk() {
-    local file=$1
-    set +o pipefail
-    otool -l "$file" | awk "
-        /^Load command/ {
-            last_command = \"\"
-        }
-        \$1 == \"cmd\" {
-            last_command = \$2
-        }
-        ((last_command ~ /LC_BUILD_VERSION/ && \$1 == \"sdk\") ||
-            (last_command ~ /^LC_VERSION_MIN_/ && \$1 == \"sdk\")) &&
-            (\$2 ~ /^[1-9]/) {
-
-            print \$2
-            exit
-        }
-    "
-    set -o pipefail
-}
-
 # Read OpenSSL version from opensslv.h file.
 #
 # In modern OpenSSL releases the version line looks like this:
@@ -131,22 +110,22 @@ for TARGETDIR in `ls -d *.sdk`; do
     MIN_SDK_VERSION=$(get_min_sdk "${TARGETDIR}/lib/libcrypto.a")
     TARGET_SDK_VERSION=$(get_target_sdk "${TARGETDIR}/lib/libcrypto.a")
     if [[ $PLATFORM == AppleTVSimulator* ]]; then
-        MIN_SDK="-platform_version tvos-simulator $MIN_SDK_VERSION $TARGET_SDK_VERSION"
+        MIN_SDK="-platform_version tvos-simulator $MIN_SDK_VERSION $SDKVERSION"
     elif [[ $PLATFORM == AppleTV* ]]; then
-        MIN_SDK="-platform_version tvos $MIN_SDK_VERSION $TARGET_SDK_VERSION"
+        MIN_SDK="-platform_version tvos $MIN_SDK_VERSION $SDKVERSION"
     elif [[ $PLATFORM == MacOSX* ]]; then
-        MIN_SDK="-platform_version macos $MIN_SDK_VERSION $TARGET_SDK_VERSION"
+        MIN_SDK="-platform_version macos $MIN_SDK_VERSION $SDKVERSION"
     elif [[ $PLATFORM == Catalyst* ]]; then
-        MIN_SDK="-platform_version mac-catalyst $MIN_SDK_VERSION $TARGET_SDK_VERSION"
+        MIN_SDK="-platform_version mac-catalyst $MIN_SDK_VERSION $SDKVERSION"
         PLATFORM="MacOSX"
     elif [[ $PLATFORM == iPhoneSimulator* ]]; then
-        MIN_SDK="-platform_version ios-simulator $MIN_SDK_VERSION $TARGET_SDK_VERSION"
+        MIN_SDK="-platform_version ios-simulator $MIN_SDK_VERSION $SDKVERSION"
     elif [[ $PLATFORM == WatchOS* ]]; then
-        MIN_SDK="-platform_version watchos $MIN_SDK_VERSION $TARGET_SDK_VERSION"
+        MIN_SDK="-platform_version watchos $MIN_SDK_VERSION $SDKVERSION"
     elif [[ $PLATFORM == WatchSimulator* ]]; then
-        MIN_SDK="-platform_version watchos-simulator $MIN_SDK_VERSION $TARGET_SDK_VERSION"
+        MIN_SDK="-platform_version watchos-simulator $MIN_SDK_VERSION $SDKVERSION"
     else
-        MIN_SDK="-platform_version ios $MIN_SDK_VERSION $TARGET_SDK_VERSION"
+        MIN_SDK="-platform_version ios $MIN_SDK_VERSION $SDKVERSION"
     fi
 
     CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
