@@ -108,7 +108,6 @@ for TARGETDIR in `ls -d *.sdk`; do
     echo "Assembling .dylib for $PLATFORM $SDKVERSION ($ARCH)"
 
     MIN_SDK_VERSION=$(get_min_sdk "${TARGETDIR}/lib/libcrypto.a")
-    TARGET_SDK_VERSION=$(get_target_sdk "${TARGETDIR}/lib/libcrypto.a")
     if [[ $PLATFORM == AppleTVSimulator* ]]; then
         MIN_SDK="-platform_version tvos-simulator $MIN_SDK_VERSION $SDKVERSION"
     elif [[ $PLATFORM == AppleTV* ]]; then
