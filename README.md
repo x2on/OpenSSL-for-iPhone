@@ -1,7 +1,11 @@
-# OpenSSL-for-iOS [![Build Status](https://app.travis-ci.com/x2on/OpenSSL-for-iPhone.svg?branch=master)](https://app.travis-ci.com/x2on/OpenSSL-for-iPhone) [![license](https://img.shields.io/github/license/x2on/OpenSSL-for-iPhone.svg)](https://github.com/x2on/OpenSSL-for-iPhone/blob/master/LICENSE) [![OpenSSL version](https://img.shields.io/badge/OpenSSL-1.1.1w-lightgrey.svg)]() [![iOS support](https://img.shields.io/badge/iOS-12.0%20--%2016.6-lightgrey.svg)]() [![tvOS support](https://img.shields.io/badge/tvOS-12.0%20--%2016.6-lightgrey.svg)]() [![MacCatalyst support](https://img.shields.io/badge/MacCatalyst-15.6-lightgrey.svg)]()
+# OpenSSL-for-iOS [![license](https://img.shields.io/github/license/x2on/OpenSSL-for-iPhone.svg)](https://github.com/x2on/OpenSSL-for-iPhone/blob/master/LICENSE) [![OpenSSL version](https://img.shields.io/badge/OpenSSL-1.1.1w-lightgrey.svg)]() [![iOS support](https://img.shields.io/badge/iOS-12.0%20--%2016.6-lightgrey.svg)]() [![tvOS support](https://img.shields.io/badge/tvOS-12.0%20--%2016.6-lightgrey.svg)]() [![MacCatalyst support](https://img.shields.io/badge/MacCatalyst-15.6-lightgrey.svg)]()
 
+## OpenSSL 1.1.1 End of Life
 
+**OpenSSL 1.1.1 series has reached its End of Life (EOL). As such it will no longer receive publicly available security fixes.**
+https://openssl-library.org/post/2023-09-11-eol-111/
 
+---
 This is a script for using self-compiled builds of the OpenSSL-library on the iPhone. You can build apps with Xcode and the official SDK from Apple with this. I also made a small example-app for using the libraries with Xcode and the iPhone/iPhone-Simulator.
 
 **Enjoy OpenSSL on the iPhone!**
